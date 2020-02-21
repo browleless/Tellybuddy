@@ -33,9 +33,9 @@ public class DataInitialization {
     }
 
     private void initialiseData() {
-        Customer c = new Customer("Alice");
-        em.persist(c);
-        em.flush();
+//        Customer c = new Customer("Alice");
+//        em.persist(c);
+//        em.flush();
 
     }
 

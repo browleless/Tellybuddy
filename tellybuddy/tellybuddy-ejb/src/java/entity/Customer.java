@@ -6,10 +6,25 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -22,13 +37,104 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
-    private String name;
+
+    @Column(nullable = false, unique = true, length = 32)
+    @NotNull
+    @Size(min = 4, max = 32)
+    private String username;
+
+    @Column(columnDefinition = "CHAR(32) NOT NULL")
+    @NotNull
+    private String password;
+
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 2, max = 24)
+    private String firstName;
+
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 2, max = 24)
+    private String lastName;
+
+    @Column(nullable = false)
+    @NotNull
+    @Positive
+    @Min(16)
+    @Max(99)
+    private Integer age;
+
+    @Column(nullable = false, length = 255)
+    @NotNull
+    @Size(min = 10, max = 64)
+    private String address;
+
+    @Column(nullable = false, length = 6)
+    @NotNull
+    @Size(min = 6, max = 6)
+    @Pattern(regexp = "^[0-9]{6}$")
+    private String postalCode;
+
+    @Column(nullable = false, unique = true, length = 9)
+    @NotNull
+    @Size(min = 9, max = 9)
+    @Pattern(regexp = "^[STFG]\\d{7}[A-JZ]$")
+    private String nric;
+
+    @Column(nullable = false)
+    @NotNull
+    @Min(0)
+    @Max(1000)
+    private Integer loyaltyPoints;
+
+    @Column(length = 16)
+    @Size(min = 16, max = 16)
+    @Pattern(regexp = "^[0-9]{16}$")
+    private String creditCardNumber;
+
+    @Column(length = 3)
+    @Size(min = 3, max = 3)
+    @Pattern(regexp = "^[0-9]{3}$")
+    private String cvv;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    @Future
+    private Date creditCardExpiryDate;
     
+    @OneToMany(mappedBy = "customer")
+    private List<Bill> bills;
+    
+    @OneToMany(mappedBy = "customer")
+    private List<Subscription> subscriptions;
+    
+    @OneToMany(mappedBy = "customer")
+    private List<QuizAttempt> quizAttempts;
+    
+    @OneToMany(mappedBy = "customer")
+    private List<Transaction> transactions;
+    
+    @ManyToOne
+    private FamilyGroup familyGroup;
+
     public Customer() {
+        this.loyaltyPoints = 0;
+        this.bills = new ArrayList<>();
+        this.subscriptions = new ArrayList<>();
+        this.quizAttempts = new ArrayList<>();
+        this.transactions = new ArrayList<>();
     }
-    
-    public Customer(String name){
-        this.name = name;
+
+    public Customer(String username, String password, String firstName, String lastName, Integer age, String address, String postalCode, String nric) {
+        this();
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.address = address;
+        this.postalCode = postalCode;
+        this.nric = nric;
     }
     
     public Long getCustomerId() {
@@ -63,5 +169,141 @@ public class Customer implements Serializable {
     public String toString() {
         return "entity.Customer[ id=" + customerId + " ]";
     }
-    
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getNric() {
+        return nric;
+    }
+
+    public void setNric(String nric) {
+        this.nric = nric;
+    }
+
+    public Integer getLoyaltyPoints() {
+        return loyaltyPoints;
+    }
+
+    public void setLoyaltyPoints(Integer loyaltyPoints) {
+        this.loyaltyPoints = loyaltyPoints;
+    }
+
+    public String getCreditCardNumber() {
+        return creditCardNumber;
+    }
+
+    public void setCreditCardNumber(String creditCardNumber) {
+        this.creditCardNumber = creditCardNumber;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
+    }
+
+    public Date getCreditCardExpiryDate() {
+        return creditCardExpiryDate;
+    }
+
+    public void setCreditCardExpiryDate(Date creditCardExpiryDate) {
+        this.creditCardExpiryDate = creditCardExpiryDate;
+    }
+
+    public List<Bill> getBills() {
+        return bills;
+    }
+
+    public void setBills(List<Bill> bills) {
+        this.bills = bills;
+    }
+
+    public List<Subscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(List<Subscription> subscriptions) {
+        this.subscriptions = subscriptions;
+    }
+
+    public List<QuizAttempt> getQuizAttempts() {
+        return quizAttempts;
+    }
+
+    public void setQuizAttempts(List<QuizAttempt> quizAttempts) {
+        this.quizAttempts = quizAttempts;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    public FamilyGroup getFamilyGroup() {
+        return familyGroup;
+    }
+
+    public void setFamilyGroup(FamilyGroup familyGroup) {
+        this.familyGroup = familyGroup;
+    }
+
 }
