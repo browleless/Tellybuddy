@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -54,7 +53,7 @@ public class Bill implements Serializable {
     
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
-    private UsageDetails usageDetails;
+    private UsageDetails usageDetail;
 
     public Bill() {
         this.paid = false;
@@ -140,11 +139,11 @@ public class Bill implements Serializable {
     }
 
     public UsageDetails getUsageDetails() {
-        return usageDetails;
+        return usageDetail;
     }
 
     public void setUsageDetails(UsageDetails usageDetails) {
-        this.usageDetails = usageDetails;
+        this.usageDetail = usageDetails;
     }
     
 }

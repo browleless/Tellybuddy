@@ -66,7 +66,7 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product")
     private List<TransactionLineItem> transactionLineItems;
     
-    @ManyToMany(mappedBy = "product")
+    @ManyToMany(mappedBy = "products")
     private List<Tag> tags;
     
     @ManyToOne(optional = false)

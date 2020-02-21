@@ -14,6 +14,7 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 /**
@@ -35,6 +36,7 @@ public class DiscountCode implements Serializable {
     
     @Column(nullable = false)
     @NotNull
+    @Positive
     @Min(3)
     @Max(40)
     private Integer discountRate;

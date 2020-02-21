@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 /**
@@ -38,18 +39,21 @@ public class FamilyGroup implements Serializable {
     
     @Column(nullable = false)
     @NotNull
+    @Positive
     @Min(1)
     @Max(5)
     private Integer numberOfMembers;
     
     @Column(nullable = false)
     @NotNull
+    @Positive
     @Min(1)
     @Max(1000)
     private Integer donatedUnits;
     
     @Column(nullable = false)
     @NotNull
+    @Positive
     @Min(10)
     @Max(30)
     private Integer discountRate;
