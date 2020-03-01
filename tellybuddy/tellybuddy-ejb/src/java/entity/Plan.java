@@ -33,51 +33,59 @@ public class Plan implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long planId;
-    
+
     @Column(nullable = false)
     @NotNull
     @Positive
     @Min(10)
     private Integer totalBasicUnits;
-    
+
     @Column(nullable = false, precision = 5, scale = 2)
     @NotNull
     @Digits(integer = 3, fraction = 2)
     @DecimalMin("0.00")
     private BigDecimal price;
-    
+
     @Column(nullable = false, precision = 4, scale = 2)
     @NotNull
     @Digits(integer = 2, fraction = 2)
     @DecimalMin("0.00")
     private BigDecimal addOnPrice;
-    
+
     @Column(nullable = false)
     @NotNull
     @Positive
     @Min(100)
     private Integer dataConversionRate;
-    
+
     @Column(nullable = false)
     @NotNull
     @Positive
     @Min(25)
     private Integer smsConversionRate;
-    
+
     @Column(nullable = false)
     @NotNull
     @Positive
     @Min(30)
     private Integer talktimeConversionRate;
-    
+
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
-    
+
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     @Future
     private Date endTime;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isDisabled;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isInUse;
 
     public Plan() {
     }
@@ -92,8 +100,11 @@ public class Plan implements Serializable {
         this.talktimeConversionRate = talktimeConversionRate;
         this.startTime = startTime;
         this.endTime = endTime;
+
+        this.isDisabled = false;
+        this.isInUse = false;
     }
-    
+
     public Long getPlanId() {
         return planId;
     }
@@ -190,5 +201,20 @@ public class Plan implements Serializable {
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
-    
+
+    public Boolean getIsDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(Boolean isDisabled) {
+        this.isDisabled = isDisabled;
+    }
+
+    public Boolean getIsInUse() {
+        return isInUse;
+    }
+
+    public void setIsInUse(Boolean isInUse) {
+        this.isInUse = isInUse;
+    }
 }
