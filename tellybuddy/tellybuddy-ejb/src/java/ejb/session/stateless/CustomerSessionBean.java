@@ -41,10 +41,18 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         customerToUpdate.setLastName(customer.getLastName());
         customerToUpdate.setAge(customer.getAge());
         customerToUpdate.setAddress(customer.getAddress());
-
+        customerToUpdate.setNewNricImagePath(customer.getNewNricImagePath());
+        //如果前端update了此项目，需要发送notification去employee来approve
     }
-
+    
+//    public void requestUpdateCustomerNRIC(String newNricImagePath, ){
+//        
+//        
+//    }
     public void updateCustomerNRIC() {
+        //消除之前的nric
+        //把新的replace到旧的上面
+        //
         //employee才有的权限，customer可以request to change nric并上传新的nric照片，employee验证过后才可以update
 
     }

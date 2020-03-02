@@ -86,6 +86,9 @@ public class Customer implements Serializable {
     @Column(nullable = true, unique = true)
     private String nricImagePath;
 
+    @Column(nullable = true, unique = true)
+    private String newNricImagePath;
+    
     @Column(nullable = false)
     @NotNull
     @Min(0)
@@ -190,6 +193,14 @@ public class Customer implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setNewNricImagePath(String newNricImagePath) {
+        this.newNricImagePath = newNricImagePath;
+    }
+
+    public String getNewNricImagePath() {
+        return newNricImagePath;
     }
 
     public void setPassword(String password) {
