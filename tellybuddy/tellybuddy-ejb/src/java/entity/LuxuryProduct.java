@@ -21,12 +21,12 @@ import javax.validation.constraints.Size;
 public class LuxuryProduct extends Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Column(nullable = false, length = 10)
     @NotNull
     @Size(min = 10, max = 10)
     private String serialNumber;
-    
+
     @OneToMany(mappedBy = "luxuryProduct")
     private List<ProductItem> productItems;
 
@@ -37,6 +37,7 @@ public class LuxuryProduct extends Product implements Serializable {
 
     public LuxuryProduct(String serialNumber, String skuCode, String name, String description, BigDecimal price, Integer quantityOnHand) {
         super(skuCode, name, description, price, quantityOnHand);
+        this.productItems = new ArrayList<>();
         this.serialNumber = serialNumber;
     }
 
@@ -60,5 +61,5 @@ public class LuxuryProduct extends Product implements Serializable {
     public void setProductItems(List<ProductItem> productItems) {
         this.productItems = productItems;
     }
-    
+
 }
