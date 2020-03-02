@@ -14,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -81,6 +83,9 @@ public class Customer implements Serializable {
     @Pattern(regexp = "^[STFG]\\d{7}[A-JZ]$")
     private String nric;
 
+    @Column(nullable = true, unique = true)
+    private String nricImagePath;
+
     @Column(nullable = false)
     @NotNull
     @Min(0)
@@ -101,18 +106,22 @@ public class Customer implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Future
     private Date creditCardExpiryDate;
-    
+
     @OneToMany(mappedBy = "customer")
     private List<Bill> bills;
-    
+
     @OneToMany(mappedBy = "customer")
     private List<Subscription> subscriptions;
-    
+
     @OneToMany(mappedBy = "customer")
     private List<QuizAttempt> quizAttempts;
-    
+
     @OneToMany(mappedBy = "customer")
     private List<Transaction> transactions;
+
+    @ManyToMany
+    @JoinColumn(nullable = false)
+    private List<Announcement> announcements;
     
     @ManyToOne
     private FamilyGroup familyGroup;
@@ -123,6 +132,7 @@ public class Customer implements Serializable {
         this.subscriptions = new ArrayList<>();
         this.quizAttempts = new ArrayList<>();
         this.transactions = new ArrayList<>();
+        this.announcements = new ArrayList<>();
     }
 
     public Customer(String username, String password, String firstName, String lastName, Integer age, String address, String postalCode, String nric) {
@@ -136,7 +146,7 @@ public class Customer implements Serializable {
         this.postalCode = postalCode;
         this.nric = nric;
     }
-    
+
     public Long getCustomerId() {
         return customerId;
     }
@@ -304,6 +314,22 @@ public class Customer implements Serializable {
 
     public void setFamilyGroup(FamilyGroup familyGroup) {
         this.familyGroup = familyGroup;
+    }
+
+    public String getNricImagePath() {
+        return nricImagePath;
+    }
+
+    public void setNricImagePath(String nricImagePath) {
+        this.nricImagePath = nricImagePath;
+    }
+
+    public List<Announcement> getAnnouncements() {
+        return announcements;
+    }
+
+    public void setAnnouncements(List<Announcement> announcements) {
+        this.announcements = announcements;
     }
 
 }
