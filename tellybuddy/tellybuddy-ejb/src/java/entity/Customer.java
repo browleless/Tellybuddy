@@ -66,29 +66,46 @@ public class Customer implements Serializable {
     @Max(99)
     private Integer age;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     @NotNull
     @Size(min = 10, max = 64)
     private String address;
 
-    @Column(nullable = false, length = 6)
+    @Column(nullable = true, length = 255)
+    @NotNull
+    @Size(min = 10, max = 64)
+    private String newAddress;
+
+    @Column(nullable = true, length = 6)
     @NotNull
     @Size(min = 6, max = 6)
     @Pattern(regexp = "^[0-9]{6}$")
     private String postalCode;
 
-    @Column(nullable = false, unique = true, length = 9)
+    @Column(nullable = true, length = 6)
+    @NotNull
+    @Size(min = 6, max = 6)
+    @Pattern(regexp = "^[0-9]{6}$")
+    private String newPostalCode;
+
+    @Column(nullable = true, unique = true, length = 9)
     @NotNull
     @Size(min = 9, max = 9)
     @Pattern(regexp = "^[STFG]\\d{7}[A-JZ]$")
     private String nric;
+
+    @Column(nullable = true, unique = true, length = 9)
+    @NotNull
+    @Size(min = 9, max = 9)
+    @Pattern(regexp = "^[STFG]\\d{7}[A-JZ]$")
+    private String newNric;
 
     @Column(nullable = true, unique = true)
     private String nricImagePath;
 
     @Column(nullable = true, unique = true)
     private String newNricImagePath;
-    
+
     @Column(nullable = false)
     @NotNull
     @Min(0)
@@ -126,6 +143,7 @@ public class Customer implements Serializable {
     @JoinColumn(nullable = false)
     private List<Announcement> announcements;
     
+
     @ManyToOne
     private FamilyGroup familyGroup;
 
@@ -138,16 +156,17 @@ public class Customer implements Serializable {
         this.announcements = new ArrayList<>();
     }
 
-    public Customer(String username, String password, String firstName, String lastName, Integer age, String address, String postalCode, String nric) {
+    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode,String newNric,String newNricImagePath) {
         this();
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
-        this.address = address;
-        this.postalCode = postalCode;
-        this.nric = nric;
+        this.newAddress = newAddress;
+        this.newPostalCode = newPostalCode;
+        this.newNric = newNric;
+        this.newNricImagePath = newNricImagePath;
     }
 
     public Long getCustomerId() {
@@ -341,6 +360,30 @@ public class Customer implements Serializable {
 
     public void setAnnouncements(List<Announcement> announcements) {
         this.announcements = announcements;
+    }
+
+    public String getNewAddress() {
+        return newAddress;
+    }
+
+    public void setNewAddress(String newAddress) {
+        this.newAddress = newAddress;
+    }
+
+    public String getNewPostalCode() {
+        return newPostalCode;
+    }
+
+    public void setNewPostalCode(String newPostalCode) {
+        this.newPostalCode = newPostalCode;
+    }
+
+    public String getNewNric() {
+        return newNric;
+    }
+
+    public void setNewNric(String newNric) {
+        this.newNric = newNric;
     }
 
 }

@@ -9,6 +9,7 @@ import entity.Bill;
 import entity.Customer;
 import entity.Subscription;
 import java.util.List;
+import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -23,79 +24,108 @@ import util.exception.InvalidLoginCredentialException;
  * @author admin
  */
 @Stateless
+@Local
+//@DeclareRoles({"employee", "customer"})
 public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
 
+//    @RolesAllowed({"customer"})
+    @Override
     public Long createCustomer(Customer newCustomer) {
         em.persist(newCustomer);
         em.flush();
         return newCustomer.getCustomerId();
     }
 
+//    @RolesAllowed({"customer"})
+    @Override
     public void updateCustomerDetailsForCustomer(Customer customer) {
         Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
         customerToUpdate.setPassword(customer.getPassword());
         customerToUpdate.setFirstName(customer.getFirstName());
         customerToUpdate.setLastName(customer.getLastName());
         customerToUpdate.setAge(customer.getAge());
-        customerToUpdate.setAddress(customer.getAddress());
+        customerToUpdate.setNewAddress(customer.getNewAddress());
+        customerToUpdate.setNewPostalCode(customer.getNewPostalCode());
+        customerToUpdate.setNewNric(customer.getNewNric());
         customerToUpdate.setNewNricImagePath(customer.getNewNricImagePath());
-        //如果前端update了此项目，需要发送notification去employee来approve
-    }
-    
-//    public void requestUpdateCustomerNRIC(String newNricImagePath, ){
-//        
-//        
-//    }
-    public void updateCustomerNRIC() {
-        //消除之前的nric
-        //把新的replace到旧的上面
-        //
-        //employee才有的权限，customer可以request to change nric并上传新的nric照片，employee验证过后才可以update
-
     }
 
-    public void updateCustomerPostalCode() {
-        //employee才有的权限，customer可以request to change nric并上传新的nric照片，employee验证过后才可以update
+//    @RolesAllowed({"employee"})
+    @Override
+    public void employeeApprovePendingCustomerAndUpdate(Customer customer) {
+        Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
+        customerToUpdate.setAddress(customer.getNewAddress());
+        customer.setNewAddress(null);
+        customerToUpdate.setPostalCode(customer.getNewPostalCode());
+        customer.setNewPostalCode(null);
+        customerToUpdate.setNric(customer.getNewNric());
+        customer.setNewNric(null);
+        customerToUpdate.setNricImagePath(customer.getNewNricImagePath());
+        customer.setNewNricImagePath(null);
     }
 
-    public void updateCustomerSubscription() {
-
+//    @RolesAllowed({"employee"})
+    @Override
+    public void updateCustomerSubscription(String customerId, Subscription subscription) {
+        //customer can only createNewSubscription, cannot change a current subscription?
     }
 
+//    @RolesAllowed({"employee"})
+    @Override
     public void updateCustomerTransaction() {
-//        在transaction sb里更新transaction的细节
-//                之后叫updateCustomerTransaction，把updatedTransaction和
+        //void transaction
+        //change the amount
+
     }
 
+//    @RolesAllowed({"employee"})
+    @Override
     public void updateCustomerBill(Customer customer, Bill billToUpdate) {
 
     }
 
+//    @RolesAllowed({"employee"})
+    @Override
     public void updateCustomerLoyaltyPoint(Long customerId, Integer loyaltyPointsToAdd) {
         Customer customerToUpdate = retrieveCustomerByCustomerId(customerId);
         customerToUpdate.setLoyaltyPoints(customerToUpdate.getLoyaltyPoints() + loyaltyPointsToAdd);
     }
 
+//    @RolesAllowed({"employee"})
+    @Override
     public List<Customer> retrieveAllCustomer() {
         Query q = em.createQuery("SELECT c FROM Customer c");
         return q.getResultList();
     }
+//    @RolesAllowed({"employee"})
 
+    @Override
+    public List<Customer> retrieveListOfPendingCustomer() {
+        Query q = em.createQuery("SELECT c FROM Customer c WHERE c.newNric IS NOT NULL OR c.newAddress IS NOT NULL OR c.newPostalCode IS NOT NULL OR c.newNricImagePath IS NOT NULL");
+        return q.getResultList();
+    }
+//    @RolesAllowed({"employee"})
+
+    @Override
     public Customer retrieveCustomerFromSubscription(Long subscriptionId) {
         Query q = em.createQuery("SELECT s.customer FROM Subscription s WHERE s.subcscriptionId = :inSubscription");
         q.setParameter("inSubscription", subscriptionId);
         return (Customer) q.getSingleResult();
     }
+//    @RolesAllowed({"employee"})
 
+    @Override
     public Customer retrieveCustomerByCustomerId(Long customerId) {
         Query q = em.createQuery("SELECT c FROM Customer c WHERE c.customerId = :inCustomerId");
         q.setParameter("inCustomerId", customerId);
         return (Customer) q.getSingleResult();
     }
+//    @RolesAllowed({"employee"})
 
+    @Override
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException {
         Query q = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername");
         q.setParameter("inUsername", username);
@@ -105,13 +135,17 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             throw new CustomerNotFoundException("Customer Username " + username + " does not exist!");
         }
     }
+//    @RolesAllowed({"employee", "customer"})
 
+    @Override
     public List<Customer> retrieveCustomerFromFamilyGroupId(Long familyGroupId) {
         Query q = em.createQuery("SELECT fg.customers FROM FamilyGroup fg WHERE fg.familyGroupId = :inFamilyGroupId");
         q.setParameter("inFamilyGroupId", familyGroupId);
         return q.getResultList();
     }
+//    @RolesAllowed({"customer"})
 
+    @Override
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException {
         try {
             Customer customer = retrieveCustomerByUsername(username);
@@ -124,10 +158,6 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         } catch (CustomerNotFoundException ex) {
             throw new InvalidLoginCredentialException("Username does not exist or invalid password!");
         }
-    }
-
-    public void deleteCustomer(Long customerId) {
-
     }
 
 }
