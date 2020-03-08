@@ -26,11 +26,7 @@ public interface CustomerSessionBeanLocal {
 
     public void employeeApprovePendingCustomerAndUpdate(Customer customer);
 
-    public void updateCustomerSubscription(String customerId, Subscription subscription);
-
     public void updateCustomerTransaction();
-
-    public void updateCustomerBill(Customer customer, Bill billToUpdate);
 
     public void updateCustomerLoyaltyPoint(Long customerId, Integer loyaltyPointsToAdd);
 
@@ -47,5 +43,9 @@ public interface CustomerSessionBeanLocal {
     public List<Customer> retrieveCustomerFromFamilyGroupId(Long familyGroupId);
 
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException;
+
+    public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription);
+
+    public void terminateCustomerSubscriptionToAPlan(Long customerId);
     
 }

@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -127,6 +128,9 @@ public class Customer implements Serializable {
     @Future
     private Date creditCardExpiryDate;
 
+    @Column(columnDefinition = "CHAR(32) NOT NULL")
+    private String salt;
+
     @OneToMany(mappedBy = "customer")
     private List<Bill> bills;
 
@@ -142,12 +146,12 @@ public class Customer implements Serializable {
     @ManyToMany
     @JoinColumn(nullable = false)
     private List<Announcement> announcements;
-    
 
     @ManyToOne
     private FamilyGroup familyGroup;
 
     public Customer() {
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
         this.loyaltyPoints = 0;
         this.bills = new ArrayList<>();
         this.subscriptions = new ArrayList<>();
@@ -156,10 +160,9 @@ public class Customer implements Serializable {
         this.announcements = new ArrayList<>();
     }
 
-    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode,String newNric,String newNricImagePath) {
+    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String newNric, String newNricImagePath) {
         this();
         this.username = username;
-        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
@@ -167,6 +170,7 @@ public class Customer implements Serializable {
         this.newPostalCode = newPostalCode;
         this.newNric = newNric;
         this.newNricImagePath = newNricImagePath;
+        setPassword(password);
     }
 
     public Long getCustomerId() {
@@ -384,6 +388,14 @@ public class Customer implements Serializable {
 
     public void setNewNric(String newNric) {
         this.newNric = newNric;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
 }

@@ -5,9 +5,10 @@
  */
 package ejb.session.stateless;
 
-import entity.Bill;
 import entity.Customer;
 import entity.Subscription;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -16,8 +17,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -30,6 +35,13 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
+    private final ValidatorFactory validatorFactory;
+    private final Validator validator;
+
+    public CustomerSessionBean() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+    }
 
 //    @RolesAllowed({"customer"})
     @Override
@@ -67,26 +79,44 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         customer.setNewNricImagePath(null);
     }
 
-//    @RolesAllowed({"employee"})
+//    @RolesAllowed({"customer"})
     @Override
-    public void updateCustomerSubscription(String customerId, Subscription subscription) {
-        //customer can only createNewSubscription, cannot change a current subscription?
+    public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription) {
+        //check
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        List<Subscription> subscriptions = customer.getSubscriptions();
+        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
+        if (latestSubscription.getIsActive() == true) {
+            terminateCustomerSubscriptionToAPlan(customerId);
+        }
+        //front end create subscription object and call createNewSubscriptionMethod in subscriptionSessionBean
+        newSubscription.setIsActive(true);
+        newSubscription.setSubscriptionStartDate(Calendar.getInstance().getTime());
+        customer.getSubscriptions().add(newSubscription);
+        newSubscription.setCustomer(customer);
     }
 
+    @Override
+    public void terminateCustomerSubscriptionToAPlan(Long customerId) {
+
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        List<Subscription> subscriptions = customer.getSubscriptions();
+        Date today = Calendar.getInstance().getTime();
+        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
+        latestSubscription.setSubscriptionEndDate(today);
+        latestSubscription.setIsActive(false);
+    }
+
+//add loyalty points is in EJB timer
 //    @RolesAllowed({"employee"})
     @Override
     public void updateCustomerTransaction() {
         //void transaction
         //change the amount
-
     }
 
-//    @RolesAllowed({"employee"})
-    @Override
-    public void updateCustomerBill(Customer customer, Bill billToUpdate) {
-
-    }
-
+    //updateCustomerBill is written in the bill sessionbean, take in billId and customerId
+    
 //    @RolesAllowed({"employee"})
     @Override
     public void updateCustomerLoyaltyPoint(Long customerId, Integer loyaltyPointsToAdd) {
@@ -147,10 +177,11 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
     @Override
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException {
+
         try {
             Customer customer = retrieveCustomerByUsername(username);
-
-            if (customer.getPassword().equals(password)) {
+            String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + customer.getSalt()));
+            if (customer.getPassword().equals(passwordHash)) {
                 return customer;
             } else {
                 throw new InvalidLoginCredentialException("Username does not exist or invalid password!");

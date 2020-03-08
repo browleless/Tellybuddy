@@ -35,8 +35,8 @@ public class LuxuryProduct extends Product implements Serializable {
         this.productItems = new ArrayList<>();
     }
 
-    public LuxuryProduct(String serialNumber, String skuCode, String name, String description, BigDecimal price, Integer quantityOnHand) {
-        super(skuCode, name, description, price, quantityOnHand);
+    public LuxuryProduct(String serialNumber, String skuCode, String name, String description, BigDecimal price, Integer quantityOnHand, Integer reorderQuantity) {
+        super(skuCode, name, description, price, quantityOnHand, reorderQuantity);
         this.productItems = new ArrayList<>();
         this.serialNumber = serialNumber;
     }
@@ -61,5 +61,17 @@ public class LuxuryProduct extends Product implements Serializable {
     public void setProductItems(List<ProductItem> productItems) {
         this.productItems = productItems;
     }
+
+//    public void addProductItems(ProductItem productItem) {
+//        if (productItem != null) {
+//            if (!this.productItems.contains(productItem)) {
+//                this.productItems.add(productItem);
+//
+//                if (!productItem.getLuxuryProduct().equals(this)) {
+//                    productItem.setLuxuryProduct(this);
+//                }
+//            }
+//        }
+//    }
 
 }
