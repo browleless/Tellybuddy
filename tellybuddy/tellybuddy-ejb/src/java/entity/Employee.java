@@ -28,7 +28,7 @@ public class Employee implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
-    
+
     @Column(nullable = false, unique = true, length = 32)
     @NotNull
     @Size(min = 4, max = 32)
@@ -37,6 +37,9 @@ public class Employee implements Serializable {
     @Column(columnDefinition = "CHAR(32) NOT NULL")
     @NotNull
     private String password;
+
+    @Column(columnDefinition = "CHAR(32) NOT NULL")
+    private String salt;
 
     @Column(nullable = false, length = 32)
     @NotNull
@@ -47,7 +50,7 @@ public class Employee implements Serializable {
     @NotNull
     @Size(min = 2, max = 24)
     private String lastName;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull
@@ -111,7 +114,11 @@ public class Employee implements Serializable {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        if (password != null) {
+            this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
+        } else {
+            this.password = null;
+        }
     }
 
     public String getFirstName() {
@@ -137,5 +144,13 @@ public class Employee implements Serializable {
     public void setAccessRightEnum(AccessRightEnum accessRightEnum) {
         this.accessRightEnum = accessRightEnum;
     }
-    
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
 }

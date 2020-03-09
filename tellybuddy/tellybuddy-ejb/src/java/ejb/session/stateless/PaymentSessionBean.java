@@ -45,7 +45,7 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
             throw new BillAlreadyPaidException("Bill id " + bill.getBillId() + " has already been paid for");
         } else {
             Customer customer = bill.getCustomer();
-            Bill billToPay = billSessionBeanLocal.retrieveBillByBillId(bill.getBillId());
+            Bill billToPay = billSessionBeanLocal.retrieveBillById(bill.getBillId());
 
             if ((customer.getCreditCardNumber() == null && customer.getCvv() == null && customer.getCreditCardExpiryDate() == null) || customer.getCreditCardExpiryDate().before(new Date())) {
                 throw new CustomerStoredCreditCardException("Customer either has no saved credit card or credit card has expired!");
