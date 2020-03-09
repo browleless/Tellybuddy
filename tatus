@@ -1,0 +1,59 @@
+[33mcommit 0a2934a711c5e857e69b153e8e91d4f789d5eb35[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: MarkTan <marktanjx@gmail.com>
+Date:   Mon Mar 2 20:51:16 2020 +0800
+
+    Amended entities
+
+[33mcommit 2d3180852ba1c85f31f6efc6eebca052eb66a8b4[m
+Author: ngjin <ngjin@LAPTOP-J3299I22>
+Date:   Sun Mar 1 23:19:36 2020 +0800
+
+    added 2 new attributes (isDisabled & isInUse) for Plan entity, completed PlanSessionBean methods
+
+[33mcommit 3991af5bde5087eeaa9fefd38dcf73df9b3e027e[m
+Author: Jun Le <tayjunle@gmail.com>
+Date:   Sat Feb 22 00:51:34 2020 +0800
+
+    fix entity mappedBy errors
+
+[33mcommit f2bb7e5c51b30667c2468cc3503499f498702281[m
+Author: Jun Le <tayjunle@gmail.com>
+Date:   Fri Feb 21 23:20:42 2020 +0800
+
+    add entities and bean validation constraints
+
+[33mcommit 446835ae4cf7037528b82ecff57d47fc00fb007b[m
+Author: katharevusa <katharevusa25@gmail.com>
+Date:   Fri Feb 21 18:10:47 2020 +0800
+
+    web.xml
+
+[33mcommit 04773b2363f50676e9a2ebabf97518dd125a17fd[m
+Author: katharevusa <katharevusa25@gmail.com>
+Date:   Fri Feb 21 18:08:22 2020 +0800
+
+    fixed .gitignore
+
+[33mcommit cc20765ee2443e79578657d280d431217feefbef[m
+Author: katharevusa <katharevusa25@gmail.com>
+Date:   Fri Feb 21 18:07:55 2020 +0800
+
+    change gitignore
+
+[33mcommit 0fbc44bc4955db30a42593388c09e53c3a1aaadd[m
+Author: katharevusa <katharevusa25@gmail.com>
+Date:   Fri Feb 21 17:04:52 2020 +0800
+
+    upload app
+
+[33mcommit ca8bb49564e625da2ce1d91aa678a15f5c73b1db[m
+Author: kaikai <admin@kate-2.local>
+Date:   Fri Feb 21 17:00:52 2020 +0800
+
+    fixed .gitignore
+
+[33mcommit ff2b7e6fcbfc3b4992722e9f2809d64240567b33[m
+Author: katharevusa <46880396+katharevusa@users.noreply.github.com>
+Date:   Fri Feb 21 16:43:09 2020 +0800
+
+    Initial commit
