@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.BillAlreadyPaidException;
+import util.exception.BillNotFoundException;
 import util.exception.CustomerStoredCreditCardException;
 import util.exception.DeletePaymentException;
 import util.exception.PaymentNotFoundException;
@@ -19,7 +20,7 @@ public interface PaymentSessionBeanLocal {
 
     public Long createNewPayment(Payment newPayment);
 
-    public Long createNewBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException;
+    public Long createNewBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException;
 
     public Payment retrievePaymentById(Long paymentId) throws PaymentNotFoundException;
 
