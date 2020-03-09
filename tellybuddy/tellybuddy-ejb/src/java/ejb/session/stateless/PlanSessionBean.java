@@ -14,11 +14,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.PlanAlreadyDisabledException;
 import util.exception.PlanExistException;
 import util.exception.PlanNotFoundException;
+import util.exception.UnknownPersistenceException;
+import util.exception.InputDataValidationException;
 
 /**
  *
@@ -35,12 +38,13 @@ public class PlanSessionBean implements PlanSessionBeanLocal {
     private final Validator validator;
 
     public PlanSessionBean() {
-        validatorFactory = Validator.buildDefaultValidatorFactory();
+        validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
 
     @Override
-    public Long createNewPlan(Plan newPlan) throws PlanExistException, UnknownPersistenceException {
+    public Long createNewPlan(Plan newPlan) throws PlanExistException, UnknownPersistenceException,
+            InputDataValidationException {
         //check uniqueness of the planName using bean validator before persisting
 
         Set<ConstraintViolation<Plan>> constraintViolations = validator.validate(newPlan);
