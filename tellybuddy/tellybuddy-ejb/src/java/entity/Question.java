@@ -74,7 +74,7 @@ public class Question implements Serializable {
             return false;
         }
         Question other = (Question) object;
-        if ((this.questionId == null && other.questionId != null) || (this.questionId != null && !this.questionId.equals(other.questionId))) {
+        if ((this.questionId == null && other.questionId != null) || (this.questionId != null && !this.questionId.equals(other.questionId)) || (this.questionId == null && other.questionId == null && !this.question.equals(other.question))) {
             return false;
         }
         return true;

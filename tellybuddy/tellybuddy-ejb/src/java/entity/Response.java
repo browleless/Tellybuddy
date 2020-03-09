@@ -64,7 +64,7 @@ public class Response implements Serializable {
             return false;
         }
         Response other = (Response) object;
-        if ((this.responseId == null && other.responseId != null) || (this.responseId != null && !this.responseId.equals(other.responseId))) {
+        if ((this.responseId == null && other.responseId != null) || (this.responseId != null && !this.responseId.equals(other.responseId)) || (this.responseId == null && other.responseId == null && !this.question.equals(other.question))) {
             return false;
         }
         return true;
