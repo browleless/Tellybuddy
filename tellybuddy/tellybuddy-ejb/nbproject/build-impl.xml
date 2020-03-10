@@ -796,7 +796,7 @@ exists or setup the property manually. For example like this:
     <target depends="compile" name="library-inclusion-in-manifest">
         <copyfiles files="${libs.jpa20-persistence.classpath}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.javaee-api-7.0.classpath}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${libs.Bean_Validation_API_2.0.1.classpath}" todir="${dist.ear.dir}/lib"/>
+        <!--<copyfiles files="${libs.Bean_Validation_API_2.0.1.classpath}" todir="${dist.ear.dir}/lib"/>-->
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">
