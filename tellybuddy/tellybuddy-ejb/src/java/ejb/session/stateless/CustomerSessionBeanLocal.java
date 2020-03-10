@@ -44,7 +44,7 @@ public interface CustomerSessionBeanLocal {
 
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException;
 
-    public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription);
+ //   public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription);
 
     public void terminateCustomerSubscriptionToAPlan(Long customerId);
     

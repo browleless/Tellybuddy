@@ -112,7 +112,7 @@ public class Customer implements Serializable {
     @Min(0)
     @Max(1000)
     private Integer loyaltyPoints;
-    
+
     @Column(nullable = false)
     @NotNull
     @Min(0)
@@ -128,7 +128,6 @@ public class Customer implements Serializable {
     @Size(min = 3, max = 3)
     @Pattern(regexp = "^[0-9]{3}$")
     private String cvv;
-   
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
@@ -234,7 +233,11 @@ public class Customer implements Serializable {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        if (password != null) {
+            this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
+        } else {
+            this.password = null;
+        }
     }
 
     public String getFirstName() {

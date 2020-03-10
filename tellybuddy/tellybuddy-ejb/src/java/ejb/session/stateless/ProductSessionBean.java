@@ -389,42 +389,31 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
     @Override
     public void deleteProduct(Long productId) throws ProductNotFoundException, DeleteProductException {
         Product productToRemove = retrieveProductByProductId(productId);
+        List<TransactionLineItem> transactionLineItems = transactionSessionBeanLocal.retrieveTransactionLineItemsByProductId(productId);
+        if (transactionLineItems.isEmpty()) {
+            productToRemove.getCategory().getProducts().remove(productToRemove);
 
-        if (productToRemove instanceof LuxuryProduct) {
-            LuxuryProduct luxuryProductToRemove = (LuxuryProduct) productToRemove;
-            //remove category
-            luxuryProductToRemove.getCategory().getProducts().remove(luxuryProductToRemove);
-            //remove tag
-            for (Tag tag : luxuryProductToRemove.getTags()) {
-                tag.getProducts().remove(luxuryProductToRemove);
+            for (Tag tag : productToRemove.getTags()) {
+                tag.getProducts().remove(productToRemove);
             }
-            luxuryProductToRemove.getTags().clear();
-            em.remove(luxuryProductToRemove);
-            //remove productItem
-            for (ProductItem productItem : luxuryProductToRemove.getProductItems()) {
-                productItem.setLuxuryProduct(null);
-            }
-            luxuryProductToRemove.getProductItems().clear();
+            productToRemove.getTags().clear();
 
-        } else {
-            List<TransactionLineItem> transactionLineItems = transactionSessionBeanLocal.retrieveTransactionLineItemsByProductId(productId);
-            if (transactionLineItems.isEmpty()) {
-                productToRemove.getCategory().getProducts().remove(productToRemove);
-
-                for (Tag tag : productToRemove.getTags()) {
-                    tag.getProducts().remove(productToRemove);
+            if (productToRemove instanceof LuxuryProduct) {
+                LuxuryProduct luxuryProductToRemove = (LuxuryProduct) productToRemove;
+                for (ProductItem productItem : luxuryProductToRemove.getProductItems()) {
+                    productItem.setLuxuryProduct(null);
                 }
-
-                productToRemove.getTags().clear();
-
-                em.remove(productToRemove);
-            } else {
-                throw new DeleteProductException("Product ID " + productId + " is associated with existing sale transaction line item(s) and cannot be deleted!");
+                luxuryProductToRemove.getProductItems().clear();
             }
+
+            em.remove(productToRemove);
+        } else {
+            throw new DeleteProductException("Product ID " + productId + " is associated with existing sale transaction line item(s) and cannot be deleted!");
         }
+
     }
-    //only delete the luxury product itself together with its list of productItem
-    //do not have to check in the transactionlineItem because debitQuantityOnHand will remove those productItem that is sold
+//only delete the luxury product itself together with its list of productItem
+//do not have to check in the transactionlineItem because debitQuantityOnHand will remove those productItem that is sold
 
     @Override
     public void debitQuantityOnHand(Long productId, Integer quantityToDebit) throws ProductNotFoundException, ProductInsufficientQuantityOnHandException {

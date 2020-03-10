@@ -58,6 +58,7 @@ public class Employee implements Serializable {
     private AccessRightEnum accessRightEnum;
 
     public Employee() {
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
     }
 
     public Employee(String username, String password, String firstName, String lastName, AccessRightEnum accessRightEnum) {

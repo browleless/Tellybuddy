@@ -80,21 +80,21 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     }
 
 //    @RolesAllowed({"customer"})
-    @Override
-    public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription) {
-        //check
-        Customer customer = retrieveCustomerByCustomerId(customerId);
-        List<Subscription> subscriptions = customer.getSubscriptions();
-        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
-        if (latestSubscription.getIsActive() == true) {
-            terminateCustomerSubscriptionToAPlan(customerId);
-        }
-        //front end create subscription object and call createNewSubscriptionMethod in subscriptionSessionBean
-        newSubscription.setIsActive(true);
-        newSubscription.setSubscriptionStartDate(Calendar.getInstance().getTime());
-        customer.getSubscriptions().add(newSubscription);
-        newSubscription.setCustomer(customer);
-    }
+//    @Override
+//    public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription) {
+//        //check
+//        Customer customer = retrieveCustomerByCustomerId(customerId);
+//        List<Subscription> subscriptions = customer.getSubscriptions();
+//        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
+//        if (latestSubscription.getIsActive() == true) {
+//            terminateCustomerSubscriptionToAPlan(customerId);
+//        }
+//        //front end create subscription object and call createNewSubscriptionMethod in subscriptionSessionBean
+//        newSubscription.setIsActive(true);
+//        newSubscription.setSubscriptionStartDate(Calendar.getInstance().getTime());
+//        customer.getSubscriptions().add(newSubscription);
+//        newSubscription.setCustomer(customer);
+//    }
 
     @Override
     public void terminateCustomerSubscriptionToAPlan(Long customerId) {
