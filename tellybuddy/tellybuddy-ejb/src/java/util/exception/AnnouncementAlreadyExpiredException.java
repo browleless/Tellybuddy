@@ -7,15 +7,14 @@ package util.exception;
 
 /**
  *
-
  * @author ngjin
  */
-public class PlanNotFoundException extends Exception {
+public class AnnouncementAlreadyExpiredException extends Exception {
 
-    public PlanNotFoundException() {
+    public AnnouncementAlreadyExpiredException() {
     }
 
-    public PlanNotFoundException(String msg) {
+    public AnnouncementAlreadyExpiredException(String msg) {
         super(msg);
     }
 }

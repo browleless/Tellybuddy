@@ -7,6 +7,7 @@ package util.exception;
 
 /**
  *
+<<<<<<< HEAD
  * @author kaikai
  */
 public class InputDataValidationException extends Exception {
@@ -24,6 +25,7 @@ public class InputDataValidationException extends Exception {
      *
      * @param msg the detail message.
      */
+
     public InputDataValidationException(String msg) {
         super(msg);
     }

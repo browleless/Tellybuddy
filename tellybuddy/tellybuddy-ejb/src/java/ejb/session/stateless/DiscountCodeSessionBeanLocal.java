@@ -6,12 +6,28 @@
 package ejb.session.stateless;
 
 import entity.DiscountCode;
+import java.util.List;
 import javax.ejb.Local;
+import util.exception.DiscountCodeAlreadyExpiredException;
+import util.exception.DiscountCodeNotFoundException;
 
 /**
  *
- * @author markt
+ * @author ngjin
  */
+@Local
 public interface DiscountCodeSessionBeanLocal {
-        public DiscountCode retrieveDiscountCodeByName(String discountCodeName);
+
+    public Long createNewDiscountCode(DiscountCode discountCode);
+
+    public DiscountCode retrieveDiscountCodeByDiscountCodeId(Long discountCodeId) throws DiscountCodeNotFoundException;
+
+    public List<DiscountCode> retrieveAllDiscountCodes();
+
+    public List<DiscountCode> retrieveAllActiveDiscountCodes();
+
+    public void updateDiscountCode(DiscountCode dc) throws DiscountCodeAlreadyExpiredException, DiscountCodeNotFoundException;
+
+    public void deleteDiscountCode(Long discountCodeId) throws DiscountCodeNotFoundException;
+    
 }

@@ -7,15 +7,14 @@ package util.exception;
 
 /**
  *
-
  * @author ngjin
  */
-public class PlanNotFoundException extends Exception {
+public class DiscountCodeNotFoundException extends Exception {
 
-    public PlanNotFoundException() {
+    public DiscountCodeNotFoundException() {
     }
 
-    public PlanNotFoundException(String msg) {
+    public DiscountCodeNotFoundException(String msg) {
         super(msg);
     }
 }

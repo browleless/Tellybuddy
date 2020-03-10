@@ -62,16 +62,5 @@ public class LuxuryProduct extends Product implements Serializable {
         this.productItems = productItems;
     }
 
-//    public void addProductItems(ProductItem productItem) {
-//        if (productItem != null) {
-//            if (!this.productItems.contains(productItem)) {
-//                this.productItems.add(productItem);
-//
-//                if (!productItem.getLuxuryProduct().equals(this)) {
-//                    productItem.setLuxuryProduct(this);
-//                }
-//            }
-//        }
-//    }
 
 }

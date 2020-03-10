@@ -105,9 +105,10 @@ public class ProductItemSessionBean implements ProductItemSessionBeanLocal {
         return productItems;
     }
     
-    public ProductItem retrieveListOfProductItemByTransactionLineItemId(Long transaction){
-        
-    }
+
+//    public ProductItem retrieveListOfProductItemByTransactionLineItemId(Long transaction){
+//        
+//    }
     
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<ProductItem>> constraintViolations) {
         String msg = "Input data validation error!:";

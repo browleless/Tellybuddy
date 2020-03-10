@@ -8,8 +8,12 @@ package ejb.session.stateless;
 import entity.ProductItem;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.InputDataValidationException;
+import util.exception.ProductItemExistException;
 import util.exception.ProductItemNotFoundException;
 import util.exception.ProductNotFoundException;
+import util.exception.UnknownPersistenceException;
+
 
 /**
  *
@@ -21,5 +25,5 @@ public interface ProductItemSessionBeanLocal {
     public ProductItem retrieveProductItemByProductItemId(Long itemId) throws ProductItemNotFoundException;
 
     public List<ProductItem> retrieveAllProductItemUnderLuxuryProduct(Long luxuryProductId) throws ProductNotFoundException;
-    
+    public ProductItem createNewProductItem(ProductItem newProductItem, Long luxuryProductId) throws InputDataValidationException, UnknownPersistenceException, ProductItemExistException;
 }

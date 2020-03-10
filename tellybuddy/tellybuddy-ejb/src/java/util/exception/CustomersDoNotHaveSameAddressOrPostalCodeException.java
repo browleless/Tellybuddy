@@ -7,15 +7,14 @@ package util.exception;
 
 /**
  *
-
  * @author ngjin
  */
-public class PlanNotFoundException extends Exception {
+public class CustomersDoNotHaveSameAddressOrPostalCodeException extends Exception {
 
-    public PlanNotFoundException() {
+    public CustomersDoNotHaveSameAddressOrPostalCodeException() {
     }
 
-    public PlanNotFoundException(String msg) {
+    public CustomersDoNotHaveSameAddressOrPostalCodeException(String msg) {
         super(msg);
     }
 }

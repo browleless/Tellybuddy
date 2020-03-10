@@ -7,15 +7,14 @@ package util.exception;
 
 /**
  *
-
  * @author ngjin
  */
-public class PlanNotFoundException extends Exception {
+public class FamilyGroupNotFoundException extends Exception {
 
-    public PlanNotFoundException() {
+    public FamilyGroupNotFoundException() {
     }
 
-    public PlanNotFoundException(String msg) {
+    public FamilyGroupNotFoundException(String msg) {
         super(msg);
     }
 }
