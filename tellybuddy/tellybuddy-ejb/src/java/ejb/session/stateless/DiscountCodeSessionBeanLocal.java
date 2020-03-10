@@ -9,7 +9,10 @@ import entity.DiscountCode;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.DiscountCodeAlreadyExpiredException;
+import util.exception.DiscountCodeExistException;
 import util.exception.DiscountCodeNotFoundException;
+import util.exception.InputDataValidationException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -18,7 +21,7 @@ import util.exception.DiscountCodeNotFoundException;
 @Local
 public interface DiscountCodeSessionBeanLocal {
 
-    public Long createNewDiscountCode(DiscountCode discountCode);
+    public Long createNewDiscountCode(DiscountCode discountCode) throws UnknownPersistenceException, DiscountCodeExistException, InputDataValidationException;
 
     public DiscountCode retrieveDiscountCodeByDiscountCodeId(Long discountCodeId) throws DiscountCodeNotFoundException;
 
@@ -29,5 +32,5 @@ public interface DiscountCodeSessionBeanLocal {
     public void updateDiscountCode(DiscountCode dc) throws DiscountCodeAlreadyExpiredException, DiscountCodeNotFoundException;
 
     public void deleteDiscountCode(Long discountCodeId) throws DiscountCodeNotFoundException;
-    
+
 }

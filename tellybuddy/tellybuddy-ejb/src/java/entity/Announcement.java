@@ -52,18 +52,12 @@ public class Announcement implements Serializable {
     @Future
     private Date expiryDate;
 
-    @ManyToMany(mappedBy = "announcements")
-    @JoinColumn(nullable = false)
-    private List<Customer> customers;
-
-    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull
     private AnnouncementRecipientEnum announcementRecipientEnum;
-    
+
     public Announcement() {
-        this.customers = new ArrayList<>();
     }
 
     public Announcement(String title, String content, Date postedDate, Date expiryDate) {
@@ -137,14 +131,6 @@ public class Announcement implements Serializable {
 
     public void setExpiryDate(Date expiryDate) {
         this.expiryDate = expiryDate;
-    }
-
-    public List<Customer> getCustomers() {
-        return customers;
-    }
-
-    public void setCustomers(List<Customer> customers) {
-        this.customers = customers;
     }
 
     public AnnouncementRecipientEnum getAnnouncementRecipientEnum() {
