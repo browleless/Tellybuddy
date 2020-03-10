@@ -1,6 +1,5 @@
 package ejb.session.stateless;
 
-import ejb.session.stateful.QuizSessionBeanLocal;
 import entity.Answer;
 import entity.Question;
 import entity.Quiz;

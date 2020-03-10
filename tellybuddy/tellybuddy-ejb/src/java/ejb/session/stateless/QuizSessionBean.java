@@ -1,4 +1,4 @@
-package ejb.session.stateful;
+package ejb.session.stateless;
 
 import ejb.session.stateless.QuestionSessionBeanLocal;
 import entity.Answer;
@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -25,7 +26,7 @@ import util.exception.QuizNotFoundException;
  *
  * @author tjle2
  */
-@Stateful
+@Stateless
 public class QuizSessionBean implements QuizSessionBeanLocal {
 
     @EJB

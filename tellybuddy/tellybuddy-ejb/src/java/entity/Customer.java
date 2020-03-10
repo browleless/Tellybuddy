@@ -112,6 +112,12 @@ public class Customer implements Serializable {
     @Min(0)
     @Max(1000)
     private Integer loyaltyPoints;
+    
+    @Column(nullable = false)
+    @NotNull
+    @Min(0)
+    @Max(1000)
+    private Integer consecutiveMonths;
 
     @Column(length = 16)
     @Size(min = 16, max = 16)
@@ -397,6 +403,14 @@ public class Customer implements Serializable {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public Integer getConsecutiveMonths() {
+        return consecutiveMonths;
+    }
+
+    public void setConsecutiveMonths(Integer consecutiveMonths) {
+        this.consecutiveMonths = consecutiveMonths;
     }
 
 }

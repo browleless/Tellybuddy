@@ -3,6 +3,7 @@ package entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,66 +36,15 @@ public class Subscription implements Serializable {
     
     @Column(nullable = false)
     @NotNull
-    @Positive
-    @Min(0)
-    @Max(100)
-    private Integer allocatedDataUnits;
+    private HashMap<String,Integer> dataUnits;
     
     @Column(nullable = false)
     @NotNull
-    @Positive
-    @Min(0)
-    @Max(100)
-    private Integer allocatedTalktimeUnits;
+    private HashMap<String,Integer> talkTimeUnits;
     
     @Column(nullable = false)
     @NotNull
-    @Positive
-    @Min(0)
-    @Max(100)
-    private Integer allocatedSmsUnits;
-
-    @Column(nullable = false)
-    @NotNull
-    @Positive
-    @Min(0)
-    @Max(100)
-    private Integer nextMonthDataUnits;
-    
-    @Column(nullable = false)
-    @NotNull
-    @Positive
-    @Min(0)
-    @Max(100)
-    private Integer nextMonthTalktimeUnits;
-    
-    @Column(nullable = false)
-    @NotNull
-    @Positive
-    @Min(0)
-    @Max(100)
-    private Integer nextMonthSmsUnits;
-    
-    @Column(nullable = false)
-    @NotNull
-    @Positive
-    @Min(0)
-    @Max(100)
-    private Integer addOnDataUnits;
-    
-    @Column(nullable = false)
-    @NotNull
-    @Positive
-    @Min(0)
-    @Max(100)
-    private Integer addOnTalktimeUnits;
-    
-    @Column(nullable = false)
-    @NotNull
-    @Positive
-    @Min(0)
-    @Max(100)
-    private Integer addOnSmsUnits;
+    private HashMap<String,Integer> smsUnits;
     
     @Column(nullable = false)
     @NotNull
@@ -124,22 +74,18 @@ public class Subscription implements Serializable {
     @JoinColumn(nullable = false)
     private PhoneNumber phoneNumber;
     
+    
+    
     public Subscription() {
-        this.addOnDataUnits = 0;
-        this.addOnSmsUnits = 0;
-        this.addOnTalktimeUnits = 0;
-        this.nextMonthDataUnits = 0;
-        this.nextMonthSmsUnits = 0;
-        this.nextMonthTalktimeUnits = 0;
         this.isActive = false;
         this.usageDetails = new ArrayList<>();
     }
 
     public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits) {
         this();
-        this.allocatedDataUnits = allocatedDataUnits;
-        this.allocatedTalktimeUnits = allocatedTalktimeUnits;
-        this.allocatedSmsUnits = allocatedSmsUnits;
+        this.dataUnits.put("allocated", allocatedDataUnits);
+        this.talkTimeUnits.put("allocated", allocatedTalktimeUnits);
+        this.smsUnits.put("allocated", allocatedSmsUnits);
     }
 
     public Long getSubcscriptionId() {
@@ -173,54 +119,6 @@ public class Subscription implements Serializable {
     @Override
     public String toString() {
         return "entity.Subscription[ id=" + subcscriptionId + " ]";
-    }
-
-    public Integer getAllocatedDataUnits() {
-        return allocatedDataUnits;
-    }
-
-    public void setAllocatedDataUnits(Integer allocatedDataUnits) {
-        this.allocatedDataUnits = allocatedDataUnits;
-    }
-
-    public Integer getAllocatedTalktimeUnits() {
-        return allocatedTalktimeUnits;
-    }
-
-    public void setAllocatedTalktimeUnits(Integer allocatedTalktimeUnits) {
-        this.allocatedTalktimeUnits = allocatedTalktimeUnits;
-    }
-
-    public Integer getAllocatedSmsUnits() {
-        return allocatedSmsUnits;
-    }
-
-    public void setAllocatedSmsUnits(Integer allocatedSmsUnits) {
-        this.allocatedSmsUnits = allocatedSmsUnits;
-    }
-
-    public Integer getAddOnDataUnits() {
-        return addOnDataUnits;
-    }
-
-    public void setAddOnDataUnits(Integer addOnDataUnits) {
-        this.addOnDataUnits = addOnDataUnits;
-    }
-
-    public Integer getAddOnTalktimeUnits() {
-        return addOnTalktimeUnits;
-    }
-
-    public void setAddOnTalktimeUnits(Integer addOnTalktimeUnits) {
-        this.addOnTalktimeUnits = addOnTalktimeUnits;
-    }
-
-    public Integer getAddOnSmsUnits() {
-        return addOnSmsUnits;
-    }
-
-    public void setAddOnSmsUnits(Integer addOnSmsUnits) {
-        this.addOnSmsUnits = addOnSmsUnits;
     }
 
     public Boolean getIsActive() {
@@ -279,28 +177,28 @@ public class Subscription implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public Integer getNextMonthDataUnits() {
-        return nextMonthDataUnits;
+    public HashMap<String,Integer> getDataUnits() {
+        return dataUnits;
     }
 
-    public void setNextMonthDataUnits(Integer nextMonthDataUnits) {
-        this.nextMonthDataUnits = nextMonthDataUnits;
+    public void setDataUnits(HashMap<String,Integer> dataUnits) {
+        this.dataUnits = dataUnits;
     }
 
-    public Integer getNextMonthTalktimeUnits() {
-        return nextMonthTalktimeUnits;
+    public HashMap<String,Integer> getTalkTimeUnits() {
+        return talkTimeUnits;
     }
 
-    public void setNextMonthTalktimeUnits(Integer nextMonthTalktimeUnits) {
-        this.nextMonthTalktimeUnits = nextMonthTalktimeUnits;
+    public void setTalkTimeUnits(HashMap<String,Integer> talkTimeUnits) {
+        this.talkTimeUnits = talkTimeUnits;
     }
 
-    public Integer getNextMonthSmsUnits() {
-        return nextMonthSmsUnits;
+    public HashMap<String,Integer> getSmsUnits() {
+        return smsUnits;
     }
 
-    public void setNextMonthSmsUnits(Integer nextMonthSmsUnits) {
-        this.nextMonthSmsUnits = nextMonthSmsUnits;
+    public void setSmsUnits(HashMap<String,Integer> smsUnits) {
+        this.smsUnits = smsUnits;
     }
     
 }

@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,6 +18,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import util.enumeration.AnnouncementRecipientEnum;
 
 /**
  *
@@ -53,6 +56,12 @@ public class Announcement implements Serializable {
     @JoinColumn(nullable = false)
     private List<Customer> customers;
 
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @NotNull
+    private AnnouncementRecipientEnum announcementRecipientEnum;
+    
     public Announcement() {
         this.customers = new ArrayList<>();
     }
@@ -136,6 +145,14 @@ public class Announcement implements Serializable {
 
     public void setCustomers(List<Customer> customers) {
         this.customers = customers;
+    }
+
+    public AnnouncementRecipientEnum getAnnouncementRecipientEnum() {
+        return announcementRecipientEnum;
+    }
+
+    public void setAnnouncementRecipientEnum(AnnouncementRecipientEnum announcementRecipientEnum) {
+        this.announcementRecipientEnum = announcementRecipientEnum;
     }
 
 }

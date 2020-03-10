@@ -43,9 +43,6 @@ public class ProductItem implements Serializable {
     @DecimalMin("0.00")
     private BigDecimal price;
     
-    @OneToOne(mappedBy = "productItem")
-    private TransactionLineItem transactionLineItem;
-    
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private LuxuryProduct luxuryProduct;
@@ -106,14 +103,6 @@ public class ProductItem implements Serializable {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public TransactionLineItem getTransactionLineItem() {
-        return transactionLineItem;
-    }
-
-    public void setTransactionLineItem(TransactionLineItem transactionLineItem) {
-        this.transactionLineItem = transactionLineItem;
     }
 
     public LuxuryProduct getLuxuryProduct() {

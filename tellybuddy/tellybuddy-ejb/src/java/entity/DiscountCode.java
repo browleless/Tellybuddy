@@ -29,7 +29,7 @@ public class DiscountCode implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long discountCodeId;
     
-    @Column(nullable = false, length = 16)
+    @Column(nullable = false, length = 16, unique = true)
     @NotNull
     @Size(min = 6, max = 16)
     private String discountCode;

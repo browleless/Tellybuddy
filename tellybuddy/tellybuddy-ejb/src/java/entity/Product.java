@@ -68,9 +68,6 @@ public class Product implements Serializable {
     @Min(0)
     private Integer reorderQuantity;
 
-    @OneToMany(mappedBy = "product")
-    private List<TransactionLineItem> transactionLineItems;
-
     @ManyToMany(mappedBy = "products")
     private List<Tag> tags;
 
@@ -79,7 +76,6 @@ public class Product implements Serializable {
     private Category category;
 
     public Product() {
-        this.transactionLineItems = new ArrayList<>();
         this.tags = new ArrayList<>();
         reorderQuantity = 0;
         quantityOnHand = 0;
@@ -200,14 +196,6 @@ public class Product implements Serializable {
 
     public void setQuantityOnHand(Integer quantityOnHand) {
         this.quantityOnHand = quantityOnHand;
-    }
-
-    public List<TransactionLineItem> getTransactionLineItems() {
-        return transactionLineItems;
-    }
-
-    public void setTransactionLineItems(List<TransactionLineItem> transactionLineItems) {
-        this.transactionLineItems = transactionLineItems;
     }
 
     public List<Tag> getTags() {
