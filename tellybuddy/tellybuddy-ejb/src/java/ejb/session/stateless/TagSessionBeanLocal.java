@@ -29,5 +29,5 @@ public interface TagSessionBeanLocal {
     public void updateTag(Tag tag) throws TagNotFoundException, UpdateTagException;
 
     public void deleteTag(Long tagId) throws TagNotFoundException, DeleteTagException;
-    
+
 }

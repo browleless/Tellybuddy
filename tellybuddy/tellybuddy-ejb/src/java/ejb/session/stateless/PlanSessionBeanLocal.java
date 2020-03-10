@@ -8,7 +8,11 @@ package ejb.session.stateless;
 import entity.Plan;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.InputDataValidationException;
 import util.exception.PlanAlreadyDisabledException;
+import util.exception.PlanExistException;
+import util.exception.PlanNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -17,16 +21,16 @@ import util.exception.PlanAlreadyDisabledException;
 @Local
 public interface PlanSessionBeanLocal {
 
-    public Long createNewPlan(Plan newPlan);
+    public Long createNewPlan(Plan newPlan) throws PlanExistException, UnknownPersistenceException, InputDataValidationException;
 
     public List<Plan> retrieveAllPlans();
 
     public List<Plan> retrieveAllValidPlans();
 
-    public Plan retrievePlanByPlanId(Long planID);
+    public Plan retrievePlanByPlanId(Long planID) throws PlanNotFoundException;
 
-    public void updatePlan(Plan plan) throws PlanAlreadyDisabledException;
+    public void updatePlan(Plan plan) throws PlanAlreadyDisabledException, PlanNotFoundException;
 
-    public void deletePlan(Long planId);
-    
+    public void deletePlan(Long planId) throws PlanNotFoundException;
+
 }

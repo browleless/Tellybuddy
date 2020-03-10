@@ -11,6 +11,7 @@ import javax.persistence.Query;
 import util.exception.EmployeeNotFoundException;
 import util.exception.EmployeeUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
+import util.security.CryptographicHelper;
 
 /**
  *
