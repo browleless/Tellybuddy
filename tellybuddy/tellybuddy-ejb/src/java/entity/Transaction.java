@@ -40,6 +40,10 @@ public class Transaction implements Serializable {
     
     @Column(nullable = false)
     @NotNull
+    private Boolean voidRefund;
+    
+    @Column(nullable = false)
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date transactionDateTime;
     
@@ -60,7 +64,7 @@ public class Transaction implements Serializable {
         this.transactionLineItems = new ArrayList<>();
     }
 
-    public Transaction(BigDecimal totalPrice, Date transactionDateTime) {
+    public Transaction(BigDecimal totalPrice, Date transactionDateTime, List<TransactionLineItem> transactionLineItems) {
         this();
         this.totalPrice = totalPrice;
         this.transactionDateTime = transactionDateTime;
@@ -145,6 +149,14 @@ public class Transaction implements Serializable {
 
     public void setTransactionLineItems(List<TransactionLineItem> transactionLineItems) {
         this.transactionLineItems = transactionLineItems;
+    }
+
+    public Boolean getVoidRefund() {
+        return voidRefund;
+    }
+
+    public void setVoidRefund(Boolean voidRefund) {
+        this.voidRefund = voidRefund;
     }
     
 }
