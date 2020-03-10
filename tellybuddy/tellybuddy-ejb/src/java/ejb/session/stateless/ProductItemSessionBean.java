@@ -19,6 +19,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.InputDataValidationException;
@@ -42,10 +43,12 @@ public class ProductItemSessionBean implements ProductItemSessionBeanLocal {
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
-    public ProductItemSessionBean(ValidatorFactory validatorFactory, Validator validator) {
-        this.validatorFactory = validatorFactory;
-        this.validator = validator;
+    public ProductItemSessionBean() {
+         validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
+
+ 
 
     @Override
     public ProductItem createNewProductItem(ProductItem newProductItem, Long luxuryProductId) throws InputDataValidationException, UnknownPersistenceException, ProductItemExistException {
