@@ -437,12 +437,15 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
                 for (Integer x = 0; x < quantityToDebit; x++) {
                     luxuryProduct.getProductItems().remove(x);
                 }
+                //need to keep track of the productItem that is debited
+                //link the debit item to the transactionLineItem
             } else {
                 throw new ProductInsufficientQuantityOnHandException("Product " + luxuryProduct.getSkuCode() + " quantity on hand is " + luxuryProduct.getQuantityOnHand() + " versus quantity to debit of " + quantityToDebit);
             }
         } else {
             if (product.getQuantityOnHand() >= quantityToDebit) {
                 product.setQuantityOnHand(product.getQuantityOnHand() - quantityToDebit);
+                //link the product to the transactionLineItem
             } else {
                 throw new ProductInsufficientQuantityOnHandException("Product " + product.getSkuCode() + " quantity on hand is " + product.getQuantityOnHand() + " versus quantity to debit of " + quantityToDebit);
             }

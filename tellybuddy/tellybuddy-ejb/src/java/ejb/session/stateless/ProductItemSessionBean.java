@@ -5,15 +5,27 @@
  */
 package ejb.session.stateless;
 
+import entity.LuxuryProduct;
 import entity.Product;
 import entity.ProductItem;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import util.exception.InputDataValidationException;
+import util.exception.ProductItemExistException;
 import util.exception.ProductItemNotFoundException;
 import util.exception.ProductNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -22,16 +34,53 @@ import util.exception.ProductNotFoundException;
 @Stateless
 public class ProductItemSessionBean implements ProductItemSessionBeanLocal {
 
+    @EJB(name = "ProductSessionBeanLocal")
+    private ProductSessionBeanLocal productSessionBeanLocal;
+
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
+    private final ValidatorFactory validatorFactory;
+    private final Validator validator;
 
+    public ProductItemSessionBean(ValidatorFactory validatorFactory, Validator validator) {
+        this.validatorFactory = validatorFactory;
+        this.validator = validator;
+    }
 
+    @Override
+    public ProductItem createNewProductItem(ProductItem newProductItem, Long luxuryProductId) throws InputDataValidationException, UnknownPersistenceException, ProductItemExistException {
+        Set<ConstraintViolation<ProductItem>> constraintViolations = validator.validate(newProductItem);
 
+        if (constraintViolations.isEmpty()) {
+            try {
+                if (luxuryProductId != null) {
+                    LuxuryProduct luxuryProduct = (LuxuryProduct)productSessionBeanLocal.retrieveProductByProductId(luxuryProductId);
+                    newProductItem.setLuxuryProduct(luxuryProduct);
+                    luxuryProduct.getProductItems().add(newProductItem);
+                }
 
-//    @Override
-//    public ProductItem createNewProductItem(ProductItem){
-//        
-//    }
+                em.persist(newProductItem);
+                em.flush();
+
+                return newProductItem;
+            } catch (PersistenceException ex) {
+                if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
+                    if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
+                        throw new ProductItemExistException();
+                    } else {
+                        throw new UnknownPersistenceException(ex.getMessage());
+                    }
+                } else {
+                    throw new UnknownPersistenceException(ex.getMessage());
+                }
+            } catch (ProductNotFoundException ex) {
+                Logger.getLogger(ProductItemSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+        }
+    }
+
 
     @Override
     public ProductItem retrieveProductItemByProductItemId(Long itemId) throws ProductItemNotFoundException {
@@ -42,7 +91,7 @@ public class ProductItemSessionBean implements ProductItemSessionBeanLocal {
 
             return productItem;
         } else {
-            throw new ProductItemNotFoundException("Product ID " + itemId + " does not exist!");
+            throw new ProductItemNotFoundException("Product item ID " + itemId + " does not exist!");
         }
     }
 
@@ -54,5 +103,19 @@ public class ProductItemSessionBean implements ProductItemSessionBeanLocal {
 
         List<ProductItem> productItems = query.getResultList();
         return productItems;
+    }
+    
+    public ProductItem retrieveListOfProductItemByTransactionLineItemId(Long transaction){
+        
+    }
+    
+    private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<ProductItem>> constraintViolations) {
+        String msg = "Input data validation error!:";
+
+        for (ConstraintViolation constraintViolation : constraintViolations) {
+            msg += "\n\t" + constraintViolation.getPropertyPath() + " - " + constraintViolation.getInvalidValue() + "; " + constraintViolation.getMessage();
+        }
+
+        return msg;
     }
 }
