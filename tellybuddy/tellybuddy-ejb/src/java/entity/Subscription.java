@@ -53,6 +53,27 @@ public class Subscription implements Serializable {
     @Min(0)
     @Max(100)
     private Integer allocatedSmsUnits;
+
+    @Column(nullable = false)
+    @NotNull
+    @Positive
+    @Min(0)
+    @Max(100)
+    private Integer nextMonthDataUnits;
+    
+    @Column(nullable = false)
+    @NotNull
+    @Positive
+    @Min(0)
+    @Max(100)
+    private Integer nextMonthTalktimeUnits;
+    
+    @Column(nullable = false)
+    @NotNull
+    @Positive
+    @Min(0)
+    @Max(100)
+    private Integer nextMonthSmsUnits;
     
     @Column(nullable = false)
     @NotNull
@@ -81,12 +102,12 @@ public class Subscription implements Serializable {
     
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    private Date contractStartDate;
+    private Date subscriptionStartDate;
     
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     @Future
-    private Date contractEndDate;
+    private Date subscriptionEndDate;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -107,6 +128,9 @@ public class Subscription implements Serializable {
         this.addOnDataUnits = 0;
         this.addOnSmsUnits = 0;
         this.addOnTalktimeUnits = 0;
+        this.nextMonthDataUnits = 0;
+        this.nextMonthSmsUnits = 0;
+        this.nextMonthTalktimeUnits = 0;
         this.isActive = false;
         this.usageDetails = new ArrayList<>();
     }
@@ -207,20 +231,20 @@ public class Subscription implements Serializable {
         this.isActive = isActive;
     }
 
-    public Date getContractStartDate() {
-        return contractStartDate;
+    public Date getSubscriptionStartDate() {
+        return subscriptionStartDate;
     }
 
-    public void setContractStartDate(Date contractStartDate) {
-        this.contractStartDate = contractStartDate;
+    public void setSubscriptionStartDate(Date subscriptionStartDate) {
+        this.subscriptionStartDate = subscriptionStartDate;
     }
 
-    public Date getContractEndDate() {
-        return contractEndDate;
+    public Date getSubscriptionEndDate() {
+        return subscriptionEndDate;
     }
 
-    public void setContractEndDate(Date contractEndDate) {
-        this.contractEndDate = contractEndDate;
+    public void setSubscriptionEndDate(Date subscriptionEndDate) {
+        this.subscriptionEndDate = subscriptionEndDate;
     }
 
     public Customer getCustomer() {
@@ -253,6 +277,30 @@ public class Subscription implements Serializable {
 
     public void setPhoneNumber(PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Integer getNextMonthDataUnits() {
+        return nextMonthDataUnits;
+    }
+
+    public void setNextMonthDataUnits(Integer nextMonthDataUnits) {
+        this.nextMonthDataUnits = nextMonthDataUnits;
+    }
+
+    public Integer getNextMonthTalktimeUnits() {
+        return nextMonthTalktimeUnits;
+    }
+
+    public void setNextMonthTalktimeUnits(Integer nextMonthTalktimeUnits) {
+        this.nextMonthTalktimeUnits = nextMonthTalktimeUnits;
+    }
+
+    public Integer getNextMonthSmsUnits() {
+        return nextMonthSmsUnits;
+    }
+
+    public void setNextMonthSmsUnits(Integer nextMonthSmsUnits) {
+        this.nextMonthSmsUnits = nextMonthSmsUnits;
     }
     
 }

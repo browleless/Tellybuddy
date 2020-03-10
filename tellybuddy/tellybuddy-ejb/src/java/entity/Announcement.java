@@ -1,12 +1,16 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
@@ -24,28 +28,33 @@ public class Announcement implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long announcementId;
-    
+
     @Column(nullable = false, length = 32)
     @NotNull
     @Size(min = 4, max = 32)
     private String title;
-    
+
     @Column(nullable = false, length = 255)
     @NotNull
     @Size(max = 255)
     private String content;
-    
+
     @Column(nullable = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date postedDate;
-    
+
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     @Future
     private Date expiryDate;
 
+    @ManyToMany(mappedBy = "announcements")
+    @JoinColumn(nullable = false)
+    private List<Customer> customers;
+
     public Announcement() {
+        this.customers = new ArrayList<>();
     }
 
     public Announcement(String title, String content, Date postedDate, Date expiryDate) {
@@ -55,7 +64,7 @@ public class Announcement implements Serializable {
         this.postedDate = postedDate;
         this.expiryDate = expiryDate;
     }
-    
+
     public Long getAnnouncementId() {
         return announcementId;
     }
@@ -120,5 +129,13 @@ public class Announcement implements Serializable {
     public void setExpiryDate(Date expiryDate) {
         this.expiryDate = expiryDate;
     }
-    
+
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(List<Customer> customers) {
+        this.customers = customers;
+    }
+
 }

@@ -35,40 +35,45 @@ public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long productId;
-    
+
     @Column(nullable = false, unique = true, length = 8)
     @NotNull
     @Size(min = 8, max = 8)
     protected String skuCode;
-    
+
     @Column(nullable = false, length = 64)
     @NotNull
     @Size(min = 4, max = 64)
     protected String name;
-    
+
     @Column(nullable = false, length = 128)
     @NotNull
     @Size(max = 128)
     protected String description;
-    
+
     @Column(nullable = false, precision = 6, scale = 2)
     @NotNull
     @Digits(integer = 4, fraction = 2)
     @DecimalMin("0.00")
     protected BigDecimal price;
-    
+
     @Column(nullable = false)
     @NotNull
     @Positive
     @Min(1)
     protected Integer quantityOnHand;
     
+    @Column(nullable = false)
+    @NotNull
+    @Min(0)
+    private Integer reorderQuantity;
+
     @OneToMany(mappedBy = "product")
     private List<TransactionLineItem> transactionLineItems;
-    
+
     @ManyToMany(mappedBy = "products")
     private List<Tag> tags;
-    
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Category category;
@@ -76,17 +81,30 @@ public class Product implements Serializable {
     public Product() {
         this.transactionLineItems = new ArrayList<>();
         this.tags = new ArrayList<>();
+        reorderQuantity = 0;
+        quantityOnHand = 0;
+        price = new BigDecimal("0.00");
+        
     }
 
-    public Product(String skuCode, String name, String description, BigDecimal price, Integer quantityOnHand) {
+    public Product(String skuCode, String name, String description, BigDecimal price, Integer quantityOnHand, Integer reorderQuantity) {
         this();
         this.skuCode = skuCode;
         this.name = name;
         this.description = description;
         this.price = price;
         this.quantityOnHand = quantityOnHand;
+        this.reorderQuantity = reorderQuantity;
     }
-    
+
+    public Integer getReorderQuantity() {
+        return reorderQuantity;
+    }
+
+    public void setReorderQuantity(Integer reorderQuantity) {
+        this.reorderQuantity = reorderQuantity;
+    }
+
     public Long getProductId() {
         return productId;
     }
@@ -118,6 +136,30 @@ public class Product implements Serializable {
     @Override
     public String toString() {
         return "entity.Product[ id=" + productId + " ]";
+    }
+
+    public void addTag(Tag tag) {
+        if (tag != null) {
+            if (!this.tags.contains(tag)) {
+                this.tags.add(tag);
+
+                if (!tag.getProducts().contains(this)) {
+                    tag.getProducts().add(this);
+                }
+            }
+        }
+    }
+
+    public void removeTag(Tag tag) {
+        if (tag != null) {
+            if (this.tags.contains(tag)) {
+                this.tags.remove(tag);
+
+                if (tag.getProducts().contains(this)) {
+                    tag.getProducts().remove(this);
+                }
+            }
+        }
     }
 
     public String getSkuCode() {
@@ -181,7 +223,23 @@ public class Product implements Serializable {
     }
 
     public void setCategory(Category category) {
+        if(this.category != null)
+        {
+            if(this.category.getProducts().contains(this))
+            {
+                this.category.getProducts().remove(this);
+            }
+        }
+        
         this.category = category;
+        
+        if(this.category != null)
+        {
+            if(!this.category.getProducts().contains(this))
+            {
+                this.category.getProducts().add(this);
+            }
+        }
     }
-    
+
 }

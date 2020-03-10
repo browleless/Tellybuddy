@@ -21,6 +21,7 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -46,6 +47,11 @@ public class Plan implements Serializable {
     @DecimalMin("0.00")
     private BigDecimal price;
 
+    @Column(nullable = false, length = 20, unique = true)
+    @NotNull
+    @Size(min = 6, max = 20)
+    private String name;
+    
     @Column(nullable = false, precision = 4, scale = 2)
     @NotNull
     @Digits(integer = 2, fraction = 2)

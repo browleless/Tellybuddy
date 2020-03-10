@@ -14,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -25,6 +27,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -64,22 +67,45 @@ public class Customer implements Serializable {
     @Max(99)
     private Integer age;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     @NotNull
     @Size(min = 10, max = 64)
     private String address;
 
-    @Column(nullable = false, length = 6)
+    @Column(nullable = true, length = 255)
+    @NotNull
+    @Size(min = 10, max = 64)
+    private String newAddress;
+
+    @Column(nullable = true, length = 6)
     @NotNull
     @Size(min = 6, max = 6)
     @Pattern(regexp = "^[0-9]{6}$")
     private String postalCode;
 
-    @Column(nullable = false, unique = true, length = 9)
+    @Column(nullable = true, length = 6)
+    @NotNull
+    @Size(min = 6, max = 6)
+    @Pattern(regexp = "^[0-9]{6}$")
+    private String newPostalCode;
+
+    @Column(nullable = true, unique = true, length = 9)
     @NotNull
     @Size(min = 9, max = 9)
     @Pattern(regexp = "^[STFG]\\d{7}[A-JZ]$")
     private String nric;
+
+    @Column(nullable = true, unique = true, length = 9)
+    @NotNull
+    @Size(min = 9, max = 9)
+    @Pattern(regexp = "^[STFG]\\d{7}[A-JZ]$")
+    private String newNric;
+
+    @Column(nullable = true, unique = true)
+    private String nricImagePath;
+
+    @Column(nullable = true, unique = true)
+    private String newNricImagePath;
 
     @Column(nullable = false)
     @NotNull
@@ -101,42 +127,52 @@ public class Customer implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Future
     private Date creditCardExpiryDate;
-    
+
+    @Column(columnDefinition = "CHAR(32) NOT NULL")
+    private String salt;
+
     @OneToMany(mappedBy = "customer")
     private List<Bill> bills;
-    
+
     @OneToMany(mappedBy = "customer")
     private List<Subscription> subscriptions;
-    
+
     @OneToMany(mappedBy = "customer")
     private List<QuizAttempt> quizAttempts;
-    
+
     @OneToMany(mappedBy = "customer")
     private List<Transaction> transactions;
-    
+
+    @ManyToMany
+    @JoinColumn(nullable = false)
+    private List<Announcement> announcements;
+
     @ManyToOne
     private FamilyGroup familyGroup;
 
     public Customer() {
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
         this.loyaltyPoints = 0;
         this.bills = new ArrayList<>();
         this.subscriptions = new ArrayList<>();
         this.quizAttempts = new ArrayList<>();
         this.transactions = new ArrayList<>();
+        this.announcements = new ArrayList<>();
     }
 
-    public Customer(String username, String password, String firstName, String lastName, Integer age, String address, String postalCode, String nric) {
+    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String newNric, String newNricImagePath) {
         this();
         this.username = username;
-        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
-        this.address = address;
-        this.postalCode = postalCode;
-        this.nric = nric;
+        this.newAddress = newAddress;
+        this.newPostalCode = newPostalCode;
+        this.newNric = newNric;
+        this.newNricImagePath = newNricImagePath;
+        setPassword(password);
     }
-    
+
     public Long getCustomerId() {
         return customerId;
     }
@@ -180,6 +216,14 @@ public class Customer implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setNewNricImagePath(String newNricImagePath) {
+        this.newNricImagePath = newNricImagePath;
+    }
+
+    public String getNewNricImagePath() {
+        return newNricImagePath;
     }
 
     public void setPassword(String password) {
@@ -304,6 +348,54 @@ public class Customer implements Serializable {
 
     public void setFamilyGroup(FamilyGroup familyGroup) {
         this.familyGroup = familyGroup;
+    }
+
+    public String getNricImagePath() {
+        return nricImagePath;
+    }
+
+    public void setNricImagePath(String nricImagePath) {
+        this.nricImagePath = nricImagePath;
+    }
+
+    public List<Announcement> getAnnouncements() {
+        return announcements;
+    }
+
+    public void setAnnouncements(List<Announcement> announcements) {
+        this.announcements = announcements;
+    }
+
+    public String getNewAddress() {
+        return newAddress;
+    }
+
+    public void setNewAddress(String newAddress) {
+        this.newAddress = newAddress;
+    }
+
+    public String getNewPostalCode() {
+        return newPostalCode;
+    }
+
+    public void setNewPostalCode(String newPostalCode) {
+        this.newPostalCode = newPostalCode;
+    }
+
+    public String getNewNric() {
+        return newNric;
+    }
+
+    public void setNewNric(String newNric) {
+        this.newNric = newNric;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
 }
