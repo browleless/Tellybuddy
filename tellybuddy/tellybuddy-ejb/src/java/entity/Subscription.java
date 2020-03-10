@@ -83,9 +83,9 @@ public class Subscription implements Serializable {
 
     public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits) {
         this();
-        this.dataUnits.put("allocated", allocatedDataUnits);
-        this.talkTimeUnits.put("allocated", allocatedTalktimeUnits);
-        this.smsUnits.put("allocated", allocatedSmsUnits);
+        this.dataUnits = new HashMap<>();
+        this.smsUnits = new HashMap<>();
+        this.talkTimeUnits = new HashMap<>();
     }
 
     public Long getSubcscriptionId() {

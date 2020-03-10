@@ -11,6 +11,7 @@ import entity.Plan;
 import entity.Subscription;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.EJB;
@@ -40,7 +41,7 @@ import util.exception.UnknownPersistenceException;
  * @author markt
  */
 @Stateless
-@Local(SubscriptionSessionBeanLocal.class)
+@Local
 public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
     @EJB
@@ -86,6 +87,12 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 customer.getSubscriptions().add(newSubscription);
                 phoneNumber.setSubscription(newSubscription);
                 
+//                HashMap<String, Integer> dataUnits = new HashMap<>();
+//                dataUnits.put("")
+//                HashMap<String, Integer> smsUnits = new HashMap<>();
+//                HashMap<String, Integer> talkTimeUnits = new HashMap<>();
+//                
+                
                 em.persist(newSubscription);
                 em.flush();
                 return newSubscription;
@@ -115,18 +122,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
         if (constraintViolations.isEmpty()) {
             Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
-
-            subscriptionToUpdate.setAddOnDataUnits(subscription.getAddOnDataUnits());
-            subscriptionToUpdate.setAddOnSmsUnits(subscription.getAddOnSmsUnits());
-            subscriptionToUpdate.setAddOnTalktimeUnits(subscription.getAddOnTalktimeUnits());
-
-            subscriptionToUpdate.setAllocatedDataUnits(subscription.getAllocatedDataUnits());
-            subscriptionToUpdate.setAllocatedSmsUnits(subscription.getAllocatedSmsUnits());
-            subscriptionToUpdate.setAllocatedTalktimeUnits(subscription.getAllocatedTalktimeUnits());
-
-            subscriptionToUpdate.setNextMonthDataUnits(subscription.getNextMonthDataUnits());
-            subscriptionToUpdate.setNextMonthSmsUnits(subscription.getNextMonthSmsUnits());
-            subscriptionToUpdate.setNextMonthTalktimeUnits(subscription.getNextMonthTalktimeUnits());
+            subscriptionToUpdate.setDataUnits(subscription.getDataUnits());
+            subscriptionToUpdate.setSmsUnits(subscription.getSmsUnits());
+            subscriptionToUpdate.setTalkTimeUnits(subscription.getTalkTimeUnits());
 
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
@@ -138,18 +136,18 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     public Subscription amendAllocationOfUniis(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException{
         Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
         
-        subscriptionToAmend.setAllocatedDataUnits(subscriptionToAmend.getNextMonthDataUnits());
-        subscriptionToAmend.setAllocatedSmsUnits(subscriptionToAmend.getNextMonthSmsUnits());
-        subscriptionToAmend.setAllocatedTalktimeUnits(subscriptionToAmend.getNextMonthTalktimeUnits());
+        HashMap<String,Integer> smsUnits = subscriptionToAmend.getSmsUnits();
+        HashMap<String,Integer> talkTimeUnits = subscriptionToAmend.getTalkTimeUnits();
+        HashMap<String,Integer> dataUnits = subscriptionToAmend.getDataUnits();
         
-        subscriptionToAmend.setNextMonthDataUnits(null);
-        subscriptionToAmend.setNextMonthSmsUnits(null);
-        subscriptionToAmend.setNextMonthTalktimeUnits(null);
+        smsUnits.put("allocated", smsUnits.get("nextMonth"));
+        talkTimeUnits.put("allocated", talkTimeUnits.get("nextMonth"));
+        dataUnits.put("allocated", dataUnits.get("nextMonth"));
         
-        //Reset add on Units at the beginning of every month also
-        subscriptionToAmend.setAddOnDataUnits(null);
-        subscriptionToAmend.setAddOnDataUnits(null);
-        subscriptionToAmend.setAddOnDataUnits(null);
+        //reset to 0 at the start of every month
+        smsUnits.put("nextMonth", 0);
+        talkTimeUnits.put("nextMonth", 0);
+        dataUnits.put("nextMonth", 0);
         
         updateSubscription(subscriptionToAmend);
         return subscriptionToAmend;
