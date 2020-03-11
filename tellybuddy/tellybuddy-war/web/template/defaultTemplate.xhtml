@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Tellybuddy Management</title>
+        <h:outputStylesheet name="./css/default.css"/>
+        <h:outputStylesheet name="./css/cssLayout.css"/>
+    </h:head>
+
+    <h:body>
+
+        <p:layout fullPage="true">
+
+            <p:growl>
+                <p:autoUpdate />
+            </p:growl>
+
+            <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces" />
+
+            <p:dialog height="40.8px" widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                <i class="pi pi-spin pi-spinner" style="font-size: 3em"></i>
+            </p:dialog>
+
+            <p:layoutUnit size="240" position="west">
+
+                <ui:insert name="sidemenu">
+                    <ui:include src="/sidemenu.xhtml" />
+                </ui:insert>
+
+            </p:layoutUnit>
+
+            <p:layoutUnit position="center" >
+
+                <ui:insert name="header">
+                    <ui:include src="/headertab.xhtml" />
+                </ui:insert>
+
+                <ui:insert name="content">Content</ui:insert>
+
+            </p:layoutUnit>
+
+        </p:layout>
+    </h:body>
+
+</html>
