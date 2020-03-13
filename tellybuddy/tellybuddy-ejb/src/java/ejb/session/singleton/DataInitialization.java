@@ -5,13 +5,14 @@
  */
 package ejb.session.singleton;
 
-import entity.Customer;
+import entity.Employee;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import util.enumeration.AccessRightEnum;
 
 /**
  *
@@ -27,16 +28,20 @@ public class DataInitialization {
 
     @PostConstruct
     public void postConstruct() {
-        if (em.find(Customer.class, 1l) == null) {
+        if (em.find(Employee.class, 1l) == null) {
             initialiseData();
         }
     }
 
     private void initialiseData() {
-//        Customer c = new Customer("Alice");
-//        em.persist(c);
-//        em.flush();
-
+        
+        Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER);
+        em.persist(newEmployee);
+        em.flush();
+        
+        newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE);
+        em.persist(newEmployee);
+        em.flush();
     }
 
 }

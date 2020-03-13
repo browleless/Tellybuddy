@@ -64,10 +64,10 @@ public class Employee implements Serializable {
     public Employee(String username, String password, String firstName, String lastName, AccessRightEnum accessRightEnum) {
         this();
         this.username = username;
-        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.accessRightEnum = accessRightEnum;
+        setPassword(password);
     }
 
     public Long getEmployeeId() {

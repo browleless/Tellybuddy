@@ -6,14 +6,37 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <section id="sidemenu" class="sidemenu">
-        <h3>Sub Menu</h3>
+        <h3 style="text-align: center; margin-top: 15px; margin-bottom: 15px">Tellybuddy</h3>
         <nav>
             <h:form>
 
-                <p:menu style="width:200px;">
+                <p:menu style="width:240px;">
 
                     <p:submenu label="Actions">
-                        <p:menuitem value="Home" outcome="/index" icon="fa fa-home" />
+
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/account')}" value="Update Particulars" outcome="/management/account/updateParticulars?i=1" icon="fa fa-edit" />
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/account')}" value="Change Password" outcome="/management/account/main.xhtml?i=1" icon="fa fa-lock" />
+
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/plans')}" value="Plan Management" outcome="/management/plans/main.xhtml?i=2" icon="fa fa-file" />
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/plans')}" value="Approvals" outcome="/management/plans/main.xhtml?i=2" icon="fa fa-check-circle" />
+
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/products')}" value="Product Management" outcome="/management/products/main.xhtml?i=3" icon="fa fa-tags" />
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/products')}" value="Search Products" outcome="/management/products/main.xhtml?i=3" icon="fa fa-search" />
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/products')}" value="Filter Products By Category" outcome="/management/products/main.xhtml?i=3" icon="fa fa-filter" />
+
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/customers')}" value="Customer Management" outcome="/management/customers/main.xhtml?i=4" icon="fa fa-users" />
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/customers')}" value="Verify Customers" outcome="/management/customers/main.xhtml?i=4" icon="fa fa-check-circle" />
+
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/announcements')}" value="Announcement Management" outcome="/management/announcements/main.xhtml?i=5" icon="fa fa-bullhorn" />
+
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/promotions')}" value="Flash Deals" outcome="/management/promotions/main.xhtml?i=6" icon="fa fa-hourglass-half" />
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/promotions')}" value="Flash Vouchers" outcome="/management/promotions/main.xhtml?i=6" icon="fa fa-tag" />
+                        <p:menuitem rendered="#{request.servletPath.contains('/management/promotions')}" value="Quiz Management" outcome="/management/promotions/main.xhtml?i=6" icon="fa fa-list-ul" />
+
+                        <p:separator />
+
+                        <p:menuitem value="Logout" actionListener="#{loginManagedBean.logout}" outcome="/index.xhtml" icon="fa fa-sign-out" />
+
                     </p:submenu>
 
                 </p:menu>

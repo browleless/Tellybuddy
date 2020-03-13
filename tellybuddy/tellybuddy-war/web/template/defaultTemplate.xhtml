@@ -11,7 +11,7 @@
         <h:outputStylesheet name="./css/cssLayout.css"/>
     </h:head>
 
-    <h:body>
+    <h:body style="padding-left: 7%; padding-right: 7%; background-image: linear-gradient(to right, #000428, #004e92); background-clip: content-box, padding-box;">
 
         <p:layout fullPage="true">
 
@@ -25,7 +25,7 @@
                 <i class="pi pi-spin pi-spinner" style="font-size: 3em"></i>
             </p:dialog>
 
-            <p:layoutUnit size="240" position="west">
+            <p:layoutUnit style="border-radius: 12px;" size="265" position="west">
 
                 <ui:insert name="sidemenu">
                     <ui:include src="/sidemenu.xhtml" />
@@ -33,7 +33,7 @@
 
             </p:layoutUnit>
 
-            <p:layoutUnit position="center" >
+            <p:layoutUnit style="border-radius: 12px;" position="center" >
 
                 <ui:insert name="header">
                     <ui:include src="/headertab.xhtml" />

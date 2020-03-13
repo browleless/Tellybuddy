@@ -67,6 +67,11 @@ public class Product implements Serializable {
     @NotNull
     @Min(0)
     private Integer reorderQuantity;
+    
+    @Column(nullable = false, length = 128)
+    @NotNull
+    @Size(max = 128)
+    private String productImagePath;
 
     @ManyToMany(mappedBy = "products")
     private List<Tag> tags;
@@ -228,6 +233,14 @@ public class Product implements Serializable {
                 this.category.getProducts().add(this);
             }
         }
+    }
+
+    public String getProductImagePath() {
+        return productImagePath;
+    }
+
+    public void setProductImagePath(String productImagePath) {
+        this.productImagePath = productImagePath;
     }
 
 }

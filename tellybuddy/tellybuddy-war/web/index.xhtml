@@ -1,18 +1,52 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                template="/template/defaultTemplate.xhtml"
-                xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
-    <ui:define name="content">
-        
-        <div>
-            <h3>Use tabs to navigate to your part</h3>
+    <h:head>
+        <title>Landing Page</title>
+    </h:head>
+    <h:body>
+        <h2 style="text-align: center">Temporary Landing Page</h2>
 
-        </div>
-        
-    </ui:define>
+        <p:panel header="Login">
+            
+            <h:form id="formLogin">
 
-</ui:composition>
+                <p:messages />
+
+                <p:panelGrid>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="username" value="Username:" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="username" value="#{loginManagedBean.username}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="password" value="Password:" />
+                        </p:column>
+                        <p:column>
+                            <p:password id="password" value="#{loginManagedBean.password}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:commandButton type="reset" value="Clear" /> 
+                            <p:commandButton type="submit" value="Login" process="@form" update="@form" actionListener="#{loginManagedBean.login}" /> 
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+
+            </h:form>
+
+        </p:panel>
+    </h:body>
+</html>
