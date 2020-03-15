@@ -45,7 +45,7 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
             throw new BillAlreadyPaidException("Bill id " + bill.getBillId() + " has already been paid for");
         } else {
             Customer customer = bill.getCustomer();
-            Bill billToPay = billSessionBeanLocal.retrieveBillById(bill.getBillId());
+            Bill billToPay = billSessionBeanLocal.retrieveBillByBillId(bill.getBillId());
 
             if ((customer.getCreditCardNumber() == null && customer.getCvv() == null && customer.getCreditCardExpiryDate() == null) || customer.getCreditCardExpiryDate().before(new Date())) {
                 throw new CustomerStoredCreditCardException("Customer either has no saved credit card or credit card has expired!");
@@ -63,7 +63,7 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
     }
 
     @Override
-    public Payment retrievePaymentById(Long paymentId) throws PaymentNotFoundException {
+    public Payment retrievePaymentByPaymentId(Long paymentId) throws PaymentNotFoundException {
 
         Payment payment = entityManager.find(Payment.class, paymentId);
 
@@ -95,7 +95,7 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
     public void deletePayment(Payment payment) throws PaymentNotFoundException, DeletePaymentException {
 
         try {
-            Payment paymentToDelete = retrievePaymentById(payment.getPaymentId());
+            Payment paymentToDelete = retrievePaymentByPaymentId(payment.getPaymentId());
 
             Query query = entityManager.createQuery("SELECT b FROM Bill b WHERE b.payment = :inPayment");
             query.setParameter("inPayment", paymentToDelete);

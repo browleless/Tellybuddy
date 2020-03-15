@@ -29,7 +29,7 @@ public class PhoneNumberSessionBean implements PhoneNumberSessionBeanLocal {
     }
 
     @Override
-    public PhoneNumber retrievePhoneNumberById(Long phoneNumberId) throws PhoneNumberNotFoundException {
+    public PhoneNumber retrievePhoneNumberByPhoneNumberId(Long phoneNumberId) throws PhoneNumberNotFoundException {
 
         PhoneNumber phoneNumber = entityManager.find(PhoneNumber.class, phoneNumberId);
 
@@ -51,7 +51,7 @@ public class PhoneNumberSessionBean implements PhoneNumberSessionBeanLocal {
     public void updatePhoneNumber(PhoneNumber phoneNumber) throws PhoneNumberNotFoundException {
 
         try {
-            PhoneNumber phoneNumberToUpdate = retrievePhoneNumberById(phoneNumber.getPhoneNumberId());
+            PhoneNumber phoneNumberToUpdate = retrievePhoneNumberByPhoneNumberId(phoneNumber.getPhoneNumberId());
             phoneNumberToUpdate.setInUse(phoneNumber.getInUse());
             phoneNumberToUpdate.setPhoneNumber(phoneNumber.getPhoneNumber());
         } catch (PhoneNumberNotFoundException ex) {
@@ -63,7 +63,7 @@ public class PhoneNumberSessionBean implements PhoneNumberSessionBeanLocal {
     public void deletePhoneNumber(PhoneNumber phoneNumber) throws PhoneNumberNotFoundException, DeletePhoneNumberException {
 
         try {
-            PhoneNumber phoneNumberToDelete = retrievePhoneNumberById(phoneNumber.getPhoneNumberId());
+            PhoneNumber phoneNumberToDelete = retrievePhoneNumberByPhoneNumberId(phoneNumber.getPhoneNumberId());
             if (phoneNumberToDelete.getSubscription().getIsActive()) {
                 throw new DeletePhoneNumberException("Phone number " + phoneNumberToDelete.getPhoneNumber() + " is still in use!");
             } else {
@@ -78,8 +78,8 @@ public class PhoneNumberSessionBean implements PhoneNumberSessionBeanLocal {
     public void changePhoneNumber(PhoneNumber oldPhoneNumber, PhoneNumber newPhoneNumber) throws PhoneNumberNotFoundException {
 
         try {
-            oldPhoneNumber = retrievePhoneNumberById(oldPhoneNumber.getPhoneNumberId());
-            newPhoneNumber = retrievePhoneNumberById(newPhoneNumber.getPhoneNumberId());
+            oldPhoneNumber = retrievePhoneNumberByPhoneNumberId(oldPhoneNumber.getPhoneNumberId());
+            newPhoneNumber = retrievePhoneNumberByPhoneNumberId(newPhoneNumber.getPhoneNumberId());
 
             // disassociate old to new and associate new to old
             oldPhoneNumber.getSubscription().setPhoneNumber(newPhoneNumber);

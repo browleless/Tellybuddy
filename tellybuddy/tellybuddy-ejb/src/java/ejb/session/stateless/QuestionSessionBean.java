@@ -35,7 +35,7 @@ public class QuestionSessionBean implements QuestionSessionBeanLocal {
     @Override
     public Long createNewQuestion(Quiz quiz, Question newQuestion) throws QuizNotFoundException {
 
-        Quiz quizToAssociateWith = quizSessionBeanLocal.retrieveQuizById(quiz.getQuizId());
+        Quiz quizToAssociateWith = quizSessionBeanLocal.retrieveQuizByQuizId(quiz.getQuizId());
 
         newQuestion.setQuiz(quizToAssociateWith);
 
@@ -48,7 +48,7 @@ public class QuestionSessionBean implements QuestionSessionBeanLocal {
     }
 
     @Override
-    public Question retrieveQuestionById(Long questionId) throws QuestionNotFoundException {
+    public Question retrieveQuestionByQuestionId(Long questionId) throws QuestionNotFoundException {
 
         Question question = entityManager.find(Question.class, questionId);
 
@@ -70,7 +70,7 @@ public class QuestionSessionBean implements QuestionSessionBeanLocal {
 
         if (question != null && question.getQuestionId() != null) {
 
-            Question questionToUpdate = retrieveQuestionById(question.getQuestionId());
+            Question questionToUpdate = retrieveQuestionByQuestionId(question.getQuestionId());
             questionToUpdate.setQuestion(question.getQuestion());
 
         } else {
@@ -83,7 +83,7 @@ public class QuestionSessionBean implements QuestionSessionBeanLocal {
 
         if (question != null && question.getQuestionId() != null) {
 
-            Question questionToDelete = retrieveQuestionById(question.getQuestionId());
+            Question questionToDelete = retrieveQuestionByQuestionId(question.getQuestionId());
 
             Query query = entityManager.createQuery("SELECT r FROM Response r WHERE r.question = :inQuestion");
             query.setParameter("inQuestion", questionToDelete);

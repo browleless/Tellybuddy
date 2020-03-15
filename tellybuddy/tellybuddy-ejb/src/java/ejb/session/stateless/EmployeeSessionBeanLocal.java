@@ -23,7 +23,7 @@ public interface EmployeeSessionBeanLocal {
 
     public List<Employee> retrieveAllEmployees();
 
-    public Employee retrieveEmployeeById(Long employeeId) throws EmployeeNotFoundException;
+    public Employee retrieveEmployeeByEmployeeId(Long employeeId) throws EmployeeNotFoundException;
 
     public Employee retrieveEmployeeByUsername(String username) throws EmployeeNotFoundException;
 

@@ -16,6 +16,6 @@ import util.exception.BillNotFoundException;
 @Local
 public interface BillSessionBeanLocal {
 
-    public Bill retrieveBillById(Long billId) throws BillNotFoundException;
+    public Bill retrieveBillByBillId(Long billId) throws BillNotFoundException;
     
 }

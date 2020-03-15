@@ -27,7 +27,7 @@ public class AnswerSessionBean implements AnswerSessionBeanLocal {
     @Override
     public Long createNewAnswer(Question question, Answer newAnswer) throws QuestionNotFoundException {
         
-        Question questionToAssociateWith = questionSessionBeanLocal.retrieveQuestionById(question.getQuestionId());
+        Question questionToAssociateWith = questionSessionBeanLocal.retrieveQuestionByQuestionId(question.getQuestionId());
         
         newAnswer.setQuestion(questionToAssociateWith);
         
@@ -40,7 +40,7 @@ public class AnswerSessionBean implements AnswerSessionBeanLocal {
     }
     
     @Override
-    public Answer retrieveAnswerById(Long answerId) throws AnswerNotFoundException {
+    public Answer retrieveAnswerByAnswerId(Long answerId) throws AnswerNotFoundException {
         
         Answer answer = entityManager.find(Answer.class, answerId);
         
@@ -56,7 +56,7 @@ public class AnswerSessionBean implements AnswerSessionBeanLocal {
         
         if (answer != null && answer.getAnswerId() != null) {
             
-            Answer answerToUpdate = retrieveAnswerById(answer.getAnswerId());
+            Answer answerToUpdate = retrieveAnswerByAnswerId(answer.getAnswerId());
             
             answerToUpdate.setAnswer(answer.getAnswer());
             answerToUpdate.setIsAnswer(answer.getIsAnswer());
@@ -72,7 +72,7 @@ public class AnswerSessionBean implements AnswerSessionBeanLocal {
         
         if (answer != null && answer.getAnswerId() != null) {
             
-            Answer answerToDelete = retrieveAnswerById(answer.getAnswerId());
+            Answer answerToDelete = retrieveAnswerByAnswerId(answer.getAnswerId());
             
             Query query = entityManager.createQuery("SELECT r FROM Response r WHERE r.answer = :inAnswer");
             query.setParameter("inAnswer", answerToDelete);

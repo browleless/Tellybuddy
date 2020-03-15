@@ -48,7 +48,7 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
     }
 
     @Override
-    public Quiz retrieveQuizById(Long quizId) throws QuizNotFoundException {
+    public Quiz retrieveQuizByQuizId(Long quizId) throws QuizNotFoundException {
 
         Quiz quiz = entityManager.find(Quiz.class, quizId);
 
@@ -120,7 +120,7 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
 
         if (quiz != null && quiz.getQuizId() != null) {
 
-            Quiz quizToUpdate = retrieveQuizById(quiz.getQuizId());
+            Quiz quizToUpdate = retrieveQuizByQuizId(quiz.getQuizId());
 
             quizToUpdate.setOpenDate(quiz.getOpenDate());
             quizToUpdate.setExpiryDate(quiz.getExpiryDate());
@@ -136,7 +136,7 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
 
         if (quiz != null && quiz.getQuizId() != null) {
             
-            Quiz quizToDelete = retrieveQuizById(quiz.getQuizId());
+            Quiz quizToDelete = retrieveQuizByQuizId(quiz.getQuizId());
             
             if (!quiz.getQuestions().isEmpty()) {
                 throw new DeleteQuizException("Quiz has attempts already, manage attempts before deleting quiz!");

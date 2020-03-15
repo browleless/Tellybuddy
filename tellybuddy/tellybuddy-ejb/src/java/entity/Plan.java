@@ -51,7 +51,7 @@ public class Plan implements Serializable {
     @NotNull
     @Size(min = 6, max = 20)
     private String name;
-    
+
     @Column(nullable = false, precision = 4, scale = 2)
     @NotNull
     @Digits(integer = 2, fraction = 2)
@@ -94,10 +94,13 @@ public class Plan implements Serializable {
     private Boolean isInUse;
 
     public Plan() {
+        this.isDisabled = false;
+        this.isInUse = false;
     }
 
-    public Plan(Integer totalBasicUnits, BigDecimal price, BigDecimal addOnPrice, Integer dataConversionRate, Integer smsConversionRate, Integer talktimeConversionRate, Date startTime, Date endTime) {
+    public Plan(String name, Integer totalBasicUnits, BigDecimal price, BigDecimal addOnPrice, Integer dataConversionRate, Integer smsConversionRate, Integer talktimeConversionRate, Date startTime, Date endTime) {
         this();
+        this.name = name;
         this.totalBasicUnits = totalBasicUnits;
         this.price = price;
         this.addOnPrice = addOnPrice;
@@ -106,9 +109,6 @@ public class Plan implements Serializable {
         this.talktimeConversionRate = talktimeConversionRate;
         this.startTime = startTime;
         this.endTime = endTime;
-
-        this.isDisabled = false;
-        this.isInUse = false;
     }
 
     public Long getPlanId() {
@@ -222,5 +222,13 @@ public class Plan implements Serializable {
 
     public void setIsInUse(Boolean isInUse) {
         this.isInUse = isInUse;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

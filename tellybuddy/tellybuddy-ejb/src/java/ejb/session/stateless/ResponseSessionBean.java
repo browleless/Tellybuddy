@@ -30,8 +30,8 @@ public class ResponseSessionBean implements ResponseSessionBeanLocal {
     @Override
     public Long createNewResponse(Response newResponse, Question question, Answer answer) throws QuestionNotFoundException, AnswerNotFoundException {
         
-        Question questionToAssociateWith = questionSessionBeanLocal.retrieveQuestionById(question.getQuestionId());
-        Answer answerToAssociateWith = answerSessionBeanLocal.retrieveAnswerById(answer.getAnswerId());
+        Question questionToAssociateWith = questionSessionBeanLocal.retrieveQuestionByQuestionId(question.getQuestionId());
+        Answer answerToAssociateWith = answerSessionBeanLocal.retrieveAnswerByAnswerId(answer.getAnswerId());
         
         newResponse.setQuestion(questionToAssociateWith);
         newResponse.setAnswer(answerToAssociateWith);
@@ -43,7 +43,7 @@ public class ResponseSessionBean implements ResponseSessionBeanLocal {
     }
     
     @Override
-    public Response retrieveResponseById(Long responseId) throws ResponseNotFoundException {
+    public Response retrieveResponseByResponseId(Long responseId) throws ResponseNotFoundException {
         
         Response response = entityManager.find(Response.class, responseId);
 

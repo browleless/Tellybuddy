@@ -21,7 +21,7 @@ public interface AnswerSessionBeanLocal {
 
     public Long createNewAnswer(Question question, Answer newAnswer) throws QuestionNotFoundException;
 
-    public Answer retrieveAnswerById(Long answerId) throws AnswerNotFoundException;
+    public Answer retrieveAnswerByAnswerId(Long answerId) throws AnswerNotFoundException;
 
     public void updateAnswer(Answer answer) throws AnswerNotFoundException;
 

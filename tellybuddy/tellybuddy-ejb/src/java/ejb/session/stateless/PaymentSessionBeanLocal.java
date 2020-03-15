@@ -22,7 +22,7 @@ public interface PaymentSessionBeanLocal {
 
     public Long createNewBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException;
 
-    public Payment retrievePaymentById(Long paymentId) throws PaymentNotFoundException;
+    public Payment retrievePaymentByPaymentId(Long paymentId) throws PaymentNotFoundException;
 
     public List<Payment> retrieveAllPayments();
 

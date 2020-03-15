@@ -36,14 +36,6 @@ public class SecurityFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         HttpSession httpSession = httpServletRequest.getSession(true);
         String requestServletPath = httpServletRequest.getServletPath();
-        
-        // gettng and checking tab menu index
-        String parameter = httpServletRequest.getParameter("i");
-        
-        if (parameter != null) {
-            // for tab menu after login
-            requestServletPath += "?i=" + parameter;
-        }
 
         if (httpSession.getAttribute("isLogin") == null) {
             httpSession.setAttribute("isLogin", false);
@@ -74,26 +66,27 @@ public class SecurityFilter implements Filter {
 
     private Boolean checkAccessRight(String path, AccessRightEnum accessRight) {
         if (accessRight.equals(AccessRightEnum.EMPLOYEE)) {
-            if (path.equals("/management/home.xhtml?i=0")
-                    || path.equals("/management/account/main.xhtml?i=1")
-                    || path.equals("/management/plans/main.xhtml?i=2")
-                    || path.equals("/management/products/main.xhtml?i=3")
-                    || path.equals("/management/customers/main.xhtml?i=4")
-                    || path.equals("/management/announcements/main.xhtml?i=5")
-                    || path.equals("/management/promotions/main.xhtml?i=6")) {
+            if (path.equals("/management/home.xhtml")
+                    || path.equals("/management/account/main.xhtml")
+                    || path.equals("/management/plans/main.xhtml")
+                    || path.equals("/management/products/main.xhtml")
+                    || path.equals("/management/customers/main.xhtml")
+                    || path.equals("/management/announcements/main.xhtml")
+                    || path.equals("/management/promotions/main.xhtml")) {
                 return true;
             } else {
                 return false;
             }
         } else if (accessRight.equals(AccessRightEnum.MANAGER)) {
-            if (path.equals("/management/home.xhtml?i=0")
-                    || path.equals("/management/account/main.xhtml?i=1")
-                    || path.equals("/management/plans/main.xhtml?i=2")
-                    || path.equals("/management/products/main.xhtml?i=3")
-                    || path.equals("/management/customers/main.xhtml?i=4")
-                    || path.equals("/management/announcements/main.xhtml?i=5")
-                    || path.equals("/management/promotions/main.xhtml?i=6")
-                    || path.equals("/management/account/updateParticulars.xhtml?i=1")) {
+            if (path.equals("/management/home.xhtml")
+                    || path.equals("/management/account/main.xhtml")
+                    || path.equals("/management/plans/main.xhtml")
+                    || path.equals("/management/products/main.xhtml")
+                    || path.equals("/management/customers/main.xhtml")
+                    || path.equals("/management/announcements/main.xhtml")
+                    || path.equals("/management/promotions/main.xhtml")
+                    || path.equals("/management/account/updateParticulars.xhtml")
+                    || path.equals("/management/plans/planManagement.xhtml")) {
                 return true;
             } else {
                 return false;

@@ -22,6 +22,6 @@ public interface ResponseSessionBeanLocal {
 
     public Long createNewResponse(Response newResponse, Question question, Answer answer) throws QuestionNotFoundException, AnswerNotFoundException;
 
-    public Response retrieveResponseById(Long responseId) throws ResponseNotFoundException;
+    public Response retrieveResponseByResponseId(Long responseId) throws ResponseNotFoundException;
     
 }

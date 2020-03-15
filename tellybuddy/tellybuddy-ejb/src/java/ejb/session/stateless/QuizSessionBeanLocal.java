@@ -24,7 +24,7 @@ import util.exception.QuizNotFoundException;
 @Local
 public interface QuizSessionBeanLocal {
 
-    public Quiz retrieveQuizById(Long quizId) throws QuizNotFoundException;
+    public Quiz retrieveQuizByQuizId(Long quizId) throws QuizNotFoundException;
 
     public void addQuestion(Question newQuestion, List<Answer> answers);
 

@@ -60,7 +60,7 @@ public class QuizAttemptSessionBean implements QuizAttemptSessionBeanLocal {
     @Override
     public QuizAttempt submitQuizAttempt(Customer customer, Quiz quiz) throws QuestionNotFoundException, AnswerNotFoundException, ResponseNotFoundException, QuizNotFoundException {
         
-        Quiz quizToAssociateWith = quizSessionBeanLocal.retrieveQuizById(quiz.getQuizId());
+        Quiz quizToAssociateWith = quizSessionBeanLocal.retrieveQuizByQuizId(quiz.getQuizId());
         Customer customerToAssociateWith = entityManager.find(Customer.class, customer.getCustomerId());
         
         QuizAttempt newQuizAttempt = new QuizAttempt();
@@ -71,7 +71,7 @@ public class QuizAttemptSessionBean implements QuizAttemptSessionBeanLocal {
                 ++quizScore;
             }
             Long newResponseId = responseSessionBeanLocal.createNewResponse(response, response.getQuestion(), response.getAnswer());
-            newQuizAttempt.getResponses().add(responseSessionBeanLocal.retrieveResponseById(newResponseId));
+            newQuizAttempt.getResponses().add(responseSessionBeanLocal.retrieveResponseByResponseId(newResponseId));
         }
         
         newQuizAttempt.setQuiz(quizToAssociateWith);

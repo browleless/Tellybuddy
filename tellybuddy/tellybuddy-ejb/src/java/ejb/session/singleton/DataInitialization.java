@@ -6,6 +6,8 @@
 package ejb.session.singleton;
 
 import entity.Employee;
+import entity.Plan;
+import java.math.BigDecimal;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
@@ -41,6 +43,10 @@ public class DataInitialization {
         
         newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE);
         em.persist(newEmployee);
+        em.flush();
+        
+        Plan newPlan = new Plan("Saver 15", 15, BigDecimal.valueOf(25), BigDecimal.valueOf(2.5), Integer.valueOf(1500), Integer.valueOf(100), Integer.valueOf(100), null, null);
+        em.persist(newPlan);
         em.flush();
     }
 

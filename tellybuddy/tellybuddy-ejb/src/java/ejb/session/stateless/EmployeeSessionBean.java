@@ -48,7 +48,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     }
 
     @Override
-    public Employee retrieveEmployeeById(Long employeeId) throws EmployeeNotFoundException {
+    public Employee retrieveEmployeeByEmployeeId(Long employeeId) throws EmployeeNotFoundException {
 
         Employee employee = entityManager.find(Employee.class, employeeId);
 
@@ -92,7 +92,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     public void updateEmployee(Employee employee) throws EmployeeNotFoundException {
 
         if (employee != null && employee.getEmployeeId() != null) {
-            Employee employeeToUpdate = retrieveEmployeeById(employee.getEmployeeId());
+            Employee employeeToUpdate = retrieveEmployeeByEmployeeId(employee.getEmployeeId());
             if (employeeToUpdate.getUsername().equals(employee.getUsername())) {
                 employeeToUpdate.setAccessRightEnum(employee.getAccessRightEnum());
                 employeeToUpdate.setFirstName(employee.getFirstName());
@@ -106,7 +106,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     @Override
     public void deleteEmployee(Employee employee) throws EmployeeNotFoundException {        
     
-        Employee employeeToDelete = retrieveEmployeeById(employee.getEmployeeId());
+        Employee employeeToDelete = retrieveEmployeeByEmployeeId(employee.getEmployeeId());
 
         // currently can just delete since there is no association yet
         entityManager.remove(employeeToDelete);

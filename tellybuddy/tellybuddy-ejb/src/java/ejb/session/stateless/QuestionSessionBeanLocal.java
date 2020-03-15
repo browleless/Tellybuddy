@@ -23,7 +23,7 @@ public interface QuestionSessionBeanLocal {
 
     public Long createNewQuestion(Quiz quiz, Question newQuestion) throws QuizNotFoundException;
 
-    public Question retrieveQuestionById(Long questionId) throws QuestionNotFoundException;
+    public Question retrieveQuestionByQuestionId(Long questionId) throws QuestionNotFoundException;
 
     public void addNewAnswer(Question currentQuestion, Answer newAnswer) throws QuestionNotFoundException;
 

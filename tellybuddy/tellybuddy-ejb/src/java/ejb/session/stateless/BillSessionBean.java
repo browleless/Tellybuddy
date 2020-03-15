@@ -17,7 +17,7 @@ public class BillSessionBean implements BillSessionBeanLocal {
     private EntityManager entityManager;
 
     @Override
-    public Bill retrieveBillById(Long billId) throws BillNotFoundException {
+    public Bill retrieveBillByBillId(Long billId) throws BillNotFoundException {
         
         Bill bill = entityManager.find(Bill.class, billId);
 

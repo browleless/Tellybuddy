@@ -20,7 +20,7 @@ public interface PhoneNumberSessionBeanLocal {
 
     public Long createNewPhoneNumber(PhoneNumber newPhoneNumber);
 
-    public PhoneNumber retrievePhoneNumberById(Long phoneNumberId) throws PhoneNumberNotFoundException;
+    public PhoneNumber retrievePhoneNumberByPhoneNumberId(Long phoneNumberId) throws PhoneNumberNotFoundException;
 
     public List<PhoneNumber> retrieveListOfAvailablePhoneNumbers();
 

@@ -5,6 +5,12 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
+    <style>
+        .active {
+            background-color : #eee;
+        }
+    </style>
+
     <section id="sidemenu" class="sidemenu">
         <h3 style="text-align: center; margin-top: 15px; margin-bottom: 15px">Tellybuddy</h3>
         <nav>
@@ -14,24 +20,25 @@
 
                     <p:submenu label="Actions">
 
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/account')}" value="Update Particulars" outcome="/management/account/updateParticulars?i=1" icon="fa fa-edit" />
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/account')}" value="Change Password" outcome="/management/account/main.xhtml?i=1" icon="fa fa-lock" />
+                        <p:menuitem styleClass="#{view.viewId.contains('updateParticulars') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/account')}" value="Update Particulars" outcome="/management/account/updateParticulars" icon="fa fa-edit" />
+                        <p:menuitem styleClass="#{view.viewId.contains('changePassword') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/account')}" value="Change Password" outcome="/management/account/main.xhtml" icon="fa fa-lock" />
 
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/plans')}" value="Plan Management" outcome="/management/plans/main.xhtml?i=2" icon="fa fa-file" />
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/plans')}" value="Approvals" outcome="/management/plans/main.xhtml?i=2" icon="fa fa-check-circle" />
+                        <p:menuitem styleClass="#{view.viewId.contains('planManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/plans')}" value="Plan Management" outcome="/management/plans/planManagement.xhtml" icon="fa fa-file" />
+                        <p:menuitem styleClass="#{view.viewId.contains('subscriptionManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/plans')}" value="Subscription Management" outcome="/management/plans/main.xhtml" icon="fa fa-list-ul" />
+                        <p:menuitem styleClass="#{view.viewId.contains('approvals') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/plans')}" value="Approvals" outcome="/management/plans/main.xhtml" icon="fa fa-check-circle" />
 
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/products')}" value="Product Management" outcome="/management/products/main.xhtml?i=3" icon="fa fa-tags" />
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/products')}" value="Search Products" outcome="/management/products/main.xhtml?i=3" icon="fa fa-search" />
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/products')}" value="Filter Products By Category" outcome="/management/products/main.xhtml?i=3" icon="fa fa-filter" />
+                        <p:menuitem styleClass="#{view.viewId.contains('productManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/products')}" value="Product Management" outcome="/management/products/main.xhtml" icon="fa fa-tags" />
+                        <p:menuitem styleClass="#{view.viewId.contains('searchProducts') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/products')}" value="Search Products" outcome="/management/products/main.xhtml" icon="fa fa-search" />
+                        <p:menuitem styleClass="#{view.viewId.contains('filterProductsByCategory') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/products')}" value="Filter Products By Category" outcome="/management/products/main.xhtml" icon="fa fa-filter" />
 
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/customers')}" value="Customer Management" outcome="/management/customers/main.xhtml?i=4" icon="fa fa-users" />
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/customers')}" value="Verify Customers" outcome="/management/customers/main.xhtml?i=4" icon="fa fa-check-circle" />
+                        <p:menuitem styleClass="#{view.viewId.contains('customerManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/customers')}" value="Customer Management" outcome="/management/customers/main.xhtml" icon="fa fa-users" />
+                        <p:menuitem styleClass="#{view.viewId.contains('verifyCustomers') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/customers')}" value="Verify Customers" outcome="/management/customers/main.xhtml" icon="fa fa-check-circle" />
 
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/announcements')}" value="Announcement Management" outcome="/management/announcements/main.xhtml?i=5" icon="fa fa-bullhorn" />
+                        <p:menuitem styleClass="#{view.viewId.contains('annoucementManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/announcements')}" value="Announcement Management" outcome="/management/announcements/main.xhtml" icon="fa fa-bullhorn" />
 
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/promotions')}" value="Flash Deals" outcome="/management/promotions/main.xhtml?i=6" icon="fa fa-hourglass-half" />
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/promotions')}" value="Flash Vouchers" outcome="/management/promotions/main.xhtml?i=6" icon="fa fa-tag" />
-                        <p:menuitem rendered="#{request.servletPath.contains('/management/promotions')}" value="Quiz Management" outcome="/management/promotions/main.xhtml?i=6" icon="fa fa-list-ul" />
+                        <p:menuitem styleClass="#{view.viewId.contains('flashDeals') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/promotions')}" value="Flash Deals" outcome="/management/promotions/main.xhtml" icon="fa fa-hourglass-half" />
+                        <p:menuitem styleClass="#{view.viewId.contains('flashVouchers') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/promotions')}" value="Flash Vouchers" outcome="/management/promotions/main.xhtml" icon="fa fa-tag" />
+                        <p:menuitem styleClass="#{view.viewId.contains('quizManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/promotions')}" value="Quiz Management" outcome="/management/promotions/main.xhtml" icon="fa fa-list-ul" />
 
                         <p:separator />
 
