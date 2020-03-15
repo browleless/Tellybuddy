@@ -33,4 +33,6 @@ public interface DiscountCodeSessionBeanLocal {
 
     public void deleteDiscountCode(Long discountCodeId) throws DiscountCodeNotFoundException;
 
+    public DiscountCode retrieveDiscountCodeByDiscountCodeName(String discountCodeName) throws DiscountCodeNotFoundException;
+
 }

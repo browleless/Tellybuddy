@@ -20,6 +20,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.CreateNewSaleTransactionException;
 import util.exception.CustomerNotFoundException;
+import util.exception.DiscountCodeNotFoundException;
 import util.exception.ProductInsufficientQuantityOnHandException;
 import util.exception.ProductNotFoundException;
 import util.exception.TransactionAlreadyVoidedRefundedException;
@@ -52,14 +53,14 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     }
        
     @Override
-    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException
+    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException
     {
         if(newTransaction != null)
         {
             try
             {
                 Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
-                DiscountCode discountCode = discountCodeSessionBeanLocal.retrieveDiscountCodeByName(discountCodeName);
+                DiscountCode discountCode = discountCodeSessionBeanLocal.retrieveDiscountCodeByDiscountCodeName(discountCodeName);
                 newTransaction.setCustomer(customer);
                 newTransaction.setDiscountCode(discountCode);
                 customer.getTransactions().add(newTransaction);

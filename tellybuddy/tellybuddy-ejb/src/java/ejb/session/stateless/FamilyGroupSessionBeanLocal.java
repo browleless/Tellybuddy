@@ -12,8 +12,13 @@ import java.util.List;
 import javax.ejb.Local;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
+import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
 import util.exception.FamilyGroupNotFoundException;
 import util.exception.FamilyGroupReachedLimitOf5MembersException;
+import util.exception.InsufficientDataUnitsToDonateToFamilyGroupException;
+import util.exception.InsufficientDonatedUnitsInFamilyGroupException;
+import util.exception.InsufficientSmsUnitsToDonateToFamilyGroupException;
+import util.exception.InsufficientTalktimeUnitsToDonateToFamilyGroupException;
 
 /**
  *
@@ -34,8 +39,12 @@ public interface FamilyGroupSessionBeanLocal {
 
     public void removeFamilyMember(Customer familyMember, FamilyGroup fg) throws CustomerDoesNotBelongToFamilyGroupException, FamilyGroupNotFoundException;
 
-    public void donateUnits(Customer familyMember, Subscription s, FamilyGroup fg, Integer smsUnits, Integer dataUnits, Integer talktimeUnits) throws CustomerDoesNotBelongToFamilyGroupException;
+    public void donateUnits(Customer familyMember, Subscription s, FamilyGroup fg, Integer smsUnits, Integer dataUnits, Integer talktimeUnits)
+            throws CustomerDoesNotBelongToFamilyGroupException, FamilyGroupDonatedUnitsExceededLimitException,
+            InsufficientSmsUnitsToDonateToFamilyGroupException, InsufficientDataUnitsToDonateToFamilyGroupException,
+            InsufficientTalktimeUnitsToDonateToFamilyGroupException;
 
-    public void useUnits(Customer familyMember, Subscription s, FamilyGroup fg, Integer smsUnits, Integer dataUnits, Integer talktimeUnits) throws CustomerDoesNotBelongToFamilyGroupException;
+    public void useUnits(Customer familyMember, Subscription s, FamilyGroup fg, Integer smsUnits, Integer dataUnits, Integer talktimeUnits) throws CustomerDoesNotBelongToFamilyGroupException,
+            InsufficientDonatedUnitsInFamilyGroupException;
 
 }

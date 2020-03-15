@@ -11,6 +11,7 @@ import java.util.List;
 import javax.ejb.Local;
 import util.exception.CreateNewSaleTransactionException;
 import util.exception.CustomerNotFoundException;
+import util.exception.DiscountCodeNotFoundException;
 import util.exception.TransactionAlreadyVoidedRefundedException;
 import util.exception.TransactionNotFoundException;
 
@@ -20,7 +21,7 @@ import util.exception.TransactionNotFoundException;
 @Local
 public interface TransactionSessionBeanLocal {
 
-    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException;
+    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException;
 
     public List<Transaction> retrieveAllTransactions();
 

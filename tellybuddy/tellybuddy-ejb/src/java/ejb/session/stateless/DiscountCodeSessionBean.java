@@ -84,6 +84,20 @@ public class DiscountCodeSessionBean implements DiscountCodeSessionBeanLocal {
     }
 
     @Override
+    public DiscountCode retrieveDiscountCodeByDiscountCodeName(String discountCodeName) throws DiscountCodeNotFoundException {
+        Query q = em.createQuery("SELECT dc FROM DiscountCode dc WHERE dc.discountCode = :inDiscountCodeName");
+        q.setParameter("inDiscountCodeName", discountCodeName);
+
+        DiscountCode discountCode = (DiscountCode) q.getSingleResult();
+
+        if (discountCode != null) {
+            return discountCode;
+        } else {
+            throw new DiscountCodeNotFoundException("Discount Code '" + discountCodeName + "' does not exist!");
+        }
+    }
+
+    @Override
     public List<DiscountCode> retrieveAllDiscountCodes() {
         Query q = em.createQuery("SELECT dc FROM DiscountCode dc");
 
