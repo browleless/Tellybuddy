@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
 import entity.Subscription;
 import java.util.List;
 import java.util.Set;
@@ -36,4 +37,5 @@ public interface SubscriptionSessonBeanLocal {
 
     public void terminateSubscription(Long customerId, Long subscriptionId);
 
+    public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer);
 }
