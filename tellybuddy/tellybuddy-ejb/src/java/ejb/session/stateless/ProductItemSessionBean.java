@@ -79,7 +79,7 @@ public class ProductItemSessionBean implements ProductItemSessionBeanLocal {
             } catch (ProductNotFoundException ex) {
                 Logger.getLogger(ProductItemSessionBean.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else {
+        }  else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
     }

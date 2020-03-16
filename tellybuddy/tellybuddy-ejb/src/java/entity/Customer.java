@@ -68,6 +68,7 @@ public class Customer implements Serializable {
     @Max(99)
     private Integer age;
 
+    
     @Column(nullable = true, length = 255)
     @NotNull
     @Size(min = 10, max = 64)
@@ -126,6 +127,12 @@ public class Customer implements Serializable {
     @Max(1000)
     private Integer consecutiveMonths;
 
+    @Column(nullable = false)
+    @NotNull
+    @Min(0)
+    @Max(1000)
+    private Integer counter;
+    
     @Column(length = 16)
     @Size(min = 16, max = 16)
     @Pattern(regexp = "^[0-9]{16}$")
@@ -166,6 +173,8 @@ public class Customer implements Serializable {
     public Customer() {
         this.salt = CryptographicHelper.getInstance().generateRandomString(32);
         this.loyaltyPoints = 0;
+        this.consecutiveMonths = 0;
+        this.counter = 0;
         this.bills = new ArrayList<>();
         this.subscriptions = new ArrayList<>();
         this.quizAttempts = new ArrayList<>();
@@ -298,6 +307,14 @@ public class Customer implements Serializable {
 
     public Integer getLoyaltyPoints() {
         return loyaltyPoints;
+    }
+
+    public Integer getCounter() {
+        return counter;
+    }
+
+    public void setCounter(Integer counter) {
+        this.counter = counter;
     }
 
     public void setLoyaltyPoints(Integer loyaltyPoints) {

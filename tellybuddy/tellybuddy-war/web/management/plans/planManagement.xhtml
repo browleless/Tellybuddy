@@ -8,12 +8,28 @@
 
     <ui:define name="content">
 
+        <style>
+            .ui-dialog {
+                border-radius: 15px;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+            }
+            
+            .ui-dialog .ui-dialog-title {
+                color: white;
+            }
+        </style>
+
         <div>
             <h3>Plans Management</h3>
 
-            <h:form id="formAllPlans">
+            <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Plan" oncomplete="PF('dialogCreateNewPlan').show()" />
 
-                <p:commandButton value="Create New Plan" oncomplete="PF('dialogCreateNewPlan').show()" />
+            <h:form id="formAllPlans">
 
                 <p:dataTable id="dataTableAllPlans" widgetVar="dataTableAllPlans" value="#{planManagementManagedBean.plans}" var="plan" rowKey="#{plan.planId}" rowIndexVar="row"
                              filteredValue="#{planManagementManagedBean.filteredPlans}"
@@ -41,13 +57,13 @@
                     </p:column>
 
                     <p:column headerText="Action" >
-                        <p:commandButton update="@form formUpdatePlan:dialogUpdatePlan" oncomplete="PF('dialogViewPlan').show()" icon="ui-icon-document" title="View">
-                            <f:setPropertyActionListener value="#{plan}" target="#{planManagementManagedBean.viewPlanManagedBean.planToView}" />
+                        <p:commandButton update="dialogViewPlan" oncomplete="PF('dialogViewPlan').show()" icon="ui-icon-document" title="View">
+                            <f:setPropertyActionListener value="#{plan}" target="#{planManagementManagedBean.planToView}" />
                         </p:commandButton>
-                        <p:commandButton oncomplete="PF('dialogUpdatePlan').show()" icon="ui-icon-pencil" title="Update">
+                        <p:commandButton update="dialogUpdatePlan" oncomplete="PF('dialogUpdatePlan').show()" icon="ui-icon-pencil" title="Update">
                             <f:setPropertyActionListener value="#{plan}" target="#{planManagementManagedBean.planToUpdate}" />
                         </p:commandButton>
-                        <p:commandButton icon="ui-icon-trash" actionListener="#{planManagementManagedBean.deletePlan}" update="formAllPlans:dataTableAllPlans">
+                        <p:commandButton update="@form formAllPlans:dataTableAllPlans" icon="ui-icon-trash" actionListener="#{planManagementManagedBean.deletePlan}">
                             <f:attribute name="planToDelete" value="#{plan}" />
                             <p:confirm header="Confirmation" message="Are you sure you want to delete #{plan.name}?" icon="ui-icon-alert" />
                         </p:commandButton>
@@ -62,9 +78,9 @@
 
             </h:form>
 
-            <h:form id="formViewPlan">
+            <p:dialog id="dialogViewPlan" widgetVar="dialogViewPlan" header="View Plan" closable="true">
 
-                <p:dialog id="dialogViewPlan" widgetVar="dialogViewPlan" header="View Plan" closable="true">
+                <h:form id="formViewPlan">
 
                     <p:panelGrid>
 
@@ -73,7 +89,7 @@
                                 <h:outputLabel value="Plan ID: " />
                             </p:column>
                             <p:column>
-                                <h:outputText value="#{viewPlanManagedBean.planToView.planId}" />
+                                <h:outputText value="#{planManagementManagedBean.planToView.planId}" />
                             </p:column>
                         </p:row>
 
@@ -82,7 +98,7 @@
                                 <h:outputLabel value="Name: " />
                             </p:column>
                             <p:column>
-                                <h:outputText value="#{viewPlanManagedBean.planToView.name}" />
+                                <h:outputText value="#{planManagementManagedBean.planToView.name}" />
                             </p:column>
                         </p:row>
 
@@ -91,34 +107,32 @@
                                 <h:outputLabel value="Total Basic Units: " />
                             </p:column>
                             <p:column>
-                                <h:outputText value="#{viewPlanManagedBean.planToView.totalBasicUnits}" />
+                                <h:outputText value="#{planManagementManagedBean.planToView.totalBasicUnits}" />
                             </p:column>
                         </p:row>
 
                         <p:row>
                             <p:column>
-                                <h:outputLabel value="Data Conversion Rate: " />
+                                <p:outputLabel value="Conversion Rates: " />
                             </p:column>
                             <p:column>
-                                <h:outputText value="#{viewPlanManagedBean.planToView.dataConversionRate}" />
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <h:outputLabel value="SMS Conversion Rate: " />
-                            </p:column>
-                            <p:column>
-                                <h:outputText value="#{viewPlanManagedBean.planToView.smsConversionRate}" />
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <h:outputLabel value="Talktime Conversion Rate: " />
-                            </p:column>
-                            <p:column>
-                                <h:outputText value="#{viewPlanManagedBean.planToView.talktimeConversionRate}" />
+                                <div class="ui-g">
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob disabled="true" id="dataConversionRate" foregroundColor="#AB47BC" step="500" max="10000" thickness="0.3" height="100" width="100" cursor="true"  value="#{planManagementManagedBean.planToView.dataConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #AB47BC;" for="dataConversionRate" value="Data" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob disabled="true" id="smsConversionRate" foregroundColor="#FFCA28" step="50" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.planToView.smsConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #FFCA28;" for="smsConversionRate" value="SMS" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob disabled="true" id="talktimeConversionRate" foregroundColor="#2399e5" step="100" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.planToView.talktimeConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #2399e5;" for="talktimeConversionRate" value="Talktime" />
+                                    </div>
+                                </div>
                             </p:column>
                         </p:row>
 
@@ -127,7 +141,7 @@
                                 <h:outputLabel value="Plan Price: " />
                             </p:column>
                             <p:column>
-                                <h:outputText value="#{viewPlanManagedBean.planToView.price}">
+                                <h:outputText value="#{planManagementManagedBean.planToView.price}">
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
                                 </h:outputText>
                             </p:column>
@@ -138,43 +152,39 @@
                                 <h:outputLabel value="Add-on Price: " />
                             </p:column>
                             <p:column>
-                                <h:outputText value="#{viewPlanManagedBean.planToView.addOnPrice}">
+                                <h:outputText value="#{planManagementManagedBean.planToView.addOnPrice}">
                                     <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
                                 </h:outputText>
                             </p:column>
                         </p:row>
 
-                        <p:row rendered="#{viewPlanManagedBean.planToView.startTime} != null">
+                        <p:row rendered="#{planManagementManagedBean.planToView.startTime} != null">
                             <p:column>
                                 <h:outputLabel value="Start Date/Time " />
                             </p:column>
                             <p:column>
-                                <p:dataList value="#{viewPlanManagedBean.planToView.startTime}">
-                                    #{tag.name}
-                                </p:dataList>
+                                <h:outputText value="#{planManagementManagedBean.planToView.startTime}" />
                             </p:column>
                         </p:row>
 
-                        <p:row rendered="#{viewPlanManagedBean.planToView.endTime}!= null">
+                        <p:row rendered="#{planManagementManagedBean.planToView.endTime}!= null">
                             <p:column>
                                 <h:outputLabel value="End Date/Time " />
                             </p:column>
                             <p:column>
-                                <p:dataList value="#{viewPlanManagedBean.planToView.endTime}">
-                                    #{tag.name}
-                                </p:dataList>
+                                <h:outputText value="#{planManagementManagedBean.planToView.endTime}" />
                             </p:column>
                         </p:row>
 
                     </p:panelGrid>
 
-                </p:dialog>
+                </h:form>
 
-            </h:form>
+            </p:dialog>
 
-            <h:form id="formCreateNewPlan">
+            <p:dialog id="dialogCreateNewPlan" widgetVar="dialogCreateNewPlan" header="Create New Plan" closable="true">
 
-                <p:dialog id="dialogCreateNewPlan" widgetVar="dialogCreateNewPlan" header="Create New Plan" closable="true">
+                <h:form id="formCreateNewPlan">
 
                     <p:panelGrid>
 
@@ -185,9 +195,6 @@
                             <p:column>
                                 <p:inputText id="name" value="#{planManagementManagedBean.newPlan.name}" placeholder="Flexi 300" required="true" requiredMessage="Name is required" />
                             </p:column>
-                            <p:column>
-                                <p:message for="name" />
-                            </p:column>
                         </p:row>
 
                         <p:row>
@@ -195,46 +202,32 @@
                                 <p:outputLabel for="totalBasicUnits" value="Total Basic Units " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:spinner id="totalBasicUnits" value="#{planManagementManagedBean.newPlan.totalBasicUnits}" placeholder="10" min="5" max="1000000" required="true" requiredMessage="Basic Units is required" />
-                            </p:column>
-                            <p:column>
-                                <p:message for="totalBasicUnits" />
+                                <p:spinner id="totalBasicUnits" value="#{planManagementManagedBean.newPlan.totalBasicUnits}" min="5" max="100" placeholder="5" />
                             </p:column>
                         </p:row>
 
                         <p:row>
                             <p:column>
-                                <p:outputLabel for="dataConversionRate" value="Data Conversion Rate " style="font-weight: bold;" />
+                                <p:outputLabel value="Conversion Rates: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:spinner id="dataConversionRate" value="#{planManagementManagedBean.newPlan.dataConversionRate}" placeholder="500" min="500" max="1000000" stepFactor="100" required="true" requiredMessage="Data Conversion Rate is required" />
-                            </p:column>
-                            <p:column>
-                                <p:message for="dataConversionRate" />
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <p:outputLabel for="smsConversionRate" value="SMS Conversion Rate " style="font-weight: bold;" />
-                            </p:column>
-                            <p:column>
-                                <p:spinner id="smsConversionRate" value="#{planManagementManagedBean.newPlan.smsConversionRate}" placeholder="100" min="50" max="1000000" stepFactor="10" required="true" requiredMessage="SMS Conversion Rate is required" />
-                            </p:column>
-                            <p:column>
-                                <p:message for="smsConversionRate" />
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <p:outputLabel for="talktimeConversionRate" value="Talktime Conversion Rate " style="font-weight: bold;" />
-                            </p:column>
-                            <p:column>
-                                <p:spinner id="talktimeConversionRate" value="#{planManagementManagedBean.newPlan.talktimeConversionRate}" placeholder="100" min="100" max="1000000" stepFactor="10" required="true" requiredMessage="Talktime Conversion Rate is required" />
-                            </p:column>
-                            <p:column>
-                                <p:message for="talktimeConversionRate" />
+                                <div class="ui-g">
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="dataConversionRate" foregroundColor="#AB47BC" step="500" max="10000" thickness="0.3" height="100" width="100" cursor="true"  value="#{planManagementManagedBean.newPlan.dataConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #AB47BC;" for="dataConversionRate" value="Data" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="smsConversionRate" foregroundColor="#FFCA28" step="50" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.newPlan.smsConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #FFCA28;" for="smsConversionRate" value="SMS" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="talktimeConversionRate" foregroundColor="#2399e5" step="100" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.newPlan.talktimeConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #2399e5;" for="talktimeConversionRate" value="Talktime" />
+                                    </div>
+                                </div>
                             </p:column>
                         </p:row>
 
@@ -245,9 +238,6 @@
                             <p:column>                            
                                 <p:spinner id="planPrice" value="#{planManagementManagedBean.newPlan.price}" placeholder="20.00" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Plan Price is required" />
                             </p:column>
-                            <p:column>
-                                <p:message for="planPrice" />
-                            </p:column>
                         </p:row>
 
                         <p:row>
@@ -257,27 +247,22 @@
                             <p:column>                            
                                 <p:spinner id="planAddOnPrice" value="#{planManagementManagedBean.newPlan.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
                             </p:column>
-                            <p:column>
-                                <p:message for="planAddOnPrice" />
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column colspan="3">
-                                <p:commandButton type="reset" value="Clear" />&nbsp;
-                                <p:commandButton  value="Create New Plan" update="@form formAllPlans:dataTableAllPlans" actionListener="#{planManagementManagedBean.createNewPlan}" oncomplete="PF('dialogCreateNewPlan').show();" />
-                            </p:column>
                         </p:row>
 
                     </p:panelGrid>
 
-                </p:dialog>
+                    <div style="text-align: center; margin-top: 20px">
+                        <p:commandButton type="reset" value="Clear" />&nbsp;
+                        <p:commandButton value="Create New Plan" update="@form formAllPlans:dataTableAllPlans" actionListener="#{planManagementManagedBean.createNewPlan}" oncomplete="PF('dialogCreateNewPlan').show();" />
+                    </div>
 
-            </h:form>
+                </h:form>
 
-            <h:form id="formUpdatePlan">
+            </p:dialog>
 
-                <p:dialog id="dialogUpdatePlan" widgetVar="dialogUpdatePlan" header="Update Plan" closable="true">
+            <p:dialog id="dialogUpdatePlan" widgetVar="dialogUpdatePlan" header="Update Plan" closable="true">
+
+                <h:form id="formUpdatePlan">
 
                     <p:panelGrid>
 
@@ -288,9 +273,6 @@
                             <p:column>
                                 <h:outputText value="#{planManagementManagedBean.planToUpdate.planId}" />
                             </p:column>
-                            <p:column>
-                                &nbsp;
-                            </p:column>
                         </p:row>
 
                         <p:row>
@@ -298,10 +280,7 @@
                                 <p:outputLabel for="name" value="Name: " />
                             </p:column>
                             <p:column>
-                                <p:inputText id="name" value="#{planManagementManagedBean.planToUpdate.name}" placeholder="Flexi 900" required="true" requiredMessage="Name is required" />
-                            </p:column>
-                            <p:column>
-                                <p:message for="name" />
+                                <h:outputText id="name" value="#{planManagementManagedBean.planToUpdate.name}" />
                             </p:column>
                         </p:row>
 
@@ -312,8 +291,30 @@
                             <p:column>
                                 <p:spinner id="basicUnits" value="#{planManagementManagedBean.planToUpdate.totalBasicUnits}" placeholder="10" min="0" max="1000000" required="true" requiredMessage="Basic Units is required" />
                             </p:column>
+                        </p:row>
+
+                        <p:row>
                             <p:column>
-                                <p:message for="basicUnits" />
+                                <p:outputLabel value="Conversion Rates: " />
+                            </p:column>
+                            <p:column>
+                                <div class="ui-g">
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="dataConversionRate" foregroundColor="#AB47BC" step="500" max="10000" thickness="0.3" height="100" width="100" cursor="true"  value="#{planManagementManagedBean.planToUpdate.dataConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #AB47BC;" for="dataConversionRate" value="Data" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="smsConversionRate" foregroundColor="#FFCA28" step="50" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.planToUpdate.smsConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #FFCA28;" for="smsConversionRate" value="SMS" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="talktimeConversionRate" foregroundColor="#2399e5" step="100" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.planToUpdate.talktimeConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #2399e5;" for="talktimeConversionRate" value="Talktime" />
+                                    </div>
+                                </div>
                             </p:column>
                         </p:row>
 
@@ -324,22 +325,27 @@
                             <p:column>
                                 <p:spinner id="planPrice" value="#{planManagementManagedBean.planToUpdate.price}" placeholder="10.00" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Plan Price is required" />
                             </p:column>
-                            <p:column>
-                                <p:message for="planPrice" />
-                            </p:column>
                         </p:row>
 
                         <p:row>
-                            <p:column colspan="3">
-                                <p:commandButton value="Update Plan" update="@form formAllPlans:dataTableAllPlans" actionListener="#{planManagementManagedBean.updatePlan}" oncomplete="PF('dialogUpdatePlan').show();" />
+                            <p:column>
+                                <p:outputLabel for="planAddOnPrice" value="Add On Price" />
+                            </p:column>
+                            <p:column>                            
+                                <p:spinner id="planAddOnPrice" value="#{planManagementManagedBean.planToUpdate.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
                             </p:column>
                         </p:row>
 
                     </p:panelGrid>
 
-                </p:dialog>
+                    <div style="text-align: center; margin-top: 20px">
+                        <p:commandButton value="Update Plan" update="@form formAllPlans:dataTableAllPlans" actionListener="#{planManagementManagedBean.updatePlan}" oncomplete="PF('dialogUpdatePlan').show();" />
+                    </div>
 
-            </h:form>
+                </h:form>
+
+            </p:dialog>
+
         </div>
 
     </ui:define>

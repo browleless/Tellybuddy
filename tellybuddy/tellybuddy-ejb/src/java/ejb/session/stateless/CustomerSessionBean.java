@@ -10,7 +10,9 @@ import entity.Subscription;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Local;
+import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -34,6 +36,9 @@ import util.security.CryptographicHelper;
 @Local
 //@DeclareRoles({"employee", "customer"})
 public class CustomerSessionBean implements CustomerSessionBeanLocal {
+
+    @EJB(name = "SubscriptionSessonBeanLocal")
+    private SubscriptionSessonBeanLocal subscriptionSessonBeanLocal;
 
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
@@ -79,7 +84,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
 //    @RolesAllowed({"employee"})
     @Override
-    public void employeeApprovePendingCustomerAndUpdate(Customer customer) {
+    public void employeeApprovePendingCustomerAndUpdate(Customer customer) throws CustomerNotFoundException{
         Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
         customerToUpdate.setAddress(customer.getNewAddress());
         customer.setNewAddress(null);
@@ -107,16 +112,16 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 //        customer.getSubscriptions().add(newSubscription);
 //        newSubscription.setCustomer(customer);
 //    }
-    @Override
-    public void terminateCustomerSubscriptionToAPlan(Long customerId) {
-
-        Customer customer = retrieveCustomerByCustomerId(customerId);
-        List<Subscription> subscriptions = customer.getSubscriptions();
-        Date today = Calendar.getInstance().getTime();
-        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
-        latestSubscription.setSubscriptionEndDate(today);
-        latestSubscription.setIsActive(false);
-    }
+//    @Override
+//    public void terminateCustomerSubscriptionToAPlan(Long customerId) throws CustomerNotFoundException {
+//
+//        Customer customer = retrieveCustomerByCustomerId(customerId);
+//        List<Subscription> subscriptions = customer.getSubscriptions();
+//        Date today = Calendar.getInstance().getTime();
+//        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
+//        latestSubscription.setSubscriptionEndDate(today);
+//        latestSubscription.setIsActive(false);
+//    }
 
 //add loyalty points is in EJB timer
 //    @RolesAllowed({"employee"})
@@ -129,9 +134,59 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     //updateCustomerBill is written in the bill sessionbean, take in billId and customerId
 //    @RolesAllowed({"employee"})
     @Override
-    public void updateCustomerLoyaltyPoint(Long customerId, Integer loyaltyPointsToAdd) {
-        Customer customerToUpdate = retrieveCustomerByCustomerId(customerId);
-        customerToUpdate.setLoyaltyPoints(customerToUpdate.getLoyaltyPoints() + loyaltyPointsToAdd);
+    @Schedule(hour = "6", minute = "0", second = "0", persistent = false)
+    public void updateCustomerLoyaltyPoint() {
+        //check it at the beginning of every day
+        List<Customer> customers = retrieveAllCustomer();
+        for (Customer c : customers) {
+            Integer months = c.getConsecutiveMonths();
+            if (months % 12 == 0 && (months != 0)) {
+                //calculation eg.
+                //12 months 1000*(12/12)
+                //24 months 1000*(24/12)
+                c.setLoyaltyPoints(c.getLoyaltyPoints() + (1000 * (months / 12)));
+            }
+        }
+
+    }
+
+    @Override
+    @Schedule(hour = "6", minute = "0", second = "0", persistent = false)
+    public void updateCustomerConsecutiveMonths() {
+        //check it at the beginning of everyday
+        List<Customer> customers = retrieveAllCustomer();
+
+        //get the no. of days in the current month
+        Calendar c = Calendar.getInstance();
+        Integer monthMaxDays = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        for (Customer customerToUpdate : customers) {
+            //check if the customer has any current active subscription
+            boolean active = checkForActiveSubscription(customerToUpdate);
+
+            if (active) {
+                if (customerToUpdate.getCounter() + 1 == monthMaxDays) {
+                    //new monthly cycle starts
+                    customerToUpdate.setCounter(0);
+                    customerToUpdate.setConsecutiveMonths(customerToUpdate.getConsecutiveMonths() + 1);
+                } else {
+                    customerToUpdate.setCounter(customerToUpdate.getCounter() + 1);
+                }
+            } else {
+                customerToUpdate.setCounter(0);
+                customerToUpdate.setConsecutiveMonths(0);
+            }
+        }
+    }
+
+    public boolean checkForActiveSubscription(Customer customer) {
+        List<Subscription> subscriptions = subscriptionSessonBeanLocal.retrieveAllSubscriptionUnderCustomer(customer);
+        for (Subscription s : subscriptions) {
+            if (s.getIsActive() == true) {
+                return true;
+            }
+        }
+        return false;
     }
 
 //    @RolesAllowed({"employee"})
