@@ -26,7 +26,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.CreateNewSubscriptionException;
-import util.exception.CustomerNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
 import util.exception.PhoneNumberNotFoundException;
@@ -63,7 +62,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     }
 
     @Override
-    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException {
+    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException, CreateNewSubscriptionException {
         Set<ConstraintViolation<Subscription>> constraintViolations = validator.validate(newSubscription);
 
         if (constraintViolations.isEmpty()) {
@@ -107,7 +106,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 } else {
                     throw new UnknownPersistenceException(ex.getMessage());
                 }
-            } catch (PlanNotFoundException | PhoneNumberNotFoundException | CustomerNotFoundException ex) {
+            } catch (PlanNotFoundException | PhoneNumberNotFoundException  ex) {
                 throw new CreateNewSubscriptionException("An error has occurred while creating the new subscription: " + ex.getMessage());
             }
         } else {
@@ -122,6 +121,15 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
         if (constraintViolations.isEmpty()) {
             Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+            subscriptionToUpdate.setCustomer(subscription.getCustomer());
+            subscriptionToUpdate.setPlan(subscription.getPlan());
+            subscriptionToUpdate.setPhoneNumber(subscription.getPhoneNumber());
+            
+            subscriptionToUpdate.setSubscriptionStartDate(subscription.getSubscriptionStartDate());
+            subscriptionToUpdate.setSubscriptionEndDate(subscription.getSubscriptionEndDate());
+            
+            subscriptionToUpdate.setIsActive(subscription.getIsActive());
+
             subscriptionToUpdate.setDataUnits(subscription.getDataUnits());
             subscriptionToUpdate.setSmsUnits(subscription.getSmsUnits());
             subscriptionToUpdate.setTalkTimeUnits(subscription.getTalkTimeUnits());

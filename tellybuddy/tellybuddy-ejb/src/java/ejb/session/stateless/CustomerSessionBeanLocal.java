@@ -10,6 +10,7 @@ import entity.Customer;
 import entity.Subscription;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.CustomerExistException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 
@@ -20,9 +21,9 @@ import util.exception.InvalidLoginCredentialException;
 @Local
 public interface CustomerSessionBeanLocal {
 
-    public Long createCustomer(Customer newCustomer);
+    public Long createCustomer(Customer newCustomer) throws CustomerExistException;
 
-    public void updateCustomerDetailsForCustomer(Customer customer);
+    public void updateCustomerDetailsForCustomer(Customer customer)throws CustomerNotFoundException;
 
     public void employeeApprovePendingCustomerAndUpdate(Customer customer);
 
@@ -36,7 +37,7 @@ public interface CustomerSessionBeanLocal {
 
     public Customer retrieveCustomerFromSubscription(Long subscriptionId);
 
-    public Customer retrieveCustomerByCustomerId(Long customerId);
+    public Customer retrieveCustomerByCustomerId(Long customerId)throws CustomerNotFoundException;
 
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException;
 
@@ -44,8 +45,7 @@ public interface CustomerSessionBeanLocal {
 
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException;
 
- //   public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription);
-
+    //   public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription);
     public void terminateCustomerSubscriptionToAPlan(Long customerId);
-    
+
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import javax.ejb.Local;
 import javax.validation.ConstraintViolation;
+import util.exception.CreateNewSubscriptionException;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
 import util.exception.PlanAlreadyDisabledException;
@@ -22,7 +23,7 @@ import util.exception.UnknownPersistenceException;
  */
 public interface SubscriptionSessonBeanLocal {
 
-    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException;
+    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException,CreateNewSubscriptionException;
 
     public void updateSubscription(Subscription subscription) throws util.exception.SubscriptionNotFoundException, InputDataValidationException;
 

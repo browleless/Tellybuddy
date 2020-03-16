@@ -20,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -107,6 +108,12 @@ public class Customer implements Serializable {
     @Column(nullable = true, unique = true)
     private String newNricImagePath;
 
+    @Column(nullable = false, unique = true, length = 64)
+    @NotNull
+    @Size(max = 64)
+    @Email
+    private String email;
+    
     @Column(nullable = false)
     @NotNull
     @Min(0)
@@ -166,7 +173,7 @@ public class Customer implements Serializable {
         this.announcements = new ArrayList<>();
     }
 
-    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String newNric, String newNricImagePath) {
+    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String email, String newNric, String newNricImagePath) {
         this();
         this.username = username;
         this.firstName = firstName;
@@ -174,6 +181,7 @@ public class Customer implements Serializable {
         this.age = age;
         this.newAddress = newAddress;
         this.newPostalCode = newPostalCode;
+        this.email = email;
         this.newNric = newNric;
         this.newNricImagePath = newNricImagePath;
         setPassword(password);
@@ -414,6 +422,14 @@ public class Customer implements Serializable {
 
     public void setConsecutiveMonths(Integer consecutiveMonths) {
         this.consecutiveMonths = consecutiveMonths;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
 }

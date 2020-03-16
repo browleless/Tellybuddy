@@ -20,8 +20,10 @@ import javax.persistence.Query;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import util.exception.CustomerExistException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
+import util.exception.ProductNotFoundException;
 import util.security.CryptographicHelper;
 
 /**
@@ -45,15 +47,25 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
 //    @RolesAllowed({"customer"})
     @Override
-    public Long createCustomer(Customer newCustomer) {
-        em.persist(newCustomer);
-        em.flush();
-        return newCustomer.getCustomerId();
+    public Long createCustomer(Customer newCustomer) throws CustomerExistException {
+
+        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername OR c.email = :inEmail");
+        query.setParameter("inUsername", newCustomer.getUsername());
+        query.setParameter("inUsername", newCustomer.getEmail());
+
+        if (query.getSingleResult() != null) {
+            throw new CustomerExistException("Chosen username for employee already exists! Try another username.");
+        } else {
+            em.persist(newCustomer);
+            em.flush();
+
+            return newCustomer.getCustomerId();
+        }
     }
 
 //    @RolesAllowed({"customer"})
     @Override
-    public void updateCustomerDetailsForCustomer(Customer customer) {
+    public void updateCustomerDetailsForCustomer(Customer customer) throws CustomerNotFoundException {
         Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
         customerToUpdate.setPassword(customer.getPassword());
         customerToUpdate.setFirstName(customer.getFirstName());
@@ -95,7 +107,6 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 //        customer.getSubscriptions().add(newSubscription);
 //        newSubscription.setCustomer(customer);
 //    }
-
     @Override
     public void terminateCustomerSubscriptionToAPlan(Long customerId) {
 
@@ -116,7 +127,6 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     }
 
     //updateCustomerBill is written in the bill sessionbean, take in billId and customerId
-    
 //    @RolesAllowed({"employee"})
     @Override
     public void updateCustomerLoyaltyPoint(Long customerId, Integer loyaltyPointsToAdd) {
@@ -148,10 +158,22 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 //    @RolesAllowed({"employee"})
 
     @Override
-    public Customer retrieveCustomerByCustomerId(Long customerId) {
-        Query q = em.createQuery("SELECT c FROM Customer c WHERE c.customerId = :inCustomerId");
-        q.setParameter("inCustomerId", customerId);
-        return (Customer) q.getSingleResult();
+    public Customer retrieveCustomerByCustomerId(Long customerId) throws CustomerNotFoundException {
+        {
+            Customer customer = em.find(Customer.class, customerId);
+
+            if (customer != null) {
+                customer.getAnnouncements();
+                customer.getQuizAttempts();
+                customer.getTransactions();
+                customer.getSubscriptions();
+                customer.getBills();
+
+                return customer;
+            } else {
+                throw new CustomerNotFoundException("Customer ID " + customerId + " does not exist!");
+            }
+        }
     }
 //    @RolesAllowed({"employee"})
 
@@ -190,5 +212,9 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             throw new InvalidLoginCredentialException("Username does not exist or invalid password!");
         }
     }
-
+    
+    public void deleteCustomer(Long customerId){
+        em.remove(em.find(Customer.class, customerId));
+    
+    }
 }
