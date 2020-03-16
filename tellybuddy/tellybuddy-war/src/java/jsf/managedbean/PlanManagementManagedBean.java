@@ -3,6 +3,7 @@ package jsf.managedbean;
 import ejb.session.stateless.PlanSessionBeanLocal;
 import entity.Plan;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,14 +33,12 @@ public class PlanManagementManagedBean implements Serializable {
     @EJB
     private PlanSessionBeanLocal planSessionBeanLocal;
 
-    @Inject
-    private ViewPlanManagedBean viewPlanManagedBean;
-
     private List<Plan> plans;
     private List<Plan> filteredPlans;
 
     private Plan newPlan;
 
+    private Plan planToView;
     private Plan planToUpdate;
 
     public PlanManagementManagedBean() {
@@ -52,14 +51,15 @@ public class PlanManagementManagedBean implements Serializable {
 
         setPlans(planSessionBeanLocal.retrieveAllPlans());
     }
-    
+
     public void createNewPlan(ActionEvent event) {
 
         try {
             Long newPlanId = planSessionBeanLocal.createNewPlan(getNewPlan());
+            plans.add(newPlan);
             setNewPlan(new Plan());
 
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New plan created successfully (Plann ID: " + newPlanId + ")", null));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New plan created successfully (Plan ID: " + newPlanId + ")", null));
         } catch (InputDataValidationException | PlanExistException | UnknownPersistenceException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred creating new plan: " + ex.getMessage(), null));
         }
@@ -81,19 +81,12 @@ public class PlanManagementManagedBean implements Serializable {
         try {
             Plan planToDelete = (Plan) event.getComponent().getAttributes().get("planToDelete");
             planSessionBeanLocal.deletePlan(planToDelete.getPlanId());
+            plans.remove(planToDelete);
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Plan deleted successfully", null));
         } catch (PlanNotFoundException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while deleting plan: " + ex.getMessage(), null));
         }
-    }
-
-    public ViewPlanManagedBean getViewPlanManagedBean() {
-        return viewPlanManagedBean;
-    }
-
-    public void setViewPlanManagedBean(ViewPlanManagedBean viewPlanManagedBean) {
-        this.viewPlanManagedBean = viewPlanManagedBean;
     }
 
     public List<Plan> getPlans() {
@@ -126,6 +119,14 @@ public class PlanManagementManagedBean implements Serializable {
 
     public void setPlanToUpdate(Plan planToUpdate) {
         this.planToUpdate = planToUpdate;
+    }
+
+    public Plan getPlanToView() {
+        return planToView;
+    }
+
+    public void setPlanToView(Plan planToView) {
+        this.planToView = planToView;
     }
 
 }
