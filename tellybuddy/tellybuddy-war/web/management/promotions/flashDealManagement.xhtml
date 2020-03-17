@@ -1,0 +1,439 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/template/defaultTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:define name="content">
+
+        <style>
+            .ui-dialog {
+                border-radius: 15px;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+            }
+
+            .ui-timer {
+                background: #1f89ce;
+                border-radius: 25px;
+                color: white;
+                font-weight: normal;
+            }
+        </style>
+
+        <div>
+            <h3>Flash Deals Management</h3>
+
+            <p:tabView id="tabView">
+
+                <p:tab title="Flash Plans">
+
+                    <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Flash Plan" oncomplete="PF('dialogCreateNewFlashPlan').show()" />
+
+                    <h:form>
+                        <h:panelGrid columns="2">
+                            <p:outputLabel for="flashDealsFilter" value="Show: " />
+                            <p:selectOneMenu id="flashDealsFilter" value="#{flashDealManagementManagedBean.selectedFilter}">
+                                <p:ajax update="tabView:formAllFlashPlans:dataTableAllFlashPlans" listener="#{flashDealManagementManagedBean.doFilter}" />
+                                <f:selectItem itemLabel="Ongoing" itemValue="Ongoing" />
+                                <f:selectItem itemLabel="Upcoming" itemValue="Upcoming" />
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                    </h:form>
+
+                    <h:form id="formAllFlashPlans">
+
+                        <p:dataTable id="dataTableAllFlashPlans" widgetVar="dataTableAllFlashPlans" value="#{flashDealManagementManagedBean.plans}" var="plan" rowKey="#{plan.planId}" rowIndexVar="row"
+                                     filteredValue="#{flashDealManagementManagedBean.filteredPlans}"
+                                     rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                            <f:facet name="header">
+                                <p:outputPanel style="text-align: right;">
+                                    <h:outputText value="Search all fields:" />
+                                    <p:inputText id="globalFilter" onkeyup="PF('dataTableAllFlashPlans').filter()" style="width:300px" placeholder="Enter keyword"/>
+                                </p:outputPanel>
+                            </f:facet>
+
+                            <p:column headerText="Plan ID" sortBy="#{plan.planId}" filterBy="#{plan.planId}" filterMatchMode="contains">
+                                <h:outputText value="#{plan.planId}" />
+                            </p:column>
+
+                            <p:column headerText="Name" sortBy="#{plan.name}" filterBy="#{plan.name}" filterMatchMode="contains">
+                                <h:outputText value="#{plan.name}" />
+                            </p:column>
+
+                            <p:column headerText="Price" sortBy="#{plan.price}" filterBy="#{plan.price}" filterMatchMode="contains" style="text-align: right;">
+                                <h:outputText value="#{plan.price}">
+                                    <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD" />
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column sortBy="#{flashDealManagementManagedBean.calculateTimerTime(plan)}" width="300" headerText="Timer" style="text-align: center;">
+                                <p:outputLabel rendered="#{plan.startTime.after(flashDealManagementManagedBean.dateTimeNow)}" for="timerTillStartEnd"  value="Starting in " />
+                                <p:outputLabel rendered="#{plan.startTime.before(flashDealManagementManagedBean.dateTimeNow)}" for="timerTillStartEnd" value="Ending in " />
+                                <pe:timer id="timerTillStartEnd" format="DDD [days,] HH [hrs, ] mm [mins, ] ss [s]" timeout="#{flashDealManagementManagedBean.calculateTimerTime(plan)}" />
+                            </p:column>
+
+                            <p:column headerText="Action" >
+                                <p:commandButton update="dialogViewPlan" oncomplete="PF('dialogViewPlan').show()" icon="ui-icon-document" title="View">
+                                    <f:setPropertyActionListener value="#{plan}" target="#{flashDealManagementManagedBean.planToView}" />
+                                </p:commandButton>
+                                <p:commandButton update="dialogUpdatePlan" oncomplete="PF('dialogUpdatePlan').show()" icon="ui-icon-pencil" title="Update">
+                                    <f:setPropertyActionListener value="#{plan}" target="#{flashDealManagementManagedBean.planToUpdate}" />
+                                </p:commandButton>
+                                <p:commandButton update="@form tabView:formAllFlashPlans:dataTableAllFlashPlans" icon="ui-icon-trash" actionListener="#{flashDealManagementManagedBean.deleteFlashPlan}">
+                                    <f:attribute name="planToDelete" value="#{plan}" />
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{plan.name}?" icon="ui-icon-alert" />
+                                </p:commandButton>
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+
+                    </h:form>
+
+                </p:tab>
+
+                <p:tab title="Product Flash Discount">
+                    kewl
+                </p:tab>
+
+            </p:tabView>
+
+            <p:dialog id="dialogCreateNewFlashPlan" widgetVar="dialogCreateNewFlashPlan" header="Create New Plan" closable="true">
+
+                <h:form id="formCreateNewPlan">
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="name" value="Name: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="name" value="#{flashDealManagementManagedBean.newPlan.name}" placeholder="Flexi 300" required="true" requiredMessage="Name is required" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planStartDate" value="Start Date/Time" style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="planStartDate" mindate="#{flashDealManagementManagedBean.dateToday}" value="#{flashDealManagementManagedBean.newPlan.startTime}" pattern="dd/MM/yyyy HH:mm"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planEndDate" value="End Date/Time" style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="planEndDate" mindate="#{flashDealManagementManagedBean.dateToday}" value="#{flashDealManagementManagedBean.newPlan.endTime}" pattern="dd/MM/yyyy HH:mm"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="totalBasicUnits" value="Total Basic Units " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:spinner id="totalBasicUnits" value="#{flashDealManagementManagedBean.newPlan.totalBasicUnits}" min="5" max="100" placeholder="5" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Conversion Rates: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <div class="ui-g">
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="dataConversionRate" foregroundColor="#AB47BC" step="500" max="10000" thickness="0.3" height="100" width="100" cursor="true"  value="#{flashDealManagementManagedBean.newPlan.dataConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #AB47BC;" for="dataConversionRate" value="Data" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="smsConversionRate" foregroundColor="#FFCA28" step="50" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{flashDealManagementManagedBean.newPlan.smsConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #FFCA28;" for="smsConversionRate" value="SMS" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="talktimeConversionRate" foregroundColor="#2399e5" step="100" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{flashDealManagementManagedBean.newPlan.talktimeConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #2399e5;" for="talktimeConversionRate" value="Talktime" />
+                                    </div>
+                                </div>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planPrice" value="Plan Price " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>                            
+                                <p:spinner id="planPrice" value="#{flashDealManagementManagedBean.newPlan.price}" placeholder="20.00" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Plan Price is required" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planAddOnPrice" value="Add On Price" style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>                            
+                                <p:spinner id="planAddOnPrice" value="#{flashDealManagementManagedBean.newPlan.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                    <div style="text-align: center; margin-top: 20px">
+                        <p:commandButton type="reset" value="Clear" />&nbsp;
+                        <p:commandButton value="Create New Plan" update="@form tabView:formAllFlashPlans:dataTableAllFlashPlans" actionListener="#{flashDealManagementManagedBean.createNewFlashPlan}" oncomplete="PF('dialogCreateNewFlashPlan').show();" />
+                    </div>
+
+                </h:form>
+
+            </p:dialog>
+
+            <p:dialog id="dialogViewPlan" widgetVar="dialogViewPlan" header="View Plan" closable="true">
+
+                <h:form id="formViewPlan">
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Plan ID: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToView.planId}" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Name: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToView.name}" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Start Time: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToView.startTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT+8" />
+                                </h:outputText>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="End Time: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToView.endTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT+8" />
+                                </h:outputText>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Conversion Rates: " />
+                            </p:column>
+                            <p:column>
+                                <div class="ui-g">
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob disabled="true" id="dataConversionRate" foregroundColor="#AB47BC" step="500" max="10000" thickness="0.3" height="100" width="100" cursor="true"  value="#{flashDealManagementManagedBean.planToView.dataConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #AB47BC;" for="dataConversionRate" value="Data" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob disabled="true" id="smsConversionRate" foregroundColor="#FFCA28" step="50" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{flashDealManagementManagedBean.planToView.smsConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #FFCA28;" for="smsConversionRate" value="SMS" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob disabled="true" id="talktimeConversionRate" foregroundColor="#2399e5" step="100" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{flashDealManagementManagedBean.planToView.talktimeConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #2399e5;" for="talktimeConversionRate" value="Talktime" />
+                                    </div>
+                                </div>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Plan Price: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToView.price}">
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Add-on Price: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToView.addOnPrice}">
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:row>
+
+                        <p:row rendered="#{flashDealManagementManagedBean.planToView.startTime} != null">
+                            <p:column>
+                                <h:outputLabel value="Start Date/Time " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToView.startTime}" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row rendered="#{flashDealManagementManagedBean.planToView.endTime}!= null">
+                            <p:column>
+                                <h:outputLabel value="End Date/Time " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToView.endTime}" />
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                </h:form>
+
+            </p:dialog>
+
+            <p:dialog id="dialogUpdatePlan" widgetVar="dialogUpdatePlan" header="Update Plan" closable="true">
+
+                <h:form id="formUpdatePlan">
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Plan ID: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToUpdate.planId}" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="name" value="Name: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText id="name" value="#{flashDealManagementManagedBean.planToUpdate.name}" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planStartDate" value="Start Date/Time" />
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="planStartDate" mindate="#{flashDealManagementManagedBean.dateToday}" value="#{flashDealManagementManagedBean.planToUpdate.startTime}" pattern="dd/MM/yyyy HH:mm"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planEndDate" value="End Date/Time" />
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="planEndDate" mindate="#{flashDealManagementManagedBean.dateToday}" value="#{flashDealManagementManagedBean.planToUpdate.endTime}" pattern="dd/MM/yyyy HH:mm"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="basicUnits" value="Basic Units " />
+                            </p:column>
+                            <p:column>
+                                <p:spinner id="basicUnits" value="#{flashDealManagementManagedBean.planToUpdate.totalBasicUnits}" placeholder="10" min="0" max="1000000" required="true" requiredMessage="Basic Units is required" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Conversion Rates: " />
+                            </p:column>
+                            <p:column>
+                                <div class="ui-g">
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="dataConversionRate" foregroundColor="#AB47BC" step="500" max="10000" thickness="0.3" height="100" width="100" cursor="true"  value="#{flashDealManagementManagedBean.planToUpdate.dataConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #AB47BC;" for="dataConversionRate" value="Data" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="smsConversionRate" foregroundColor="#FFCA28" step="50" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{flashDealManagementManagedBean.planToUpdate.smsConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #FFCA28;" for="smsConversionRate" value="SMS" />
+                                    </div>
+                                    <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
+                                        <p:knob id="talktimeConversionRate" foregroundColor="#2399e5" step="100" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{flashDealManagementManagedBean.planToUpdate.talktimeConversionRate}"/>
+                                        <br/>
+                                        <p:outputLabel style="color: #2399e5;" for="talktimeConversionRate" value="Talktime" />
+                                    </div>
+                                </div>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planPrice" value="Plan Price " />
+                            </p:column>
+                            <p:column>
+                                <p:spinner id="planPrice" value="#{flashDealManagementManagedBean.planToUpdate.price}" placeholder="10.00" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Plan Price is required" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planAddOnPrice" value="Add On Price" />
+                            </p:column>
+                            <p:column>                            
+                                <p:spinner id="planAddOnPrice" value="#{flashDealManagementManagedBean.planToUpdate.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                    <div style="text-align: center; margin-top: 20px">
+                        <p:commandButton value="Update Plan" update="@form tabView:formAllFlashPlans:dataTableAllFlashPlans" actionListener="#{flashDealManagementManagedBean.updateFlashPlan}" oncomplete="PF('dialogUpdatePlan').show();" />
+                    </div>
+
+                </h:form>
+
+            </p:dialog>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

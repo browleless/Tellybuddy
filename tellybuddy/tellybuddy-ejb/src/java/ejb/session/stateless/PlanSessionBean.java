@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.Plan;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
@@ -108,6 +109,7 @@ public class PlanSessionBean implements PlanSessionBeanLocal {
             if (!planToUpdate.getIsDisabled()) {
                 planToUpdate.setAddOnPrice(plan.getAddOnPrice());
                 planToUpdate.setDataConversionRate(plan.getDataConversionRate());
+                planToUpdate.setStartTime(plan.getStartTime());
                 planToUpdate.setEndTime(plan.getEndTime());
                 planToUpdate.setPrice(plan.getPrice());
                 planToUpdate.setSmsConversionRate(plan.getSmsConversionRate());
@@ -143,4 +145,21 @@ public class PlanSessionBean implements PlanSessionBeanLocal {
         return msg;
     }
 
+    @Override
+    public List<Plan> retrieveAllActiveFlashPlans() {
+        
+        Query query = em.createQuery("SELECT p FROM Plan p WHERE :inDateTime BETWEEN p.startTime AND p.endTime ORDER BY p.endTime");
+        query.setParameter("inDateTime", new Date());
+        
+        return query.getResultList();
+    }
+    
+    @Override
+    public List<Plan> retrieveAllUpcomingFlashPlans() {
+        
+        Query query = em.createQuery("SELECT p FROM Plan p WHERE :inDateTime < p.startTime ORDER BY p.startTime");
+        query.setParameter("inDateTime", new Date());
+        
+        return query.getResultList();
+    }
 }
