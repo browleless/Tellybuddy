@@ -1,0 +1,260 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/template/defaultTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:define name="content">
+
+        <style>
+            .ui-dialog {
+                border-radius: 15px;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+            }
+
+            .ui-timer {
+                background: #1f89ce;
+                border-radius: 25px;
+                color: white;
+                font-weight: normal;
+            }
+        </style>
+
+        <div>
+            <h3>Flash Coupon Management</h3>
+
+            <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Flash Coupon" oncomplete="PF('dialogCreateNewFlashCoupon').show()" />
+
+            <h:form id="formAllFlashCoupons">
+
+                <p:dataGrid var="discountCode" value="#{flashCouponManagementManagedBean.discountCodes}" columns="3" layout="grid"
+                            rows="6" paginator="true" id="dataGridAllFlashCoupons"
+                            paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                            rowsPerPageTemplate="6,9,12">
+
+                    <f:facet name="header">
+                        Flash Coupons
+                    </f:facet>
+
+                    <p:panel header="#{discountCode.discountCodeId}" style="text-align: center;">
+
+                        <h:panelGrid columns="1" style="width: 100%; text-align: center;">
+
+                            <p:spacer />
+                            <p:row style="margin: 100px;">
+                                <p:column>
+                                    <h:outputText style="font-weight: bold; font-size: 20;" value="#{discountCode.discountCode}" />
+                                </p:column>
+                            </p:row>
+                            <p:spacer />
+
+                            <p:spacer />
+                            <p:row>
+                                <p:column>
+                                    <p:knob id="discountRate" disabled="true" foregroundColor="#{flashCouponManagementManagedBean.getColour()}" max="40" thickness="0.3" height="100" width="100" labelTemplate="{value}%" value="#{discountCode.discountRate}"/>
+                                </p:column>
+                            </p:row>
+                            <p:spacer />
+
+                            <p:spacer />
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel for="timerTillExpiry" value="Expires in:" />
+                                </p:column>
+                            </p:row>
+                            <p:spacer />
+
+                            <p:spacer />
+                            <p:row>
+                                <p:column>
+                                    <pe:timer id="timerTillExpiry" format="DDD [days,] HH [hrs, ] mm [mins, ] ss [s]" timeout="#{flashCouponManagementManagedBean.calculateTimerTime(discountCode)}" />
+                                </p:column>
+                            </p:row>
+                            <p:spacer />
+
+                            <p:spacer />
+                            <p:row>
+                                <p:column>
+                                    <p:commandLink update="dialogViewFlashCoupon" oncomplete="PF('dialogViewFlashCoupon').show()" title="View Flash Coupon">
+                                        <h:outputText styleClass="pi pi-search" style="margin:0 auto;"/>
+                                        <f:setPropertyActionListener value="#{discountCode}" target="#{flashCouponManagementManagedBean.discountCodeToView}" />
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column>
+                                    <p:commandLink update="dialogUpdateFlashCoupon" oncomplete="PF('dialogUpdateFlashCoupon').show()" title="Update Flash Coupon">
+                                        <h:outputText styleClass="pi pi-pencil" style="margin:0 auto;"/>
+                                        <f:setPropertyActionListener value="#{discountCode}" target="#{flashCouponManagementManagedBean.discountCodeToUpdate}" />
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column>
+                                    <p:commandLink update="@form formAllFlashCoupons:dataGridAllFlashCoupons" actionListener="#{flashCouponManagementManagedBean.deleteFlashCoupon}">
+                                        <f:attribute name="discountCodeToDelete" value="#{discountCode}" />
+                                        <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
+                                        <p:confirm header="Confirmation" message="Are you sure you want to delete #{discountCode.discountCode}?" icon="ui-icon-alert" />
+                                    </p:commandLink>
+                                </p:column>
+                            </p:row>
+                            <p:spacer />
+                        </h:panelGrid>
+                    </p:panel>
+
+                </p:dataGrid>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+
+            </h:form>
+
+            <p:dialog id="dialogCreateNewFlashCoupon" widgetVar="dialogCreateNewFlashCoupon" header="Create New Flash Coupon" closable="true">
+
+                <h:form id="formCreateNewFlashCoupon">
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="discountCode" value="Code: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="discountCode" value="#{flashCouponManagementManagedBean.newDiscountCode.discountCode}" placeholder="DISCOUNT20" required="true" requiredMessage="Code is required" />
+                                <p:commandLink process="@this" update="discountCode" title="Generate Code" action="#{flashCouponManagementManagedBean.generateRandomCodeForNewCoupon}">
+                                    <h:outputText styleClass="pi pi-question" style="margin:0 auto;"/>
+                                </p:commandLink>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="expiryDate" value="Expiry Date/Time: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="expiryDate" mindate="#{flashCouponManagementManagedBean.dateToday}" value="#{flashCouponManagementManagedBean.newDiscountCode.expiryDate}" pattern="dd/MM/yyyy HH:mm"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="discountRate" value="Rate: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column style="text-align: center;">
+                                <p:knob id="discountRate" foregroundColor="#F50057" max="40" thickness="0.3" height="100" width="100" labelTemplate="{value}%" value="#{flashCouponManagementManagedBean.newDiscountCode.discountRate}"/>
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                    <div style="text-align: center; margin-top: 20px">
+                        <p:commandButton type="reset" value="Clear" />&nbsp;
+                        <p:commandButton value="Create New Flash Coupon" update="@form formAllFlashCoupons:dataGridAllFlashCoupons" actionListener="#{flashCouponManagementManagedBean.createNewFlashCoupon}" oncomplete="PF('dialogCreateNewFlashCoupon').show();" />
+                    </div>
+
+                </h:form>
+
+            </p:dialog>
+
+            <p:dialog id="dialogViewFlashCoupon" widgetVar="dialogViewFlashCoupon" header="View Flash Coupon" closable="true">
+
+                <h:form id="formViewFlashCoupon">
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="discountCode" value="Code: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText id="discountCode" value="#{flashCouponManagementManagedBean.discountCodeToView.discountCode}" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="expiryDate" value="Expiry Date/Time: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText id="expiryDate" value="#{flashCouponManagementManagedBean.discountCodeToView.expiryDate}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT+8" />
+                                </h:outputText>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="discountRate" value="Rate: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column style="text-align: center;">
+                                <p:knob disabled="true" id="discountRate" foregroundColor="#F50057" max="40" thickness="0.3" height="100" width="100" labelTemplate="{value}%" value="#{flashCouponManagementManagedBean.discountCodeToView.discountRate}"/>
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                </h:form>
+
+            </p:dialog>
+
+            <p:dialog id="dialogUpdateFlashCoupon" widgetVar="dialogUpdateFlashCoupon" header="Update Flash Coupon" closable="true">
+
+                <h:form id="formUPdateFlashCoupon">
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="discountCode" value="Code: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="discountCode" value="#{flashCouponManagementManagedBean.discountCodeToUpdate.discountCode}" placeholder="DISCOUNT20" required="true" requiredMessage="Code is required" />
+                                <p:commandLink process="@this" update="discountCode" title="Generate Code" action="#{flashCouponManagementManagedBean.generateRandomCodeForExistingCoupon}">
+                                    <h:outputText styleClass="pi pi-question" style="margin:0 auto;"/>
+                                </p:commandLink>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="expiryDate" value="Expiry Date/Time: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="expiryDate" mindate="#{flashCouponManagementManagedBean.dateToday}" value="#{flashCouponManagementManagedBean.discountCodeToUpdate.expiryDate}" pattern="dd/MM/yyyy HH:mm"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="discountRate" value="Rate: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column style="text-align: center;">
+                                <p:knob id="discountRate" foregroundColor="#F50057" max="40" thickness="0.3" height="100" width="100" labelTemplate="{value}%" value="#{flashCouponManagementManagedBean.discountCodeToUpdate.discountRate}"/>
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                    <div style="text-align: center; margin-top: 20px">
+                        <p:commandButton value="Update Flash Coupon" update="@form formAllFlashCoupons:dataGridAllFlashCoupons" actionListener="#{flashCouponManagementManagedBean.updateFlashCoupon}" oncomplete="PF('dialogUpdateFlashCoupon').show();" />
+                    </div>
+
+                </h:form>
+
+            </p:dialog>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

@@ -6,7 +6,6 @@
 package ejb.session.stateless;
 
 import entity.Plan;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
@@ -148,8 +147,7 @@ public class PlanSessionBean implements PlanSessionBeanLocal {
     @Override
     public List<Plan> retrieveAllActiveFlashPlans() {
         
-        Query query = em.createQuery("SELECT p FROM Plan p WHERE :inDateTime BETWEEN p.startTime AND p.endTime ORDER BY p.endTime");
-        query.setParameter("inDateTime", new Date());
+        Query query = em.createQuery("SELECT p FROM Plan p WHERE CURRENT_TIMESTAMP BETWEEN p.startTime AND p.endTime ORDER BY p.endTime");
         
         return query.getResultList();
     }
@@ -157,8 +155,7 @@ public class PlanSessionBean implements PlanSessionBeanLocal {
     @Override
     public List<Plan> retrieveAllUpcomingFlashPlans() {
         
-        Query query = em.createQuery("SELECT p FROM Plan p WHERE :inDateTime < p.startTime ORDER BY p.startTime");
-        query.setParameter("inDateTime", new Date());
+        Query query = em.createQuery("SELECT p FROM Plan p WHERE CURRENT_TIMESTAMP < p.startTime ORDER BY p.startTime");
         
         return query.getResultList();
     }
