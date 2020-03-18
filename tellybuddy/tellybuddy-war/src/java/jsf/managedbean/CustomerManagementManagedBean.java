@@ -37,9 +37,6 @@ public class CustomerManagementManagedBean implements Serializable {
     @EJB
     private CustomerSessionBeanLocal customerSessionBeanLocal;
 
-    @Inject
-    private ViewPlanManagedBean viewPlanManagedBean;
-
     private List<Customer> customers;
     private Customer newCustomer;
 
@@ -83,14 +80,6 @@ public class CustomerManagementManagedBean implements Serializable {
 
     public void setCustomerSessionBeanLocal(CustomerSessionBeanLocal customerSessionBeanLocal) {
         this.customerSessionBeanLocal = customerSessionBeanLocal;
-    }
-
-    public ViewPlanManagedBean getViewPlanManagedBean() {
-        return viewPlanManagedBean;
-    }
-
-    public void setViewPlanManagedBean(ViewPlanManagedBean viewPlanManagedBean) {
-        this.viewPlanManagedBean = viewPlanManagedBean;
     }
 
     public List<Customer> getCustomers() {

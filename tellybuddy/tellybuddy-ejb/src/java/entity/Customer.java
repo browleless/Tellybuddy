@@ -68,37 +68,30 @@ public class Customer implements Serializable {
     @Max(99)
     private Integer age;
 
-    
     @Column(nullable = true, length = 255)
-    @NotNull
     @Size(min = 10, max = 64)
     private String address;
 
     @Column(nullable = true, length = 255)
-    @NotNull
     @Size(min = 10, max = 64)
     private String newAddress;
 
     @Column(nullable = true, length = 6)
-    @NotNull
     @Size(min = 6, max = 6)
     @Pattern(regexp = "^[0-9]{6}$")
     private String postalCode;
 
     @Column(nullable = true, length = 6)
-    @NotNull
     @Size(min = 6, max = 6)
     @Pattern(regexp = "^[0-9]{6}$")
     private String newPostalCode;
 
     @Column(nullable = true, unique = true, length = 9)
-    @NotNull
     @Size(min = 9, max = 9)
     @Pattern(regexp = "^[STFG]\\d{7}[A-JZ]$")
     private String nric;
 
     @Column(nullable = true, unique = true, length = 9)
-    @NotNull
     @Size(min = 9, max = 9)
     @Pattern(regexp = "^[STFG]\\d{7}[A-JZ]$")
     private String newNric;
@@ -114,7 +107,7 @@ public class Customer implements Serializable {
     @Size(max = 64)
     @Email
     private String email;
-    
+
     @Column(nullable = false)
     @NotNull
     @Min(0)
@@ -132,7 +125,7 @@ public class Customer implements Serializable {
     @Min(0)
     @Max(1000)
     private Integer counter;
-    
+
     @Column(length = 16)
     @Size(min = 16, max = 16)
     @Pattern(regexp = "^[0-9]{16}$")

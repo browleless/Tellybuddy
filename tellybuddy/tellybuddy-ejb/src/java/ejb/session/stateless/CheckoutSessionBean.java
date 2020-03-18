@@ -5,7 +5,6 @@
  */
 package ejb.session.stateless;
 
-import ejb.session.stateless.TransactionSessionBeanLocal;
 import entity.LuxuryProduct;
 import entity.Product;
 import entity.ProductItem;
