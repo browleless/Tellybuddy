@@ -4,15 +4,248 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="/template/defaultTemplate.xhtml"
-                xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp">
+                xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+                xmlns:p="http://primefaces.org/ui" >
+
 
     <ui:define name="content">
-        
+
         <div>
             <h3>Announcements Main Page</h3>
 
+            <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Announcement" oncomplete="PF('dialogCreateNewAnnouncement').show()" />
+            <h:form id="formAllOngoingAnct">
+
+                <p:dataTable id="dataTableAllOngoingAnct" widgetVar="dataTableAllOngoingAnct" value="#{announcementManagedBean.ongoingAnnouncements}" var="ongoingAnct" rowKey="#{ongoingAnct.announcementId}" rowIndexVar="row"
+                             filteredValue="#{announcementManagedBean.filteredAnnouncements}"
+                             rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                    <f:facet name="header">
+                        <p:outputPanel style="text-align: right;">
+                            <h:outputText value="Search all fields:" />
+                            <p:inputText id="globalFilter" onkeyup="PF('dataTableAllOngoingAnct').filter()" style="width:300px" placeholder="Enter keyword"/>
+                        </p:outputPanel>
+                    </f:facet>
+
+                    <p:column headerText=" ID" sortBy="#{ongoingAnct.announcementId}" filterBy="#{ongoingAnct.announcementId}" filterMatchMode="contains">
+                        <h:outputText value="#{ongoingAnct.announcementId}" />
+                    </p:column>
+
+                    <p:column headerText="Title" sortBy="#{ongoingAnct.title}" filterBy="#{pongoingAnct.title}" filterMatchMode="contains">
+                        <h:outputText value="#{ongoingAnct.title}" />
+                    </p:column>
+                    <p:column headerText="Action" >
+                        <p:commandButton update="dialogViewAnnouncement" oncomplete="PF('dialogViewAnnouncement').show()" icon="ui-icon-document" title="View">
+                            <f:setPropertyActionListener value="#{ongoingAnct}" target="#{announcementManagedBean.announcementToView}" />
+                        </p:commandButton>
+                        <p:commandButton update="dialogUpdateOngoingAnct" oncomplete="PF('dialogUpdateOngoingAnct').show()" icon="ui-icon-pencil" title="Update">
+                            <f:setPropertyActionListener value="#{ongoingAnct}" target="#{announcementManagedBean.ongoingToUpdate}" />
+                        </p:commandButton>
+                        <p:commandButton update="@form formAllOngoingAnct:dataTableAllOngoingAnct" icon="ui-icon-trash" actionListener="#{announcementManagedBean.deleteAnnouncement}">
+                            <f:attribute name="announcementToDelete" value="#{ongoingAnct}" />
+                            <p:confirm header="Confirmation" message="Are you sure you want to delete #{ongoingAnct.announcementId}?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+
+            </h:form>
+
+
+            <p:dialog id="dialogViewAnnouncement" widgetVar="dialogViewAnnouncement" header="View announcement" closable="true">
+
+                <h:form id="formViewAnnouncement">
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Announcement ID: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{announcementManagedBean.announcementToView.announcementId}" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Title: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{announcementManagedBean.announcementToView.title}" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Content: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{announcementManagedBean.announcementToView.content}" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Posted date: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{announcementManagedBean.announcementToView.postedDate}" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Expiry date: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{announcementManagedBean.announcementToView.expiryDate}" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Audience: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{announcementManagedBean.announcementToView.announcementRecipientEnum}" />
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </h:form>
+            </p:dialog>
+            <p:dialog id="dialogCreateNewAnnouncement" widgetVar="dialogCreateNewAnnouncement" header="Create New Announcement" closable="true">
+
+                <h:form id="formCreateNewAnnouncement">
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="title" value="Title: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="title" value="#{announcementManagedBean.newAnnouncement.title}" required="true" requiredMessage="Title is required" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:textEditor widgetVar="editor" value="#{announcementManagedBean.newAnnouncement.content}" height="300" style="margin-bottom:10px" placeholder="Enter your content" required="true" requiredMessage="Content is required">
+                                <f:facet name="toolbar">
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <select class="ql-font"></select>
+                                        <select class="ql-size"></select>
+                                    </span>
+                                </f:facet>
+                            </p:textEditor>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="postDate" value="Posting date: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:datePicker id="postDate" value="#{announcementManagedBean.newAnnouncement.postedDate}" showTime="true" required = "true" requiredMessage="Posting date is required"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="expiryDate" value="Expiry date: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:datePicker id="expiryDate" value="#{announcementManagedBean.newAnnouncement.expiryDate}" showTime="true" required = "true"  requiredMessage="Expiry date is required"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="audience" value="Announcement audience: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneRadio id="audience" value="#{announcementManagedBean.newAnnouncement.announcementRecipientEnum}" required = "true" unselectable="true" requiredMessage="Audience is required">
+                                    <f:selectItem itemLabel="Customer" itemValue="CUSTOMER" />
+                                    <f:selectItem itemLabel="Employee" itemValue="EMPLOYEES" />
+                                </p:selectOneRadio>
+                            </p:column>
+                        </p:row>
+
+
+                    </p:panelGrid>
+
+                    <div style="text-align: center; margin-top: 20px">
+                        <p:commandButton type="reset" value="Clear" />&nbsp;
+                        <p:commandButton value="Create New Announcement" update="@form formAllOngoingAnct:dataTableAllOngoingAnct " actionListener="#{announcementManagedBean.createNewAnnouncement}" oncomplete="PF('dialogCreateNewAnnouncement').show();" />
+                    </div>
+
+                </h:form>
+
+            </p:dialog>
+
+            <p:dialog id="dialogUpdateOngoingAnct" widgetVar="dialogUpdateOngoingAnct" header="Update announcement" closable="true">
+
+                <h:form id="formUpdateOngoingAnct">
+
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Announcement ID: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{announcementManagedBean.ongoingToUpdate.announcementId}" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Title: " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="title" value="#{announcementManagedBean.ongoingToUpdate.title}" required="true" requiredMessage="Title is required" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Content: " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="content" value="#{announcementManagedBean.ongoingToUpdate.content}" required="true" requiredMessage="Content is required" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Posted date: " />
+                            </p:column>
+                            <p:column>
+                                <p:datePicker id="postedDate" value="#{announcementManagedBean.ongoingToUpdate.postedDate}" showTime="true" required="true" requiredMessage="Posting date is required"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Expiry date: " />
+                            </p:column>
+                            <p:column>
+                                <p:datePicker id="expiryDate" value="#{announcementManagedBean.ongoingToUpdate.expiryDate}" showTime="true" required="true" requiredMessage="Expiry date is required"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:selectOneRadio id="audience" value="#{announcementManagedBean.ongoingToUpdate.announcementRecipientEnum}" required = "true" unselectable="true" requiredMessage="Audience is required">
+                                <f:selectItem itemLabel="Customers" itemValue="CUSTOMER" />
+                                <f:selectItem itemLabel="Employees" itemValue="EMPLOYEES" />
+                            </p:selectOneRadio>
+                        </p:row>
+
+                        <div style="text-align: center; margin-top: 20px">
+                            <p:commandButton value="Update announcement" update="@form formAllOngoingAnct:dataTableAllOngoingAnct" actionListener="#{announcementManagedBean.updateAnnouncement}" oncomplete="PF('dialogUpdateOngoing').show();" />
+                        </div>
+                    </p:panelGrid>
+                </h:form>
+
+            </p:dialog>
+
+
         </div>
-        
+
     </ui:define>
 
 </ui:composition>

@@ -5,9 +5,14 @@
  */
 package ejb.session.singleton;
 
+import entity.Announcement;
 import entity.Employee;
 import entity.Plan;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
@@ -15,6 +20,7 @@ import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.enumeration.AccessRightEnum;
+import util.enumeration.AnnouncementRecipientEnum;
 
 /**
  *
@@ -27,6 +33,7 @@ public class DataInitialization {
 
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
+    SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
 
     @PostConstruct
     public void postConstruct() {
@@ -36,18 +43,37 @@ public class DataInitialization {
     }
 
     private void initialiseData() {
-        
-        Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER);
-        em.persist(newEmployee);
-        em.flush();
-        
-        newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE);
-        em.persist(newEmployee);
-        em.flush();
-        
-        Plan newPlan = new Plan("Saver 15", 15, BigDecimal.valueOf(25), BigDecimal.valueOf(2.5), Integer.valueOf(1500), Integer.valueOf(100), Integer.valueOf(100), null, null);
-        em.persist(newPlan);
-        em.flush();
+
+        try {
+            Employee newEmployee = new Employee("firstname", "lastname", "manager", "password", AccessRightEnum.MANAGER);
+            em.persist(newEmployee);
+            em.flush();
+
+            newEmployee = new Employee("firstname", "lastname", "employee", "password", AccessRightEnum.EMPLOYEE);
+            em.persist(newEmployee);
+            em.flush();
+
+            Plan newPlan = new Plan("Saver 15", 15, BigDecimal.valueOf(25), BigDecimal.valueOf(2.5), Integer.valueOf(1500), Integer.valueOf(100), Integer.valueOf(100), null, null);
+            em.persist(newPlan);
+            em.flush();
+
+            Announcement newAnnouncement = new Announcement("Flash deal", "content", formatter.parse("16-Mar-2020 23:37:50"), formatter.parse("23-Mar-2020 23:37:50"), AnnouncementRecipientEnum.CUSTOMER);
+            em.persist(newAnnouncement);
+            em.flush();
+            newAnnouncement = new Announcement("New year deal", "content", formatter.parse("16-Jan-2020 23:37:50"), formatter.parse("23-Jan-2020 23:37:50"), AnnouncementRecipientEnum.CUSTOMER);
+            em.persist(newAnnouncement);
+            em.flush();
+            newAnnouncement = new Announcement("Update password", "content", formatter.parse("16-Mar-2020 23:37:50"), formatter.parse("23-Dec-2020 23:37:50"), AnnouncementRecipientEnum.EMPLOYEES);
+            em.persist(newAnnouncement);
+            em.flush();
+            newAnnouncement = new Announcement("Internal discount", "content", formatter.parse("16-Mar-2019 23:37:50"), formatter.parse("23-Dec-2019 23:37:50"), AnnouncementRecipientEnum.EMPLOYEES);
+            em.persist(newAnnouncement);
+            em.flush();
+
+        } catch (ParseException ex) {
+            Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
 }

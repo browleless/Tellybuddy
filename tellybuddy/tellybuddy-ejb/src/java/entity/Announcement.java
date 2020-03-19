@@ -49,7 +49,7 @@ public class Announcement implements Serializable {
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    @Future
+   // @Future
     private Date expiryDate;
 
     @Enumerated(EnumType.STRING)
@@ -60,12 +60,13 @@ public class Announcement implements Serializable {
     public Announcement() {
     }
 
-    public Announcement(String title, String content, Date postedDate, Date expiryDate) {
+    public Announcement(String title, String content, Date postedDate, Date expiryDate, AnnouncementRecipientEnum announcementRecipientEnum) {
         this();
         this.title = title;
         this.content = content;
         this.postedDate = postedDate;
         this.expiryDate = expiryDate;
+        this.announcementRecipientEnum = announcementRecipientEnum;
     }
 
     public Long getAnnouncementId() {

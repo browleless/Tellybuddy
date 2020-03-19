@@ -72,7 +72,11 @@ public class SecurityFilter implements Filter {
                     || path.equals("/management/products/main.xhtml")
                     || path.equals("/management/customers/main.xhtml")
                     || path.equals("/management/announcements/main.xhtml")
-                    || path.equals("/management/promotions/main.xhtml")) {
+                    || path.equals("/management/promotions/main.xhtml")
+                    || path.equals("/management/account/main.xhtml")
+                    || path.equals("/management/announcements/pastAnnouncement.xhtml")
+                    
+                    ) {
                 return true;
             } else {
                 return false;
@@ -86,7 +90,9 @@ public class SecurityFilter implements Filter {
                     || path.equals("/management/announcements/main.xhtml")
                     || path.equals("/management/promotions/main.xhtml")
                     || path.equals("/management/account/updateParticulars.xhtml")
-                    || path.equals("/management/plans/planManagement.xhtml")) {
+                    || path.equals("/management/account/employeeAccountManagement.xhtml")
+                    || path.equals("/management/plans/planManagement.xhtml")
+                    || path.equals("/management/announcements/pastAnnouncement.xhtml")) {
                 return true;
             } else {
                 return false;

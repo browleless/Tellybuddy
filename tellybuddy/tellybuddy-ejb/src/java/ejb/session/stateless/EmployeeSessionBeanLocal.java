@@ -10,7 +10,9 @@ import java.util.List;
 import javax.ejb.Local;
 import util.exception.EmployeeNotFoundException;
 import util.exception.EmployeeUsernameExistException;
+import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -19,7 +21,7 @@ import util.exception.InvalidLoginCredentialException;
 @Local
 public interface EmployeeSessionBeanLocal {
 
-    public Long createNewEmployee(Employee newEmployee) throws EmployeeUsernameExistException;
+public Long createNewEmployee(Employee newEmployee) throws EmployeeUsernameExistException, UnknownPersistenceException, InputDataValidationException;
 
     public List<Employee> retrieveAllEmployees();
 

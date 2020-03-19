@@ -50,7 +50,7 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
 
     @Override
     public List<Announcement> retrieveAllAnnouncements() {
-        Query q = em.createQuery("SELECT a FROM Announcment a");
+        Query q = em.createQuery("SELECT a FROM Announcement a");
 
         return q.getResultList();
     }
@@ -59,9 +59,17 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
     public List<Announcement> retrieveAllActiveAnnoucements() {
         Date current = new Date();
 
-        Query q = em.createQuery("SELECT a FROM Announcment a WHERE a.expiryDate <= :inCurrent");
+        Query q = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate >= :inCurrent");
         q.setParameter("inCurrent", current);
 
+        return q.getResultList();
+    }
+    @Override
+    public List<Announcement> retrieveAllExpiredAnnouncements(){
+        Date current = new Date();
+
+        Query q = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate <= :inCurrent");
+        q.setParameter("inCurrent", current);
         return q.getResultList();
     }
 
