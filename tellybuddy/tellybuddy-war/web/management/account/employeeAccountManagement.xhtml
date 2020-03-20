@@ -16,8 +16,8 @@
 
             <h:form id="formAllEmployees">
 
-                <p:dataTable id="dataTableAllEmployees" widgetVar="dataTableAllEmployees" value="#{employeeManagementManagedBean.employees}" var="employee" rowKey="#{employee.employeeId}" rowIndexVar="row"
-                             filteredValue="#{employeeManagementManagedBean.filteredEmployees}"
+                <p:dataTable id="dataTableAllEmployees" widgetVar="dataTableAllEmployees" value="#{employeeManagedBean.employees}" var="employee" rowKey="#{employee.employeeId}" rowIndexVar="row"
+                             filteredValue="#{employeeManagedBean.filteredEmployees}"
                              rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
 
                     <f:facet name="header">
@@ -49,7 +49,10 @@
                     </p:column>
 
                     <p:column headerText="Action" >
-                        <p:commandButton update="@form formAllEmployees:dataTableAllEmployees" icon="ui-icon-trash" actionListener="#{employeeManagementManagedBean.deleteEmployee}">
+                        <p:commandButton update="dialogUpdateEmployee" oncomplete="PF('dialogUpdateEmployee').show()" icon="ui-icon-pencil" title="Update">
+                            <f:setPropertyActionListener value="#{employee}" target="#{employeeManagedBean.employeeToUpdate}" />
+                        </p:commandButton>
+                        <p:commandButton update="@form formAllEmployees:dataTableAllEmployees" icon="ui-icon-trash" actionListener="#{employeeManagedBean.deleteEmployee}">
                             <f:attribute name="employeeToDelete" value="#{employee}" />
                             <p:confirm header="Confirmation" message="Are you sure you want to delete #{employee.employeeId}?" icon="ui-icon-alert" />
                         </p:commandButton>
@@ -75,7 +78,7 @@
                                 <p:outputLabel for="firstName" value="First name: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="firstName" value="#{employeeManagementManagedBean.newEmployee.firstName}" placeholder="John" required="true" requiredMessage="First name is required" />
+                                <p:inputText id="firstName" value="#{employeeManagedBean.newEmployee.firstName}" placeholder="John" required="true" requiredMessage="First name is required" />
                             </p:column>
                         </p:row>
                         <p:row>
@@ -83,7 +86,7 @@
                                 <p:outputLabel for="lastName" value="Last name: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="lastName" value="#{employeeManagementManagedBean.newEmployee.lastName}" placeholder="Appleseed" required="true" requiredMessage="Last name is required" />
+                                <p:inputText id="lastName" value="#{employeeManagedBean.newEmployee.lastName}" placeholder="Appleseed" required="true" requiredMessage="Last name is required" />
                             </p:column>
                         </p:row>
                         <p:row>
@@ -91,7 +94,7 @@
                                 <p:outputLabel for="username" value="Username: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="username" value="#{employeeManagementManagedBean.newEmployee.username}" placeholder="John_Appleseed" required="true" requiredMessage="Username is required" />
+                                <p:inputText id="username" value="#{employeeManagedBean.newEmployee.username}" placeholder="John_Appleseed" required="true" requiredMessage="Username is required" />
                             </p:column>
                         </p:row>
                         <p:row>
@@ -99,7 +102,7 @@
                                 <p:outputLabel for="password" value="Password: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="password" value="#{employeeManagementManagedBean.newEmployee.password}" required="true" requiredMessage="Password is required" />
+                                <p:inputText id="password" value="#{employeeManagedBean.newEmployee.password}" required="true" requiredMessage="Password is required" />
                             </p:column>
                         </p:row>
 
@@ -108,7 +111,7 @@
                                 <p:outputLabel for="accessRight" value="Access right: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:selectOneRadio id="accessRight" value="#{employeeManagementManagedBean.newEmployee.accessRightEnum}" required = "true" unselectable="true" requiredMessage="Access right is required">
+                                <p:selectOneRadio id="accessRight" value="#{employeeManagedBean.newEmployee.accessRightEnum}" required = "true" unselectable="true" requiredMessage="Access right is required">
                                     <f:selectItem itemLabel="Manager" itemValue="MANAGER" />
                                     <f:selectItem itemLabel="Employee" itemValue="EMPLOYEE" />
                                 </p:selectOneRadio>
@@ -120,7 +123,56 @@
 
                     <div style="text-align: center; margin-top: 20px">
                         <p:commandButton type="reset" value="Clear" />&nbsp;
-                        <p:commandButton value="Create New Employee" update="@form formAllEmployees:dataTableAllEmployees" actionListener="#{employeeManagementManagedBean.createNewEmployee}" oncomplete="PF('dialogCreateNewEmployee').show();" />
+                        <p:commandButton value="Create New Employee" update="@form formAllEmployees:dataTableAllEmployees" actionListener="#{employeeManagedBean.createNewEmployee}" oncomplete="PF('dialogCreateNewEmployee').show();" />
+                    </div>
+
+                </h:form>
+
+            </p:dialog>
+            <p:dialog id="dialogUpdateEmployee" widgetVar="dialogUpdateEmployee" header="Update particulars" closable="true">
+
+                <h:form id="formUpdateEmployee">
+
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="First name: " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="firstName" value="#{employeeManagedBean.employeeToUpdate.firstName}" required="true" requiredMessage="First name is required" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Last name: " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="lastName" value="#{employeeManagedBean.employeeToUpdate.lastName}" required="true" requiredMessage="Last name is required" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Username: " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="username" value="#{employeeManagedBean.employeeToUpdate.username}" required="true" requiredMessage="Username is required" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="acessLevel" value="Access level: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneRadio id="acessLevel" value="#{employeeManagedBean.employeeToUpdate.accessRightEnum}" required = "true" unselectable="true" requiredMessage="Access level is required">
+                                    <f:selectItem itemLabel="Employee" itemValue="EMPLOYEE" />
+                                    <f:selectItem itemLabel="Manager" itemValue="MANAGER" />
+                                </p:selectOneRadio>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+                    <div style="text-align: center; margin-top: 20px">
+                        <p:commandButton value="Save" update=" @form formAllEmployees:dataTableAllEmployees "  actionListener="#{employeeManagedBean.updateEmployee}" oncomplete="PF('dialogUpdateEmployee').show();" />
                     </div>
 
                 </h:form>

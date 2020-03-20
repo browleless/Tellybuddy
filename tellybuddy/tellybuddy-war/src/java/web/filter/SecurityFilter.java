@@ -67,7 +67,7 @@ public class SecurityFilter implements Filter {
     private Boolean checkAccessRight(String path, AccessRightEnum accessRight) {
         if (accessRight.equals(AccessRightEnum.EMPLOYEE)) {
             if (path.equals("/management/home.xhtml")
-                    || path.equals("/management/account/main.xhtml")
+                    || path.equals("/management/account/updateParticulars.html")
                     || path.equals("/management/plans/main.xhtml")
                     || path.equals("/management/products/main.xhtml")
                     || path.equals("/management/customers/main.xhtml")
@@ -83,7 +83,6 @@ public class SecurityFilter implements Filter {
             }
         } else if (accessRight.equals(AccessRightEnum.MANAGER)) {
             if (path.equals("/management/home.xhtml")
-                    || path.equals("/management/account/main.xhtml")
                     || path.equals("/management/plans/main.xhtml")
                     || path.equals("/management/products/main.xhtml")
                     || path.equals("/management/customers/main.xhtml")

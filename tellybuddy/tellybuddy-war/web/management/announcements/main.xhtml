@@ -213,32 +213,36 @@
                         </p:row>
                         <p:row>
                             <p:column>
-                                <h:outputLabel value="Posted date: " />
+                                <p:outputLabel for="postDate" value="Post date: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:datePicker id="postedDate" value="#{announcementManagedBean.ongoingToUpdate.postedDate}" showTime="true" required="true" requiredMessage="Posting date is required"/>
+                                <p:datePicker id="postDate" value="#{announcementManagedBean.ongoingToUpdate.postedDate}" showTime="true" required = "true"  requiredMessage="Posting date is required"/>
                             </p:column>
                         </p:row>
                         <p:row>
                             <p:column>
-                                <h:outputLabel value="Expiry date: " />
+                                <p:outputLabel for="expiryDate" value="Expiry date: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:datePicker id="expiryDate" value="#{announcementManagedBean.ongoingToUpdate.expiryDate}" showTime="true" required="true" requiredMessage="Expiry date is required"/>
+                                <p:datePicker id="expiryDate" value="#{announcementManagedBean.ongoingToUpdate.expiryDate}" showTime="true" required = "true"  requiredMessage="Expiry date is required"/>
                             </p:column>
                         </p:row>
-
                         <p:row>
-                            <p:selectOneRadio id="audience" value="#{announcementManagedBean.ongoingToUpdate.announcementRecipientEnum}" required = "true" unselectable="true" requiredMessage="Audience is required">
-                                <f:selectItem itemLabel="Customers" itemValue="CUSTOMER" />
-                                <f:selectItem itemLabel="Employees" itemValue="EMPLOYEES" />
-                            </p:selectOneRadio>
+                            <p:column>
+                                <p:outputLabel for="audience" value="Announcement audience: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneRadio id="audience" value="#{announcementManagedBean.ongoingToUpdate.announcementRecipientEnum}" required = "true" unselectable="true" requiredMessage="Audience is required">
+                                    <f:selectItem itemLabel="Customer" itemValue="CUSTOMER" />
+                                    <f:selectItem itemLabel="Employee" itemValue="EMPLOYEES" />
+                                </p:selectOneRadio>
+                            </p:column>
                         </p:row>
-
-                        <div style="text-align: center; margin-top: 20px">
-                            <p:commandButton value="Update announcement" update="@form formAllOngoingAnct:dataTableAllOngoingAnct" actionListener="#{announcementManagedBean.updateAnnouncement}" oncomplete="PF('dialogUpdateOngoing').show();" />
-                        </div>
                     </p:panelGrid>
+                    <div style="text-align: center; margin-top: 20px">
+                        <p:commandButton value="Update announcement" update="@form formAllOngoingAnct:dataTableAllOngoingAnct" actionListener="#{announcementManagedBean.updateAnnouncement}" oncomplete="PF('dialogUpdateOngoingAnct').show();" />
+                    </div>
+
                 </h:form>
 
             </p:dialog>
