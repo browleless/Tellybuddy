@@ -3,8 +3,6 @@ package ejb.session.stateless;
 import entity.Answer;
 import entity.Question;
 import entity.Quiz;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -60,12 +58,6 @@ public class QuestionSessionBean implements QuestionSessionBeanLocal {
     }
 
     @Override
-    public void addNewAnswer(Question currentQuestion, Answer newAnswer) throws QuestionNotFoundException {
-
-        answerSessionBeanLocal.createNewAnswer(currentQuestion, newAnswer);
-    }
-
-    @Override
     public void updateQuestion(Question question) throws QuestionNotFoundException {
 
         if (question != null && question.getQuestionId() != null) {
@@ -92,7 +84,7 @@ public class QuestionSessionBean implements QuestionSessionBeanLocal {
                 throw new DeleteQuestionException("Answer has been recorded in a response, unable to delete");
             }
 
-            for (Answer answer : questionToDelete.getAnswers()) {
+            for (Answer answer : question.getAnswers()) {
                 try {
                     answerSessionBeanLocal.deleteAnswer(answer);
                 } catch (AnswerNotFoundException ex) {

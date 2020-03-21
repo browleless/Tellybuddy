@@ -16,6 +16,7 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -29,26 +30,31 @@ public class Quiz implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long quizId;
 
+    @Column(nullable = false, length = 64, unique = true)
+    @NotNull
+    @Size(min = 2, max = 64)
+    private String name;
+
     @Column(nullable = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date openDate;
-            
+
     @Column(nullable = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @Future
     private Date expiryDate;
-    
+
     @Column(nullable = false)
     @NotNull
     @Positive
     @Min(1)
     private Integer unitsWorth;
-    
+
     @OneToMany(mappedBy = "quiz")
     private List<QuizAttempt> quizAttempts;
-    
+
     @OneToMany(mappedBy = "quiz")
     private List<Question> questions;
 
@@ -57,13 +63,14 @@ public class Quiz implements Serializable {
         this.questions = new ArrayList<>();
     }
 
-    public Quiz(Date openDate, Date expiryDate, Integer unitsWorth) {
+    public Quiz(String name, Date openDate, Date expiryDate, Integer unitsWorth) {
         this();
+        this.name = name;
         this.openDate = openDate;
         this.expiryDate = expiryDate;
         this.unitsWorth = unitsWorth;
     }
-    
+
     public Long getQuizId() {
         return quizId;
     }
@@ -136,5 +143,13 @@ public class Quiz implements Serializable {
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 }

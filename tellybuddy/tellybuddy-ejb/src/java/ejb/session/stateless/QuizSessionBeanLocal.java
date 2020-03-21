@@ -15,6 +15,7 @@ import util.exception.DeleteAnswerException;
 import util.exception.DeleteQuestionException;
 import util.exception.DeleteQuizException;
 import util.exception.QuestionNotFoundException;
+import util.exception.QuizNameExistException;
 import util.exception.QuizNotFoundException;
 
 /**
@@ -26,12 +27,6 @@ public interface QuizSessionBeanLocal {
 
     public Quiz retrieveQuizByQuizId(Long quizId) throws QuizNotFoundException;
 
-    public void addQuestion(Question newQuestion, List<Answer> answers);
-
-    public void deleteQuestion(Question question);
-
-    public Quiz publishQuiz(Date openDate, Date closeDate, Integer unitsWorth) throws QuizNotFoundException, QuestionNotFoundException;
-
     public void updateQuiz(Quiz quiz) throws QuizNotFoundException;
 
     public void deleteQuiz(Quiz quiz) throws QuizNotFoundException, DeleteQuizException, DeleteQuestionException, DeleteAnswerException;
@@ -39,5 +34,9 @@ public interface QuizSessionBeanLocal {
     public List<Quiz> retrieveAllQuizzes();
 
     public List<Quiz> retrieveActiveQuizzes();
-    
+
+    public List<Quiz> retrieveUpcomingQuizzes();
+
+    public Long createNewQuiz(Quiz newQuiz) throws QuizNameExistException, QuizNotFoundException, QuestionNotFoundException;
+
 }
