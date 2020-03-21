@@ -38,7 +38,7 @@ public class Product implements Serializable {
 
     @Column(nullable = false, unique = true, length = 8)
     @NotNull
-    @Size(min = 8, max = 8)
+    @Size(min = 6, max = 8)
     protected String skuCode;
 
     @Column(nullable = false, length = 64)
@@ -60,12 +60,11 @@ public class Product implements Serializable {
     @Column(nullable = false)
     @NotNull
     @Positive
-    @Min(1)
     protected Integer quantityOnHand;
     
     @Column(nullable = false)
     @NotNull
-    @Min(0)
+    @Positive
     private Integer reorderQuantity;
     
     @Column(nullable = false, length = 128)
@@ -82,13 +81,11 @@ public class Product implements Serializable {
 
     public Product() {
         this.tags = new ArrayList<>();
-        reorderQuantity = 0;
-        quantityOnHand = 0;
         price = new BigDecimal("0.00");
         
     }
 
-    public Product(String skuCode, String name, String description, BigDecimal price, Integer quantityOnHand, Integer reorderQuantity) {
+    public Product(String skuCode, String name, String description, BigDecimal price, Integer quantityOnHand, Integer reorderQuantity, String productImagePath) {
         this();
         this.skuCode = skuCode;
         this.name = name;
@@ -96,6 +93,7 @@ public class Product implements Serializable {
         this.price = price;
         this.quantityOnHand = quantityOnHand;
         this.reorderQuantity = reorderQuantity;
+        this.productImagePath = productImagePath;
     }
 
     public Integer getReorderQuantity() {

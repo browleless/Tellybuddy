@@ -40,8 +40,6 @@ import util.enumeration.AnnouncementRecipientEnum;
  *
  * @author admin
  */
-
-
 @Singleton
 @LocalBean
 @Startup
@@ -136,8 +134,12 @@ public class DataInitialization {
 
             Category newCat1 = new Category("Cat A", "test");
             Tag newTag1 = new Tag("Testing");
+            em.persist(newCat1);
+            em.flush();
+            em.persist(newTag1);
+            em.flush();
 
-            Product newProd = new Product("PROD001", "testing", "testing", BigDecimal.ONE, 20, 50);
+            Product newProd = new Product("SKU001", "testing", "testing", BigDecimal.ONE, 20, 50, "path");
             newProd.setCategory(newCat1);
             List<Tag> tags = new ArrayList<>();
             tags.add(newTag1);
