@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/template/defaultTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="content">
+
+        <style type="text/css"> 
+            .ui-dataview-list .ui-dataview-row {
+                border-bottom: 1px solid #A8A8A8;
+                padding: 25px 10px;
+            }
+            .ui-dialog {
+                border-radius: 15px;
+                width: 80%;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+                text-align: center;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+                text-align: center;
+            } 
+            .info {
+                border-left: 1px solid #A8A8A8;
+            }
+        </style>
+        <h3>Subscription Management</h3>
+
+        <h:form id="formAllsubscriptions">
+
+            <p:dataTable id="dataTableAllSubscriptions" widgetVar="dataTableAllsubscriptions" value="#{subscriptionManagedBean.subscriptions}" var="subscription" rowKey="#{customer.customerId}" rowIndexVar="row"
+
+                         rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right;">
+                        <h:outputText value="Search all fields: " />
+                        <p:inputText id="globalFilter" onkeyup="PF('dataTableAllSubscriptions').filter()" style="width:200px; text-align: center" placeholder="Enter keyword"/>
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="ID" sortBy="#{subscription.subcscriptionId}" filterBy="#{subscription.subcscriptionId}" filterMatchMode="contains" width="10%" style="text-align: center;" >
+                    <h:outputText value="#{subscription.subcscriptionId}" />
+                </p:column>
+
+                <p:column headerText="Subscription Mobile No." sortBy="#{subscription.phoneNumber.phoneNumber}" filterBy="#{subscription.phoneNumber.phoneNumber}" filterMatchMode="contains" style="text-align: center;"   >
+                    <h:outputText value="#{subscription.phoneNumber.phoneNumber}" />
+                </p:column>
+
+                <p:column headerText="Customer Name" sortBy="#{subscription.customer.firstName} #{subscription.customer.lastName}" filterBy="#{subscription.customer.firstName} #{subscription.customer.lastName}" filterMatchMode="contains" style="text-align: center;">
+                    <h:outputText value=" #{subscription.customer.firstName} #{subscription.customer.lastName}" />
+                </p:column>
+                <p:column headerText="Status" sortBy="#{subscription.subscriptionStatusEnum}" filterBy="#{subscription.subscriptionStatusEnum}" filterMatchMode="contains" style="text-align: center;">
+                    <h:outputText value=" #{subscription.subscriptionStatusEnum}" />
+                </p:column>
+
+                <p:column style="width:16px">
+
+                    <p:rowToggler/>
+                </p:column>
+
+ 
+            </p:dataTable>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
