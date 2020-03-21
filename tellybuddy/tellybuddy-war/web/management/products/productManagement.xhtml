@@ -43,25 +43,30 @@
 
                     <p:panel header="#{product.category.name}" style="text-align:center">
                         <h:panelGrid columns="1" style="width:100%">
-                            <!--<p:graphicImage name="demo/images/car/#{car.brand}.gif"/> -->
 
-                            <h:outputText value="#{product.name}" />
+                            <p:outputPanel>
 
-                            <p:commandLink update="ccViewProduct:formViewProduct" oncomplete="PF('dialogViewProduct').show()" title="View Details">
-                                <h:outputText styleClass="pi pi-search" style="margin:0 auto;"/>
-                                <f:setPropertyActionListener value="#{product}" target="#{viewProductManagedBean.productToView}" />
-                            </p:commandLink>
+                                <!--<p:graphicImage width="100%" value="#{product.productImagePath}"/>--> 
 
-                            <p:commandLink actionListener="#{productManagementManagedBean.doUpdateProduct}" update="formUpdateProduct" oncomplete="PF('dialogUpdateProduct').show()" title="Update">
+                                <h:outputText value="#{product.name}" />
+                                <br></br> <br></br>
 
-                                <f:attribute name="productToUpdate" value="#{product}" />
-                            </p:commandLink>
+                                <p:commandLink update="ccViewProduct:formViewProduct" oncomplete="PF('dialogViewProduct').show()" title="View Details">
+                                    <h:outputText styleClass="pi pi-search" style="margin:0 auto;"/>
+                                    <f:setPropertyActionListener value="#{product}" target="#{viewProductManagedBean.productToView}" />
+                                </p:commandLink>
 
-                            <p:commandLink actionListener="#{productManagementManagedBean.deleteProduct}" update="formAllProducts:dataGridAllProducts">
-                                <h:outputText styleClass="ui-icon-trash" style="margin:0 auto;"/>
-                                <f:attribute name="productToDelete" value="#{product}" />
-                                <p:confirm header="Confirmation" message="Are you sure you want to delete #{product.name} (SKU Code: #{product.skuCode})?" icon="ui-icon-alert" />
-                            </p:commandLink>
+                                <p:commandLink actionListener="#{productManagementManagedBean.doUpdateProduct}" update="formUpdateProduct" oncomplete="PF('dialogUpdateProduct').show()" title="Update">
+
+                                    <f:attribute name="productToUpdate" value="#{product}" />
+                                </p:commandLink>
+
+                                <p:commandLink actionListener="#{productManagementManagedBean.deleteProduct}" update="formAllProducts:dataGridAllProducts">
+                                    <h:outputText styleClass="ui-icon-trash" style="margin:0 auto;"/>
+                                    <f:attribute name="productToDelete" value="#{product}" />
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{product.name} (SKU Code: #{product.skuCode})?" icon="ui-icon-alert" />
+                                </p:commandLink>
+                            </p:outputPanel>
                         </h:panelGrid>
                     </p:panel>
                 </p:dataGrid>
