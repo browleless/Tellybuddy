@@ -87,13 +87,16 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     public void employeeApprovePendingCustomerAndUpdate(Customer customer) throws CustomerNotFoundException{
         Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
         customerToUpdate.setAddress(customer.getNewAddress());
-        customer.setNewAddress(null);
+        customerToUpdate.setNewAddress(null);
         customerToUpdate.setPostalCode(customer.getNewPostalCode());
-        customer.setNewPostalCode(null);
+        customerToUpdate.setNewPostalCode(null);
         customerToUpdate.setNric(customer.getNewNric());
-        customer.setNewNric(null);
+        customerToUpdate.setNewNric(null);
         customerToUpdate.setNricImagePath(customer.getNewNricImagePath());
-        customer.setNewNricImagePath(null);
+        customerToUpdate.setNewNricImagePath(null);
+        
+        customerToUpdate.setIsApproved(true);
+
     }
 
 //    @RolesAllowed({"customer"})
@@ -112,16 +115,16 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 //        customer.getSubscriptions().add(newSubscription);
 //        newSubscription.setCustomer(customer);
 //    }
-//    @Override
-//    public void terminateCustomerSubscriptionToAPlan(Long customerId) throws CustomerNotFoundException {
-//
-//        Customer customer = retrieveCustomerByCustomerId(customerId);
-//        List<Subscription> subscriptions = customer.getSubscriptions();
-//        Date today = Calendar.getInstance().getTime();
-//        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
-//        latestSubscription.setSubscriptionEndDate(today);
-//        latestSubscription.setIsActive(false);
-//    }
+    @Override
+    public void terminateCustomerSubscriptionToAPlan(Long customerId) throws CustomerNotFoundException {
+
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        List<Subscription> subscriptions = customer.getSubscriptions();
+        Date today = Calendar.getInstance().getTime();
+        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
+        latestSubscription.setSubscriptionEndDate(today);
+        latestSubscription.setIsActive(false);
+    }
 
 //add loyalty points is in EJB timer
 //    @RolesAllowed({"employee"})

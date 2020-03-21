@@ -141,6 +141,10 @@ public class Customer implements Serializable {
     @Future
     private Date creditCardExpiryDate;
 
+    @Column(nullable = false)
+    @NotNull
+    private Boolean isApproved;
+        
     @Column(columnDefinition = "CHAR(32) NOT NULL")
     private String salt;
 
@@ -173,6 +177,7 @@ public class Customer implements Serializable {
         this.quizAttempts = new ArrayList<>();
         this.transactions = new ArrayList<>();
         this.announcements = new ArrayList<>();
+        this.isApproved = false;
     }
 
     public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String email, String newNric, String newNricImagePath) {
@@ -440,6 +445,14 @@ public class Customer implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Boolean getIsApproved() {
+        return isApproved;
+    }
+
+    public void setIsApproved(Boolean isApproved) {
+        this.isApproved = isApproved;
     }
 
 }

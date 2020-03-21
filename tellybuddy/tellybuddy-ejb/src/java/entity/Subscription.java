@@ -1,6 +1,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,59 +35,60 @@ public class Subscription implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long subcscriptionId;
-    
+
     @Column(nullable = false)
     @NotNull
-    private HashMap<String,Integer> dataUnits;
-    
+    private HashMap<String, Integer> dataUnits;
+
     @Column(nullable = false)
     @NotNull
-    private HashMap<String,Integer> talkTimeUnits;
-    
+    private HashMap<String, Integer> talkTimeUnits;
+
     @Column(nullable = false)
     @NotNull
-    private HashMap<String,Integer> smsUnits;
-    
+    private HashMap<String, Integer> smsUnits;
+
     @Column(nullable = false)
     @NotNull
     private Boolean isActive;
-    
+
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date subscriptionStartDate;
-    
+
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     @Future
     private Date subscriptionEndDate;
-    
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Customer customer;
-    
+
     @OneToMany(mappedBy = "subscription")
     private List<UsageDetails> usageDetails;
-    
+
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
     private Plan plan;
-    
+
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
     private PhoneNumber phoneNumber;
-    
-    
-    
+
     public Subscription() {
         this.isActive = false;
         this.usageDetails = new ArrayList<>();
+        this.dataUnits = new HashMap<>();
+        this.smsUnits = new HashMap<>();
+        this.talkTimeUnits = new HashMap<>();
     }
 
     public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits) {
         this();
-        this.dataUnits = new HashMap<>();
-        this.smsUnits = new HashMap<>();
-        this.talkTimeUnits = new HashMap<>();
+        this.dataUnits.put("allocated", allocatedDataUnits);
+        this.smsUnits.put("allocated", allocatedSmsUnits);
+        this.talkTimeUnits.put("allocated", allocatedTalktimeUnits);
     }
 
     public Long getSubcscriptionId() {
@@ -177,28 +180,45 @@ public class Subscription implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public HashMap<String,Integer> getDataUnits() {
+    public HashMap<String, Integer> getDataUnits() {
         return dataUnits;
     }
 
-    public void setDataUnits(HashMap<String,Integer> dataUnits) {
+    public void setDataUnits(HashMap<String, Integer> dataUnits) {
         this.dataUnits = dataUnits;
     }
 
-    public HashMap<String,Integer> getTalkTimeUnits() {
+    public HashMap<String, Integer> getTalkTimeUnits() {
         return talkTimeUnits;
     }
 
-    public void setTalkTimeUnits(HashMap<String,Integer> talkTimeUnits) {
+    public void setTalkTimeUnits(HashMap<String, Integer> talkTimeUnits) {
         this.talkTimeUnits = talkTimeUnits;
     }
 
-    public HashMap<String,Integer> getSmsUnits() {
+    public HashMap<String, Integer> getSmsUnits() {
         return smsUnits;
     }
 
-    public void setSmsUnits(HashMap<String,Integer> smsUnits) {
+    public void setSmsUnits(HashMap<String, Integer> smsUnits) {
         this.smsUnits = smsUnits;
     }
-    
+
+    public List<Integer> getTalkTimeAsList() {
+        return new ArrayList<Integer>(this.talkTimeUnits.values());
+    }
+
+    public List<Integer> getSmsAsList() {
+        return new ArrayList<Integer>(this.smsUnits.values());
+    }
+
+    public List<Integer> getDataAsList() {
+        return new ArrayList<Integer>(this.dataUnits.values());
+    }
+
+    public String getFormattedStartDate() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        return dateFormat.format(this.subscriptionStartDate);
+    }
+
 }

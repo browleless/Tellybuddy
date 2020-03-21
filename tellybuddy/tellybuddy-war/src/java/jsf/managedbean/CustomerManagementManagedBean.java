@@ -8,6 +8,7 @@ package jsf.managedbean;
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import entity.Customer;
 import entity.Plan;
+import entity.Subscription;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -40,18 +41,30 @@ public class CustomerManagementManagedBean implements Serializable {
     private List<Customer> customers;
     private Customer newCustomer;
 
+    private Customer customerToView;
     private Customer customerToUpdate;
+    private List<Subscription> subscriptionsToView;
 
     public CustomerManagementManagedBean() {
         newCustomer = new Customer();
     }
-    
+
     @PostConstruct
-    public void postConstruct(){
+    public void postConstruct() {
         setCustomers(customerSessionBeanLocal.retrieveAllCustomer());
     }
-    
-    
+
+    public void verifyCustomer(ActionEvent event) {
+
+        try {
+            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customerToUpdate);
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Customer verified successfully", null));
+        } catch (CustomerNotFoundException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while updating customer: " + ex.getMessage(), null));
+        }
+        setCustomers(customerSessionBeanLocal.retrieveAllCustomer());
+    }
+
 //    public void createNewPlan(ActionEvent event) {
 //
 //        try {
@@ -63,10 +76,10 @@ public class CustomerManagementManagedBean implements Serializable {
 //            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred creating new plan: " + ex.getMessage(), null));
 //        }
 //    }
-
     public void updateCustomer(ActionEvent event) {
         try {
             customerSessionBeanLocal.updateCustomerDetailsForCustomer(getCustomerToUpdate());
+            setCustomerToUpdate(null);
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Plan updated successfully", null));
         } catch (CustomerNotFoundException ex) {
@@ -105,8 +118,21 @@ public class CustomerManagementManagedBean implements Serializable {
     public void setCustomerToUpdate(Customer customerToUpdate) {
         this.customerToUpdate = customerToUpdate;
     }
-    
-    
-    
-    
+
+    public Customer getCustomerToView() {
+        return customerToView;
+    }
+
+    public void setCustomerToView(Customer customerToView) {
+        this.customerToView = customerToView;
+    }
+
+    public List<Subscription> getSubscriptionsToView() {
+        return subscriptionsToView;
+    }
+
+    public void setSubscriptionsToView(List<Subscription> subscriptionsToView) {
+        this.subscriptionsToView = subscriptionsToView;
+    }
+
 }

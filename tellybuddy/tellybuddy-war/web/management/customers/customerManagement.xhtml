@@ -4,37 +4,265 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="/template/defaultTemplate.xhtml"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:define name="content">
-        <h3>Plans Management</h3>
 
-        <h:form id="forAllCustomers">
+        <style type="text/css"> 
+            .ui-dataview-list .ui-dataview-row {
+                border-bottom: 1px solid #A8A8A8;
+                padding: 25px 10px;
+            }
+            .ui-dialog {
+                border-radius: 15px;
+                width: 80%;
+            }
 
-            <p:dataTable id="dataTableAllCustomers" widgetVar="dataTableAllCustomers" value="#{customerManagementManagedBean.customers}" var="plan" rowKey="#{customer.customerId}" rowIndexVar="row"
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+                text-align: center;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+                text-align: center;
+            } 
+            .info {
+                border-left: 1px solid #A8A8A8;
+            }
+        </style>
+        <h3>Customer Management</h3>
+
+        <h:form id="formAllCustomers">
+
+            <p:dataTable id="dataTableAllCustomers" widgetVar="dataTableAllCustomers" value="#{customerManagementManagedBean.customers}" var="customer" rowKey="#{customer.customerId}" rowIndexVar="row"
 
                          rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
 
                 <f:facet name="header">
                     <p:outputPanel style="text-align: right;">
-                        <h:outputText value="Search all fields:" />
-                        <p:inputText id="globalFilter" onkeyup="PF('dataTableAllCustomers').filter()" style="width:300px" placeholder="Enter keyword"/>
+                        <h:outputText value="Search all fields: " />
+                        <p:inputText id="globalFilter" onkeyup="PF('dataTableAllCustomers').filter()" style="width:200px; text-align: center" placeholder="Enter keyword"/>
                     </p:outputPanel>
                 </f:facet>
 
-                <p:column headerText="Customer ID" sortBy="#{customer.customerId}" filterBy="#{customer.customerId}" filterMatchMode="contains">
+                <p:column headerText="ID" sortBy="#{customer.customerId}" filterBy="#{customer.customerId}" filterMatchMode="contains" width="10%" style="text-align: center;" >
                     <h:outputText value="#{customer.customerId}" />
                 </p:column>
 
-                <p:column headerText="Name" sortBy="#{customer.name}" filterBy="#{customer.name}" filterMatchMode="contains">
-                    <h:outputText value="#{customer.name}" />
+                <p:column headerText="Full Name" sortBy="#{customer.lastName}" filterBy="#{customer.lastName}" filterMatchMode="contains" style="text-align: center;">
+                    <h:outputText value="#{customer.lastName} #{customer.firstName} " />
                 </p:column>
 
                 <p:column headerText="Email" sortBy="#{customer.email}" filterBy="#{customer.email}" filterMatchMode="contains" style="text-align: right;">
-                    <h:outputText value="#{customer.email}" />
+                    <h:outputText value="#{customer.email}"  style="text-align: right;"/>
                 </p:column>
+
+                <p:column style="width:16px">
+
+                    <p:rowToggler/>
+                </p:column>
+
+
+                <p:rowExpansion >
+                    <p:panelGrid  style="padding: 5px 5px 5px 5px" columns="2" columnClasses="ui-grid-col-2, ui-grid-col-10" layout="grid">
+
+                        <p:graphicImage style="width:100%" value="./passport.jpg"/> 
+
+                        <p:outputPanel   style="width:100%; border-left: 1px; border-left-color: #999999">
+                            <p:panelGrid  columns="4" columnClasses="ui-grid-col-2, ui-grid-col-4,ui-grid-col-2, ui-grid-col-4">
+
+                                <h:outputText value="First Name:" />
+                                <h:outputText value="#{customer.firstName}" style="font-weight: bold"/>
+
+                                <h:outputText value="Last Name:" />
+                                <h:outputText value="#{customer.lastName}" style="font-weight: bold"/>
+
+                                <h:outputText value="Username:" />
+                                <h:outputText value="#{customer.username}" style="font-weight: bold"/>
+
+                                <h:outputText value="Age:" />
+                                <h:outputText value="#{customer.age}" style="font-weight: bold"/>
+
+                                <h:outputText value="Total Subscriptions:" />
+                                <h:outputText value="#{customer.subscriptions.size()}" style="font-weight: bold"/>
+
+                                <h:outputText value="Address:" />
+                                <h:outputText value="#{customer.address} #{customer.postalCode}" style="font-weight: bold"/>
+
+                                <h:outputText value="Loyalty Points:" />
+                                <h:outputText value="#{customer.loyaltyPoints}" style="font-weight: bold"/>
+
+                                <h:outputText value="NRIC:" />
+                                <h:outputText value="#{customer.nric}" style="font-weight: bold"/>
+
+                                <h:outputText value="Approval Status:" />
+                                <h:outputText value="#{customer.isApproved}" style="font-weight: bold"/>
+                            </p:panelGrid>
+                        </p:outputPanel>
+                    </p:panelGrid>
+
+                    <p:row >
+                        <div style="text-align: center">
+                            <p:column style="text-align: justify">
+                                <p:commandButton style="text-align: center" update="dialogViewSubscriptions" oncomplete="PF('dialogViewSubscriptions').show()" icon="fa fa-database" title="View Customer's Subscsriptions">
+                                    <f:setPropertyActionListener value="#{customer.subscriptions}" target="#{customerManagementManagedBean.subscriptionsToView}" />
+                                </p:commandButton>
+                            </p:column>
+
+                            <p:column>
+                                <p:commandButton update="dialogVerifyCustomer" oncomplete="PF('dialogVerifyCustomer').show()" icon="fa fa-thumbs-o-up" title="Approve Customer Onboarding">
+                                    <f:setPropertyActionListener value="#{customer}" target="#{customerManagementManagedBean.customerToUpdate}" />
+                                </p:commandButton>
+                            </p:column>
+
+                            <p:column>
+                                <p:commandButton update="@form formAllPlans:dataTableAllPlans" icon="ui-icon-trash" actionListener="#{customerManagementManagedBean.deletePlan}" >
+                                    <f:attribute name="planToDelete" value="#{customer}" />
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{plan.name}?" icon="ui-icon-alert" />
+                                </p:commandButton>
+                            </p:column>
+
+                        </div>
+
+                    </p:row>
+
+
+                </p:rowExpansion>
             </p:dataTable>
         </h:form>
+
+        <p:dialog id="dialogViewSubscriptions" width="80%"  widgetVar="dialogViewSubscriptions" header="View All Subscriptions" closable="true">
+
+            <h:form id="formViewSubscriptions">
+                <p:dataTable id="ataTableCustomerSubscriptions" widgetVar="dataTableCustomerSubscriptions" style="text-align: center" value="#{customerManagementManagedBean.subscriptionsToView}" var="subscription" rowKey="#{subscription.subscriptionId}" rowIndexVar="row">
+                    <p:column headerText="Id" width="5%" style="text-align: center">
+                        <h:outputText value="#{subscription.subcscriptionId}" />
+                    </p:column>
+
+                    <p:column headerText="Plan" width="10%" style="text-align: center">
+                        <h:outputText value="#{subscription.plan.name}" />
+                    </p:column>
+
+                    <p:column headerText="Contract Start Date" width="20%" style="text-align: center">
+                        <h:outputText value="#{subscription.formattedStartDate}" />
+                    </p:column>
+
+                    <p:column headerText="Phone Number" width="10%" style="text-align: center">
+                        <h:outputText value="#{subscription.phoneNumber.phoneNumber}" />
+                    </p:column>
+
+                    <p:column headerText="Allocated TalkTime Units" width="10%" style="text-align: center">
+                        <h:outputText value="#{subscription.talkTimeAsList}" />
+                    </p:column>
+                    <p:column headerText="Allocated SMS Units" width="10%" style="text-align: center">
+                        <h:outputText value="#{subscription.smsAsList}" />
+                    </p:column>
+                    <p:column headerText="Allocated Data Units" width="10%" style="text-align: center">
+                        <h:outputText value="#{subscription.dataAsList}" />
+                    </p:column>
+                </p:dataTable>
+
+
+
+
+
+<!--                <p:dataView var="subscription" value="#{customerManagementManagedBean.subscriptionsToView}">
+                    <p:dataViewListItem>
+                        <h:panelGrid columns="3" style="width:100%" columnClasses="">
+                            <p:outputPanel>
+                                <h:panelGrid columns="2" cellpadding="5">
+                                    <h:outputText value="Id:" />
+                                    <h:outputText value="#{subscription.subcscriptionId}" style="font-weight: bold"/>
+
+                                    <h:outputText value="Start Date" />
+                                    <h:outputText value="#{subscription.subscriptionStartDate}" style="font-weight: bold"/>
+
+                                </h:panelGrid>
+                            </p:outputPanel>
+                        </h:panelGrid>
+                    </p:dataViewListItem>
+                </p:dataView>-->
+
+            </h:form>
+
+        </p:dialog>
+
+
+        <p:dialog id="dialogVerifyCustomer" width="500px"  widgetVar="dialogVerifyCustomer" header="Approve Customer" closable="true">
+            <p:panelGrid style="width:100%" columnClasses="ui-grid-col-4, ui-grid-col-8">
+                <p:row>
+                    <p:column>
+                        <p:outputLabel for="id" value="Customer ID: " />
+                    </p:column>
+                    <p:column>
+                        <h:outputText id="id" value="#{customerManagementManagedBean.customerToUpdate.customerId}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="Full Name: " />
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{customerManagementManagedBean.customerToUpdate.lastName} #{customerManagementManagedBean.customerToUpdate.firstName}"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="Address: " />
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{customerManagementManagedBean.customerToUpdate.newAddress} #{customerManagementManagedBean.customerToUpdate.newPostalCode}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="NRIC: " />
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{customerManagementManagedBean.customerToUpdate.newNric}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="Proof of Residence: " />
+                    </p:column>
+                    <p:column>
+                        <p:graphicImage style="width:100%" value="#{customerManagementManagedBean.customerToUpdate.newNricImagePath}"/> 
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+
+
+
+
+            <h:form >     
+                <p:growl id="message" showDetail="true" />
+
+                <div style="text-align: center; padding: 10px 0px 0px 0px">
+                    <p:commandButton value="Verify Customer" update="@form formAllCustomers:dataTableAllCustomers" actionListener="#{customerManagementManagedBean.verifyCustomer}">
+                        <p:confirm header="Confirmation" message="Have you confirmed that the customer's details match the provided image?" icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
+
+                </div>
+
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <div style="text-align: center">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" oncomplete="PF('dialogVerifyCustomer').hide();" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" oncomplete="PF('dialogVerifyCustomer').hide();"/>
+                    </div>
+                </p:confirmDialog>      
+            </h:form>
+        </p:dialog>
+
     </ui:define>
 
 </ui:composition>
