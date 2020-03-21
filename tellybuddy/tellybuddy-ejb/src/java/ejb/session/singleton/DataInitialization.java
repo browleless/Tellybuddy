@@ -6,13 +6,23 @@
 package ejb.session.singleton;
 
 import entity.Announcement;
+
+import entity.Category;
+
 import entity.Employee;
 import entity.Plan;
+import entity.Product;
+import entity.Tag;
 import java.math.BigDecimal;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
@@ -70,10 +80,20 @@ public class DataInitialization {
             em.persist(newAnnouncement);
             em.flush();
 
+            Category newCat1 = new Category("Cat A", "test");
+            Tag newTag1 = new Tag("Testing");
+
+            Product newProd = new Product("PROD001", "testing", "testing", BigDecimal.ONE, 20, 50);
+            newProd.setCategory(newCat1);
+            List<Tag> tags = new ArrayList<>();
+            tags.add(newTag1);
+            newProd.setTags(tags);
+            em.persist(newProd);
+            em.flush();
         } catch (ParseException ex) {
             Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+ 
     }
 
 }
