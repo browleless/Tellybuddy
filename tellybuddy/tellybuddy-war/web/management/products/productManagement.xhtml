@@ -107,7 +107,7 @@
                             <p:column>
                                 <p:outputLabel for="ProductType" value="Product Type " style="font-weight: bold;" /> 
                             </p:column>
-                            <p:column>
+                            <p:column colspan="2">
                                 <p:selectOneRadio id="ProductType" value="#{productManagementManagedBean.newLuxuryProduct}" required="true" unselectable="true" requiredMessage="Type of product must be specified" >
                                     <f:selectItem itemLabel="Non-Luxury Product" itemValue="Non-Luxury Product" />
                                     <f:selectItem itemLabel="Luxury Product" itemValue="Luxury Product" />
