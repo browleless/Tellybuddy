@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -85,14 +86,15 @@ public class DiscountCodeSessionBean implements DiscountCodeSessionBeanLocal {
 
     @Override
     public DiscountCode retrieveDiscountCodeByDiscountCodeName(String discountCodeName) throws DiscountCodeNotFoundException {
-        Query q = em.createQuery("SELECT dc FROM DiscountCode dc WHERE dc.discountCode = :inDiscountCodeName");
-        q.setParameter("inDiscountCodeName", discountCodeName);
 
-        DiscountCode discountCode = (DiscountCode) q.getSingleResult();
+        try {
+            Query q = em.createQuery("SELECT dc FROM DiscountCode dc WHERE dc.discountCode = :inDiscountCodeName");
+            q.setParameter("inDiscountCodeName", discountCodeName);
 
-        if (discountCode != null) {
+            DiscountCode discountCode = (DiscountCode) q.getSingleResult();
+
             return discountCode;
-        } else {
+        } catch (NoResultException ex) {
             throw new DiscountCodeNotFoundException("Discount Code '" + discountCodeName + "' does not exist!");
         }
     }
@@ -106,10 +108,8 @@ public class DiscountCodeSessionBean implements DiscountCodeSessionBeanLocal {
 
     @Override
     public List<DiscountCode> retrieveAllActiveDiscountCodes() {
-        Date current = new Date();
 
-        Query q = em.createQuery("SELECT dc FROM DiscountCode dc WHERE dc.expiryDate <= :inCurrent");
-        q.setParameter("inCurrent", current);
+        Query q = em.createQuery("SELECT dc FROM DiscountCode dc WHERE dc.expiryDate > CURRENT_TIMESTAMP ORDER BY dc.expiryDate");
 
         return q.getResultList();
     }
@@ -125,6 +125,7 @@ public class DiscountCodeSessionBean implements DiscountCodeSessionBeanLocal {
             if (discountCodeToUpdate.getExpiryDate().before(current)) {
                 throw new DiscountCodeAlreadyExpiredException("Discount code cannot be updated as it expired!");
             } else {
+                discountCodeToUpdate.setDiscountCode(dc.getDiscountCode());
                 discountCodeToUpdate.setDiscountRate(dc.getDiscountRate());
                 discountCodeToUpdate.setExpiryDate(dc.getExpiryDate());
             }

@@ -16,91 +16,95 @@
             <p:dialog id="dialogViewProduct" widgetVar="dialogViewProduct" header="View Product" closable="true">
 
                 <p:panelGrid>
+                    <p:outputPanel>
+                        <p:graphicImage width="100%" value="#{productToView.productImagePath}"/>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Product ID: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{viewProductManagedBean.productToView.productId}" />
+                            </p:column>
+                        </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel value="Product ID: " />
-                        </p:column>
-                        <p:column>
-                            <h:outputText value="#{viewProductManagedBean.productToView.productId}" />
-                        </p:column>
-                    </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="SKU Code: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{viewProductManagedBean.productToView.skuCode}" />
+                            </p:column>
+                        </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel value="SKU Code: " />
-                        </p:column>
-                        <p:column>
-                            <h:outputText value="#{viewProductManagedBean.productToView.skuCode}" />
-                        </p:column>
-                    </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Name: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{viewProductManagedBean.productToView.name}" />
+                            </p:column>
+                        </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel value="Name: " />
-                        </p:column>
-                        <p:column>
-                            <h:outputText value="#{viewProductManagedBean.productToView.name}" />
-                        </p:column>
-                    </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Description: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{viewProductManagedBean.productToView.description}" />
+                            </p:column>
+                        </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel value="Description: " />
-                        </p:column>
-                        <p:column>
-                            <h:outputText value="#{viewProductManagedBean.productToView.description}" />
-                        </p:column>
-                    </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Quantity On Hand: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{viewProductManagedBean.productToView.quantityOnHand}" />
+                            </p:column>
+                        </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel value="Quantity On Hand: " />
-                        </p:column>
-                        <p:column>
-                            <h:outputText value="#{viewProductManagedBean.productToView.quantityOnHand}" />
-                        </p:column>
-                    </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Reorder Quantity: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{viewProductManagedBean.productToView.reorderQuantity}" />
+                            </p:column>
+                        </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel value="Reorder Quantity: " />
-                        </p:column>
-                        <p:column>
-                            <h:outputText value="#{viewProductManagedBean.productToView.reorderQuantity}" />
-                        </p:column>
-                    </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Unit Price: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{viewProductManagedBean.productToView.price}">
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel value="Unit Price: " />
-                        </p:column>
-                        <p:column>
-                            <h:outputText value="#{viewProductManagedBean.productToView.price}">
-                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
-                            </h:outputText>
-                        </p:column>
-                    </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Category: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{viewProductManagedBean.productToView.category.name}" />
+                            </p:column>
+                        </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel value="Category: " />
-                        </p:column>
-                        <p:column>
-                            <h:outputText value="#{viewProductManagedBean.productToView.category.name}" />
-                        </p:column>
-                    </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Tag(s): " />
+                            </p:column>
+                            <p:column>
+                                <p:dataList value="#{viewProductManagedBean.productToView.tags}" var="tag" type="unordered">
+                                    #{tag.name}
+                                </p:dataList>
+                            </p:column>
+                        </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel value="Tag(s): " />
-                        </p:column>
-                        <p:column>
-                            <p:dataList value="#{viewProductManagedBean.productToView.tags}" var="tag" type="unordered">
-                                #{tag.name}
-                            </p:dataList>
-                        </p:column>
-                    </p:row>
+                    </p:outputPanel>
+
 
                 </p:panelGrid>
 

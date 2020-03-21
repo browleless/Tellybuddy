@@ -1,0 +1,484 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/template/defaultTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="content">
+
+        <style>
+            .ui-dialog {
+                border-radius: 15px;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+            }
+
+            .ui-timer {
+                background: #1f89ce;
+                border-radius: 25px;
+                color: white;
+                font-weight: normal;
+            }
+
+            .ui-dialog-content{ 
+                max-width: 950px !important; 
+                max-height: 60vh !important;
+                margin-bottom: 5px !important;
+            }
+        </style>
+
+        <div>
+            <h3>Quiz Management</h3>
+
+            <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Quiz" oncomplete="PF('dialogCreateNewQuiz').show()" />
+
+            <h:form>
+                <h:panelGrid columns="2">
+                    <p:outputLabel for="quizFilter" value="Show: " />
+                    <p:selectOneMenu id="quizFilter" value="#{quizManagementManagedBean.selectedFilter}">
+                        <p:ajax update="formAllQuizzes:dataTableAllQuizzes" listener="#{quizManagementManagedBean.doFilter}" />
+                        <f:selectItem itemLabel="Active" itemValue="Active" />
+                        <f:selectItem itemLabel="Upcoming" itemValue="Upcoming" />
+                    </p:selectOneMenu>
+                </h:panelGrid>
+            </h:form>
+
+            <h:form id="formAllQuizzes">
+
+                <p:dataTable id="dataTableAllQuizzes" widgetVar="dataTableAllQuizzes" value="#{quizManagementManagedBean.quizzes}" var="quiz" rowKey="#{quiz.quizId}" rowIndexVar="row"
+                             filteredValue="#{quizManagementManagedBean.filteredQuizzes}"
+                             rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                    <f:facet name="header">
+                        <p:outputPanel style="text-align: right;">
+                            <h:outputText value="Search all fields:" />
+                            <p:inputText id="globalFilter" onkeyup="PF('dataTableAllQuizzes').filter()" style="width:300px" placeholder="Enter keyword"/>
+                        </p:outputPanel>
+                    </f:facet>
+
+                    <p:column headerText="Quiz ID" sortBy="#{quiz.quizId}" filterBy="#{quiz.quizId}" filterMatchMode="contains">
+                        <h:outputText value="#{quiz.quizId}" />
+                    </p:column>
+
+                    <p:column headerText="Name" sortBy="#{quiz.name}" filterBy="#{quiz.name}" filterMatchMode="contains">
+                        <h:outputText value="#{quiz.name}" />
+                    </p:column>
+
+                    <p:column headerText="Units Worth" sortBy="#{quiz.unitsWorth}" filterBy="#{quiz.unitsWorth}" filterMatchMode="contains" style="text-align: right;">
+                        <h:outputText value="#{quiz.unitsWorth}" />
+                    </p:column>
+
+                    <p:column sortBy="#{quizManagementManagedBean.calculateTimerTime(quiz)}" width="300" headerText="Timer" style="text-align: center;">
+                        <p:outputLabel rendered="#{quiz.openDate.after(flashDealManagementManagedBean.dateTimeNow)}" for="timerTillStartEnd"  value="Starting in " />
+                        <p:outputLabel rendered="#{quiz.openDate.before(flashDealManagementManagedBean.dateTimeNow)}" for="timerTillStartEnd" value="Ending in " />
+                        <pe:timer id="timerTillStartEnd" format="DDD [days,] HH [hrs, ] mm [mins, ] ss [s]" timeout="#{quizManagementManagedBean.calculateTimerTime(quiz)}" />
+                    </p:column>
+
+                    <p:column headerText="Action" >
+                        <p:commandButton update="dialogUpdateQuiz" oncomplete="PF('dialogUpdateQuiz').show()" icon="ui-icon-pencil" title="Update">
+                            <f:setPropertyActionListener value="#{quiz}" target="#{quizManagementManagedBean.quizToUpdate}" />
+                        </p:commandButton>
+                        <p:commandButton update="@form formAllQuizzes:dataTableAllQuizzes" icon="ui-icon-trash" actionListener="#{quizManagementManagedBean.deleteQuiz}">
+                            <f:attribute name="quizToDelete" value="#{quiz}" />
+                            <p:confirm header="Confirmation" message="Are you sure you want to delete #{quiz.name}?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+
+            </h:form>
+
+            <p:dialog id="dialogCreateNewQuiz" widgetVar="dialogCreateNewQuiz" header="Create New Quiz" closable="true" position="center center" onShow="PF('dialogCreateNewQuiz').initPosition()">
+
+                <h:form id="formCreateNewQuiz">
+
+                    <p:wizard id="wizardCreateQuiz" widgetVar="wizardCreateQuiz" onnext="PF('dialogCreateNewQuiz').initPosition()">
+
+                        <p:tab id="details" title="Details">
+
+                            <p:panel header="Details">
+
+                                <h:panelGrid columns="2" columnClasses="label, value">
+
+                                    <h:outputText value="Quiz Name: " />
+                                    <p:inputText value="#{quizManagementManagedBean.quizName}" placeholder="Quiz 1" required="true" requiredMessage="Quiz Name is required" label="quizName"/>
+
+                                    <h:outputText value="Units Worth: " />
+                                    <p:spinner value="#{quizManagementManagedBean.quizUnitsWorth}" placeholder="5" max="10" required="true" requiredMessage="Units Worth is required" label="quizUnits"/>
+
+                                    <h:outputText value="Start Date/Time: " />
+                                    <p:calendar value="#{quizManagementManagedBean.quizStartDateTime}" mindate="#{quizManagementManagedBean.dateToday}" required="true" requiredMessage="Start Date Time is required" pattern="dd/MM/yyyy HH:mm"/>
+
+                                    <h:outputText value="End Date/Time: " />
+                                    <p:calendar value="#{quizManagementManagedBean.quizEndDateTime}" mindate="#{quizManagementManagedBean.dateToday}" required="true" requiredMessage="End Date Time is required" pattern="dd/MM/yyyy HH:mm"/>
+
+                                </h:panelGrid>
+
+                            </p:panel>
+
+                        </p:tab>
+
+                        <p:tab id="questions" title="Questions">
+
+                            <h:form id="formAllQuestions">
+
+                                <p:dataGrid var="question" value="#{quizManagementManagedBean.questions}" columns="3" layout="grid"
+                                            rows="6" paginator="true" id="dataGridAllQuestions"
+                                            paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            rowsPerPageTemplate="6,9,12" rowIndexVar="index" style="width: 500px; margin-top: 15px;">
+
+                                    <f:facet name="header">
+                                        Questions
+                                    </f:facet>
+
+                                    <p:panel header="Question #{index + 1}" style="text-align:center">
+                                        <h:panelGrid columns="1" style="width:100%; text-align: center">
+
+                                            <h:outputText escape="false" value="#{question.question}" />
+
+                                            <p:row>
+                                                <p:column>
+                                                    <p:commandLink process="@this dialogEditQuestion" update="dialogEditQuestion" oncomplete="PF('dialogEditQuestion').show(); PF('dialogCreateNewQuiz').hide()" title="Edit Question">
+                                                        <h:outputText styleClass="pi pi-pencil" style="margin:0 auto;"/>
+                                                        <f:setPropertyActionListener value="#{question}" target="#{quizManagementManagedBean.questionToEdit}" />
+                                                        <f:setPropertyActionListener value="#{index}" target="#{quizManagementManagedBean.questionToEditIndex}" />
+                                                    </p:commandLink>
+                                                </p:column>
+                                                <p:column>
+                                                    <p:commandLink process="@this" update="formCreateNewQuiz:formAllQuestions" title="Delete Question" actionListener="#{quizManagementManagedBean.deleteQuestion}">
+                                                        <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
+                                                        <f:attribute name="questionToDelete" value="#{question}" />
+                                                    </p:commandLink>
+
+                                                </p:column>
+                                            </p:row>
+
+                                        </h:panelGrid>
+                                    </p:panel>
+
+                                </p:dataGrid>
+
+                            </h:form>
+
+                            <div style="text-align: center; margin: 15px 0px 15px 0px;">
+                                <p:commandButton icon="fa fa-plus" value="Add New Question" oncomplete="PF('dialogCreateNewQuestion').show(); PF('dialogCreateNewQuiz').hide()" />
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab id="confirmation" title="Confirmation">
+
+                            <p:panel header="Confirmation">
+
+                                <h:panelGrid columns="2" columnClasses="label, value">
+
+                                    <h:outputText value="Quiz Name: " />
+                                    <h:outputText value="#{quizManagementManagedBean.quizName}" styleClass="outputLabel"/>
+
+                                    <h:outputText value="No. of Questions: " />
+                                    <h:outputText value="#{quizManagementManagedBean.questions.size()}" styleClass="outputLabel"/>
+
+                                    <h:outputText value="Units Worth: " />
+                                    <h:outputText value="#{quizManagementManagedBean.quizUnitsWorth}" styleClass="outputLabel"/>
+
+                                    <h:outputText value="Start Date/Time: " />
+                                    <h:outputText value="#{quizManagementManagedBean.quizStartDateTime}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT+8" />
+                                    </h:outputText>
+
+                                    <h:outputText value="End Date/Time: " />
+                                    <h:outputText value="#{quizManagementManagedBean.quizEndDateTime}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT+8" />
+                                    </h:outputText>
+
+                                </h:panelGrid>
+
+                            </p:panel>
+
+                            <div style="text-align: center; margin: 15px 0px 15px 0px;">
+                                <p:commandButton icon="fa fa-upload" value="Publish Quiz" update="formAllQuizzes:dataTableAllQuizzes" oncomplete="PF('dialogCreateNewQuiz').show()" actionListener="#{quizManagementManagedBean.publishQuiz}" />
+                            </div>
+
+                        </p:tab>
+
+                    </p:wizard>
+
+                </h:form>
+
+            </p:dialog>
+
+            <p:dialog id="dialogCreateNewQuestion" widgetVar="dialogCreateNewQuestion" header="Create New Question" closable="true" position="center center" onShow="PF('dialogCreateNewQuestion').initPosition()">
+
+                <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogCreateNewQuiz').show(); PF('dialogCreateNewQuestion').hide()" />
+
+                <h:form id="formCreateNewQuestion">
+
+                    <p:panel id="question" header="Question" style="margin-bottom: 25px;">
+
+                        <p:textEditor widgetVar="editor1" value="#{quizManagementManagedBean.newQuestion.question}" height="100" style="width: 500px;">
+                            <f:facet name="toolbar">
+                                <span class="ql-formats">
+                                    <select class="ql-font"></select>
+                                    <select class="ql-size"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-bold"></button>
+                                    <button class="ql-italic"></button>
+                                    <button class="ql-underline"></button>
+                                    <button class="ql-strike"></button>
+                                </span>
+                            </f:facet>
+                        </p:textEditor>
+
+                    </p:panel>
+
+                    <p:panel id="answerList" header="Answers" rendered="#{quizManagementManagedBean.newQuestion.answers.size() > 0}">
+
+                        <h:panelGrid>
+
+                            <p:selectOneRadio id="selectAnswer" value="#{quizManagementManagedBean.answerIndex}" layout="custom">
+                                <c:forEach items="#{quizManagementManagedBean.newQuestion.answers}" var="answer" varStatus="idx">
+                                    <f:selectItem itemValue="#{idx.index}"/>
+                                </c:forEach>
+                            </p:selectOneRadio>
+
+                            <p:repeat value="#{quizManagementManagedBean.newQuestion.answers}" var="answer" varStatus="status">
+
+                                <p:radioButton id="radioOption" for="formCreateNewQuestion:selectAnswer" itemIndex="#{status.index}" />
+                                <h:outputLabel style="margin: 5px 10px 0 10px;" for="radioOption" value="Option #{status.index + 1}" />
+
+                                <p:commandLink process="@this" update="formCreateNewQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
+                                    <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
+                                    <f:attribute name="questionType" value="new" />
+                                    <f:attribute name="answerToDelete" value="#{answer}" />
+                                </p:commandLink>
+
+                                <p:textEditor value="#{answer.answer}" height="100" style="width: 500px; margin: 15px 0px 15px 0px;">
+                                    <f:facet name="toolbar">
+                                        <span class="ql-formats">
+                                            <select class="ql-font"></select>
+                                            <select class="ql-size"></select>
+                                        </span>
+                                        <span class="ql-formats">
+                                            <button class="ql-bold"></button>
+                                            <button class="ql-italic"></button>
+                                            <button class="ql-underline"></button>
+                                            <button class="ql-strike"></button>
+                                        </span>
+                                    </f:facet>
+                                </p:textEditor>
+
+                            </p:repeat>
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                    <div style="text-align: center; margin: 20px 0 20px 0;">
+                        <p:commandButton process="@this formCreateNewQuestion" update="formCreateNewQuestion" icon="fa fa-plus" value="Add Answer Choice" actionListener="#{quizManagementManagedBean.addNewAnswer}">
+                            <f:attribute name="questionType" value="new" />
+                        </p:commandButton>
+                        <p:commandButton process="@this formCreateNewQuestion" update="formCreateNewQuestion formCreateNewQuiz:formAllQuestions:dataGridAllQuestions" icon="fa fa-plus" value="Add Question to Quiz" actionListener="#{quizManagementManagedBean.addNewQuestion}" oncomplete="PF('dialogCreateNewQuiz').show(); PF('dialogCreateNewQuestion').hide()" />
+                    </div>
+
+                </h:form>
+
+            </p:dialog>
+
+            <p:dialog id="dialogEditQuestion" widgetVar="dialogEditQuestion" header="Edit Question" closable="true" position="center center" onShow="PF('dialogEditQuestion').initPosition()">
+
+                <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogCreateNewQuiz').show(); PF('dialogEditQuestion').hide()" />
+
+                <h:form id="formEditQuestion">
+
+                    <p:panel id="question" header="Question" style="margin-bottom: 25px;">
+
+                        <p:textEditor widgetVar="editor2" value="#{quizManagementManagedBean.questionToEdit.question}" height="100" style="width: 500px;">
+                            <f:facet name="toolbar">
+                                <span class="ql-formats">
+                                    <select class="ql-font"></select>
+                                    <select class="ql-size"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-bold"></button>
+                                    <button class="ql-italic"></button>
+                                    <button class="ql-underline"></button>
+                                    <button class="ql-strike"></button>
+                                </span>
+                            </f:facet>
+                        </p:textEditor>
+
+                    </p:panel>
+
+                    <p:panel id="answerList" header="Answers" rendered="#{quizManagementManagedBean.questionToEdit.answers.size() > 0}">
+
+                        <h:panelGrid>
+
+                            <p:selectOneRadio id="selectAnswer" value="#{quizManagementManagedBean.answerIndex}" layout="custom">
+                                <c:forEach items="#{quizManagementManagedBean.questionToEdit.answers}" var="answer" varStatus="idx">
+                                    <f:selectItem itemValue="#{idx.index}"/>
+                                </c:forEach>
+                            </p:selectOneRadio>
+
+                            <p:repeat value="#{quizManagementManagedBean.questionToEdit.answers}" var="answer" varStatus="status">
+
+                                <p:radioButton id="radioOption" for="formEditQuestion:selectAnswer" itemIndex="#{status.index}" />
+                                <h:outputLabel style="margin: 5px 10px 0 10px;" for="radioOption" value="Option #{status.index + 1}" />
+
+                                <p:commandLink process="@this" update="formEditQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
+                                    <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
+                                    <f:attribute name="answerToDelete" value="#{answer}" />
+                                    <f:attribute name="questionType" value="existing" />
+                                </p:commandLink>
+
+                                <p:textEditor value="#{answer.answer}" height="100" style="width: 500px; margin: 15px 0px 15px 0px;">
+                                    <f:facet name="toolbar">
+                                        <span class="ql-formats">
+                                            <select class="ql-font"></select>
+                                            <select class="ql-size"></select>
+                                        </span>
+                                        <span class="ql-formats">
+                                            <button class="ql-bold"></button>
+                                            <button class="ql-italic"></button>
+                                            <button class="ql-underline"></button>
+                                            <button class="ql-strike"></button>
+                                        </span>
+                                    </f:facet>
+                                </p:textEditor>
+
+                            </p:repeat>
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                    <div style="text-align: center; margin: 20px 0 20px 0;">
+                        <p:commandButton process="@this formEditQuestion" update="formEditQuestion" icon="fa fa-plus" value="Add Answer Choice" actionListener="#{quizManagementManagedBean.addNewAnswer}">
+                            <f:attribute name="questionType" value="existing" />
+                        </p:commandButton>
+                        <p:commandButton process="@this formEditQuestion" update="formEditQuestion formCreateNewQuiz:formAllQuestions:dataGridAllQuestions" icon="fa fa-pencil" value="Amend Question" actionListener="#{quizManagementManagedBean.amendQuestion}" oncomplete="PF('dialogCreateNewQuiz').show(); PF('dialogEditQuestion').hide()" />
+                    </div>
+
+                </h:form>
+
+            </p:dialog>
+
+            <p:dialog id="dialogUpdateQuiz" widgetVar="dialogUpdateQuiz" header="Update Quiz" closable="true" position="center center" onShow="PF('dialogUpdateQuiz').initPosition()">
+
+                <h:form id="formUpdateQuiz">
+
+                    <p:tabView id="updateTabView">
+
+                        <p:tab title="Details">
+
+                            <p:panelGrid>
+
+                                <p:row>
+                                    <p:column>
+                                        <h:outputLabel value="Quiz ID: " />
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{quizManagementManagedBean.quizToUpdate.quizId}" />
+                                    </p:column>
+                                </p:row>
+
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel for="name" value="Name: " />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="name" value="#{quizManagementManagedBean.quizToUpdate.name}" />
+                                    </p:column>
+                                </p:row>
+
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel for="startDateTime" value="Start Date/Time: " />
+                                    </p:column>
+                                    <p:column>
+                                        <p:calendar id="startDateTime" mindate="#{quizManagementManagedBean.dateToday}" value="#{quizManagementManagedBean.quizToUpdate.openDate}" pattern="dd/MM/yyyy HH:mm"/>
+                                    </p:column>
+                                </p:row>
+
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel for="endDateTime" value="Emd Date/Time: " />
+                                    </p:column>
+                                    <p:column>
+                                        <p:calendar id="endDateTime" mindate="#{quizManagementManagedBean.dateToday}" value="#{quizManagementManagedBean.quizToUpdate.expiryDate}" pattern="dd/MM/yyyy HH:mm"/>
+                                    </p:column>
+                                </p:row>
+
+                            </p:panelGrid>
+
+                        </p:tab>
+
+                        <p:tab title="Questions">
+
+                            <h:form id="formAllExistingQuestions">
+
+                                <p:dataGrid var="question" value="#{quizManagementManagedBean.quizToUpdate.questions}" columns="3" layout="grid"
+                                            rows="6" paginator="true" id="dataGridAllQuestions"
+                                            paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            rowsPerPageTemplate="6,9,12" rowIndexVar="index" style="width: 500px; margin-top: 15px;">
+
+                                    <f:facet name="header">
+                                        Questions
+                                    </f:facet>
+
+                                    <p:panel header="Question #{index + 1}" style="text-align:center">
+                                        <h:panelGrid columns="1" style="width:100%; text-align: center">
+
+                                            <h:outputText escape="false" value="#{question.question}" />
+
+                                            <p:row>
+                                                <p:column>
+                                                    <p:commandLink process="@this" update="formUpdateQuiz:updateTabView:formAllExistingQuestions:dataGridAllQuestions" title="Delete Question" actionListener="#{quizManagementManagedBean.deleteExistingQuestion}">
+                                                        <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
+                                                        <f:attribute name="existingQuestionToDelete" value="#{question}" />
+                                                    </p:commandLink>
+
+                                                </p:column>
+                                            </p:row>
+
+                                        </h:panelGrid>
+                                    </p:panel>
+
+                                </p:dataGrid>
+
+                            </h:form>
+
+                        </p:tab>
+
+                    </p:tabView>
+
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <p:commandButton value="Update Quiz" />
+                    </div>
+
+                </h:form>
+
+            </p:dialog>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

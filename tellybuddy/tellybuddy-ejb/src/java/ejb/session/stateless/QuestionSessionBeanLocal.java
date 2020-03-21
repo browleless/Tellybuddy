@@ -5,7 +5,6 @@
  */
 package ejb.session.stateless;
 
-import entity.Answer;
 import entity.Question;
 import entity.Quiz;
 import javax.ejb.Local;
@@ -24,8 +23,6 @@ public interface QuestionSessionBeanLocal {
     public Long createNewQuestion(Quiz quiz, Question newQuestion) throws QuizNotFoundException;
 
     public Question retrieveQuestionByQuestionId(Long questionId) throws QuestionNotFoundException;
-
-    public void addNewAnswer(Question currentQuestion, Answer newAnswer) throws QuestionNotFoundException;
 
     public void updateQuestion(Question question) throws QuestionNotFoundException;
 

@@ -33,4 +33,8 @@ public interface PlanSessionBeanLocal {
 
     public void deletePlan(Long planId) throws PlanNotFoundException;
 
+    public List<Plan> retrieveAllActiveFlashPlans();
+
+    public List<Plan> retrieveAllUpcomingFlashPlans();
+
 }

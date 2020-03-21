@@ -31,9 +31,24 @@
 
             <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Product" oncomplete="PF('dialogCreateNewProduct').show()" />
 
+            <h:form id="searchForm">
+
+                <p:inputText id="txtSearchString" value="#{searchProductsByNameManagedBean.searchString}" placeholder="Search Product By Name">
+                    <p:ajax event="keyup" process="@this txtSearchString" update="formAllProducts:dataGridAllProducts" listener="#{searchProductsByNameManagedBean.searchProduct}" />
+                </p:inputText>
+                &nbsp;
+                <p:commandButton value="Search">
+                    <p:ajax event="click" process="@this searchForm:txtSearchString" update="formAllProducts:dataGridAllProducts" listener="#{searchProductsByNameManagedBean.searchProduct}" />
+                </p:commandButton>
+            </h:form>
+            <br />
+
+
             <h:form id="formAllProducts">
 
-                <p:dataGrid id="dataGridAllProducts" var="product" value="#{productManagementManagedBean.allProducts}" columns="3" layout="grid"
+                <p:messages id="messages" redisplay="false" closable="true" />
+
+                <p:dataGrid id="dataGridAllProducts" var="product" value="#{searchProductsByNameManagedBean.products}" columns="3" layout="grid"
                             rows="10" paginator="true"  
                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                             rowsPerPageTemplate="10,20,50">
@@ -43,28 +58,38 @@
 
                     <p:panel header="#{product.category.name}" style="text-align:center">
                         <h:panelGrid columns="1" style="width:100%">
-                            <!--<p:graphicImage name="demo/images/car/#{car.brand}.gif"/> -->
 
-                            <h:outputText value="#{product.name}" />
+                            <p:outputPanel>
 
-                            <p:commandLink update="ccViewProduct:formViewProduct" oncomplete="PF('dialogViewProduct').show()" title="View Details">
-                                <h:outputText styleClass="pi pi-search" style="margin:0 auto;"/>
-                                <f:setPropertyActionListener value="#{product}" target="#{viewProductManagedBean.productToView}" />
-                            </p:commandLink>
+                                <!--<p:graphicImage width="100%" value="#{product.productImagePath}"/>--> 
 
-                            <p:commandLink actionListener="#{productManagementManagedBean.doUpdateProduct}" update="formUpdateProduct" oncomplete="PF('dialogUpdateProduct').show()" title="Update">
+                                <h:outputText value="#{product.name}" />
+                                <br></br> <br></br>
 
-                                <f:attribute name="productToUpdate" value="#{product}" />
-                            </p:commandLink>
+                                <p:commandLink update="ccViewProduct:formViewProduct" oncomplete="PF('dialogViewProduct').show()" title="View Details">
+                                    <h:outputText styleClass="fa fa-search" style="margin:0 auto;"/>
+                                    <f:setPropertyActionListener value="#{product}" target="#{viewProductManagedBean.productToView}" />
+                                </p:commandLink>&nbsp;&nbsp;
 
-                            <p:commandLink actionListener="#{productManagementManagedBean.deleteProduct}" update="formAllProducts:dataGridAllProducts">
-                                <h:outputText styleClass="ui-icon-trash" style="margin:0 auto;"/>
-                                <f:attribute name="productToDelete" value="#{product}" />
-                                <p:confirm header="Confirmation" message="Are you sure you want to delete #{product.name} (SKU Code: #{product.skuCode})?" icon="ui-icon-alert" />
-                            </p:commandLink>
+                                <p:commandLink actionListener="#{productManagementManagedBean.doUpdateProduct}" update="formUpdateProduct" oncomplete="PF('dialogUpdateProduct').show()" title="Update">
+                                    <h:outputText styleClass="fa fa-edit" style="margin:0 auto;"/>
+                                    <f:attribute name="productToUpdate" value="#{product}" />
+                                </p:commandLink>&nbsp;
+
+                                <p:commandLink actionListener="#{productManagementManagedBean.deleteProduct}" update="@form formAllProducts:dataGridAllProducts">
+                                    <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
+                                    <f:attribute name="productToDelete" value="#{product}" />
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{product.name} (SKU Code: #{product.skuCode})?" icon="ui-icon-alert" />
+                                </p:commandLink>
+                            </p:outputPanel>
                         </h:panelGrid>
                     </p:panel>
                 </p:dataGrid>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
             </h:form>
 
             <ez:ViewProduct id="ccViewProduct" />
@@ -177,6 +202,13 @@
                             </p:column>
                             <p:column>
                                 <p:message for="selTags" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row style="text-align:center">
+                            <p:column colspan="3">
+                                <!-- INCOMPLETE -->
+                                <p:commandButton value="Upload Image" icon="fa fa-image" />
                             </p:column>
                         </p:row>
 
@@ -311,6 +343,13 @@
                             </p:column>
                             <p:column>
                                 <p:message for="selTags" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row style="text-align:center">
+                            <p:column colspan="3">
+                                <!-- INCOMPLETE -->
+                                <p:commandButton value="Replace Current Image" icon="fa fa-image" />
                             </p:column>
                         </p:row>
 

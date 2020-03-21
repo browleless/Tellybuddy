@@ -61,7 +61,7 @@ public class Employee implements Serializable {
         this.salt = CryptographicHelper.getInstance().generateRandomString(32);
     }
 
-    public Employee(String firstName, String lastName,String username, String password,  AccessRightEnum accessRightEnum) {
+    public Employee(String username, String password, String firstName, String lastName, AccessRightEnum accessRightEnum) {
         this();
         this.username = username;
         this.firstName = firstName;

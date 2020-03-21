@@ -22,29 +22,29 @@ public class Answer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long answerId;
-    
+
     @Column(nullable = false, length = 128)
     @NotNull
     @Size(min = 4, max = 128)
     private String answer;
-    
+
     @Column(nullable = false)
     @NotNull
     private Boolean isAnswer;
-    
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Question question;
 
     public Answer() {
+        this.isAnswer = false;
     }
 
-    public Answer(String answer, Boolean isAnswer) {
+    public Answer(String answer) {
         this();
         this.answer = answer;
-        this.isAnswer = isAnswer;
     }
-    
+
     public Long getAnswerId() {
         return answerId;
     }
@@ -67,7 +67,7 @@ public class Answer implements Serializable {
             return false;
         }
         Answer other = (Answer) object;
-        if ((this.answerId == null && other.answerId != null) || (this.answerId != null && !this.answerId.equals(other.answerId))) {
+        if ((this.answerId == null && other.answerId != null) || (this.answerId != null && !this.answerId.equals(other.answerId)) || (this.answerId == null && other.answerId == null && !this.answer.equals(other.answer))) {
             return false;
         }
         return true;
@@ -101,5 +101,5 @@ public class Answer implements Serializable {
     public void setQuestion(Question question) {
         this.question = question;
     }
-    
+
 }
