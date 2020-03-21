@@ -103,13 +103,24 @@
                     <p:messages id="messagesCreateNewProduct" redisplay="false" />
 
                     <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="ProductType" value="Product Type " style="font-weight: bold;" /> 
+                            </p:column>
+                            <p:column>
+                                <p:selectOneRadio id="ProductType" value="#{productManagementManagedBean.newLuxuryProduct}" required="true" unselectable="true" requiredMessage="Type of product must be specified" >
+                                    <f:selectItem itemLabel="Non-Luxury Product" itemValue="Non-Luxury Product" />
+                                    <f:selectItem itemLabel="Luxury Product" itemValue="Luxury Product" />
+                                </p:selectOneRadio>
+                            </p:column>
+                        </p:row>
 
                         <p:row>
                             <p:column>
                                 <p:outputLabel for="skuCode" value="SKU Code: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="skuCode" value="#{productManagementManagedBean.newProduct.skuCode}" placeholder="PROD999" required="true" requiredMessage="SKU Code is required" />
+                                <p:inputText id="skuCode" value="#{productManagementManagedBean.newNonLuxuryProduct.skuCode}" rendered="#{productManagementManagedBean.newLuxuryProduct} == null" placeholder="PROD999" required="true" requiredMessage="SKU Code is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="skuCode" />
@@ -121,7 +132,7 @@
                                 <p:outputLabel for="name" value="Name: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="name" value="#{productManagementManagedBean.newProduct.name}" placeholder="Product 1" required="true" requiredMessage="Name is required" />
+                                <p:inputText id="name" value="#{productManagementManagedBean.newNonLuxuryProduct.name}" rendered="#{productManagementManagedBean.newLuxuryProduct} == null" placeholder="Product 1" required="true" requiredMessage="Name is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="name" />
@@ -133,7 +144,7 @@
                                 <p:outputLabel for="description" value="Description " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="description" value="#{productManagementManagedBean.newProduct.description}" placeholder="Product 1" required="true" requiredMessage="Description is required" />
+                                <p:inputText id="description" value="#{productManagementManagedBean.newNonLuxuryProduct.description}" rendered="#{productManagementManagedBean.newLuxuryProduct} == null" placeholder="Product 1" required="true" requiredMessage="Description is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="description" />
@@ -145,7 +156,7 @@
                                 <p:outputLabel for="quantityOnHand" value="Quantity On Hand " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:spinner id="quantityOnHand" value="#{productManagementManagedBean.newProduct.quantityOnHand}" placeholder="100" min="0" max="1000000" required="true" requiredMessage="Quantity On Hand is required" />
+                                <p:spinner id="quantityOnHand" value="#{productManagementManagedBean.newNonLuxuryProduct.quantityOnHand}" rendered="#{productManagementManagedBean.newLuxuryProduct} == null" placeholder="100" min="0" max="1000000" required="true" requiredMessage="Quantity On Hand is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="quantityOnHand" />
@@ -157,7 +168,7 @@
                                 <p:outputLabel for="reorderQuantity" value="Reorder Quantity " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:spinner id="reorderQuantity" value="#{productManagementManagedBean.newProduct.reorderQuantity}" placeholder="10" min="0" max="1000000" stepFactor="10" required="true" requiredMessage="Reorder Quantity is required" validator="reorderQuantityValidator" />
+                                <p:spinner id="reorderQuantity" value="#{productManagementManagedBean.newNonLuxuryProduct.reorderQuantity}" rendered="#{productManagementManagedBean.newLuxuryProduct} == null" placeholder="10" min="0" max="1000000" stepFactor="10" required="true" requiredMessage="Reorder Quantity is required" validator="reorderQuantityValidator" />
                             </p:column>
                             <p:column>
                                 <p:message for="reorderQuantity" />
@@ -169,7 +180,7 @@
                                 <p:outputLabel for="unitPrice" value="Unit Price " style="font-weight: bold;" />
                             </p:column>
                             <p:column>                            
-                                <p:spinner id="unitPrice" value="#{productManagementManagedBean.newProduct.price}" placeholder="10.00" min="0" max="1000000" stepFactor="0.01" required="true" requiredMessage="Unit Price is required" />
+                                <p:spinner id="unitPrice" value="#{productManagementManagedBean.newNonLuxuryProduct.price}" rendered="#{productManagementManagedBean.newLuxuryProduct} == null" placeholder="10.00" min="0" max="1000000" stepFactor="0.01" required="true" requiredMessage="Unit Price is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="unitPrice" />
@@ -215,7 +226,7 @@
                         <p:row>
                             <p:column colspan="3">
                                 <p:commandButton type="reset" value="Clear" />&nbsp;
-                                <p:commandButton  value="Create New Product" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').show();" />
+                                <p:commandButton  value="Create New Product" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewNonLuxuryProduct}" oncomplete="PF('dialogCreateNewProduct').show();" />
                             </p:column>
                         </p:row>
 

@@ -9,6 +9,7 @@ import ejb.session.stateless.CategorySessionBeanLocal;
 import ejb.session.stateless.ProductSessionBeanLocal;
 import ejb.session.stateless.TagSessionBeanLocal;
 import entity.Category;
+import entity.LuxuryProduct;
 import entity.Product;
 import entity.Tag;
 import java.io.IOException;
@@ -53,7 +54,9 @@ public class ProductManagementManagedBean implements Serializable {
     private List<Product> allProducts;
     private List<Product> filteredProducts;
 
-    private Product newProduct;
+    private Product newNonLuxuryProduct;
+    private LuxuryProduct newLuxuryProduct;
+
     private Long categoryIdNew;
     private List<Long> tagIdsNew;
     private List<Category> allCategories;
@@ -64,7 +67,8 @@ public class ProductManagementManagedBean implements Serializable {
     private List<Long> tagIdsUpdate;
 
     public ProductManagementManagedBean() {
-        this.newProduct = new Product();
+        this.newNonLuxuryProduct = new Product();
+        this.newLuxuryProduct = new LuxuryProduct();
     }
 
     @PostConstruct
@@ -74,35 +78,43 @@ public class ProductManagementManagedBean implements Serializable {
         this.setAllProducts(productSessionBeanLocal.retrieveAllProducts());
     }
 
+    public void createNewLuxuryProduct(ActionEvent ae) {
+        this.newNonLuxuryProduct = null;
+    }
+
+    public void createNewNonLuxuryProduct(ActionEvent ae) {
+        this.setNewLuxuryProduct(null);
+    }
+
     public void viewProductDetails(ActionEvent ae) throws IOException {
         Long productIdToView = (Long) ae.getComponent().getAttributes().get("productId");
         FacesContext.getCurrentInstance().getExternalContext().getFlash().put("productIdToView", productIdToView);
         FacesContext.getCurrentInstance().getExternalContext().redirect("viewProductDetails.xhtml");
     }
 
-    public void createNewProduct(ActionEvent ae) {
-        if (categoryIdNew == 0) {
-            categoryIdNew = null;
-        }
-
-        try {
-
-            Product p = productSessionBeanLocal.createNewProduct(newProduct, categoryIdNew, tagIdsNew);
-            allProducts.add(p);
-
-            if (filteredProducts != null) {
-                filteredProducts.add(p);
-            }
-
-            newProduct = new Product();
-            categoryIdNew = null;
-            tagIdsNew = null;
-
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New product created successfully (Product ID: " + p.getProductId() + ")", null));
-        } catch (InputDataValidationException | CreateNewProductException | ProductSkuCodeExistException | UnknownPersistenceException ex) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating the new product: " + ex.getMessage(), null));
-        }
-    }
+//    public void createNewProduct(ActionEvent ae) {
+//        if (categoryIdNew == 0) {
+//            categoryIdNew = null;
+//        }
+//
+//        try {
+//
+//            Product p = productSessionBeanLocal.createNewProduct(newProduct, categoryIdNew, tagIdsNew);
+//            allProducts.add(p);
+//
+//            if (filteredProducts != null) {
+//                filteredProducts.add(p);
+//            }
+//
+//            newProduct = new Product();
+//            categoryIdNew = null;
+//            tagIdsNew = null;
+//
+//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New product created successfully (Product ID: " + p.getProductId() + ")", null));
+//        } catch (InputDataValidationException | CreateNewProductException | ProductSkuCodeExistException | UnknownPersistenceException ex) {
+//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating the new product: " + ex.getMessage(), null));
+//        }
+//    }
 
     public void doUpdateProduct(ActionEvent ae) {
         selectedProductToUpdate = (Product) ae.getComponent().getAttributes().get("productToUpdate");
@@ -183,12 +195,12 @@ public class ProductManagementManagedBean implements Serializable {
         this.filteredProducts = filteredProducts;
     }
 
-    public Product getNewProduct() {
-        return newProduct;
+    public Product getNewNonLuxuryProduct() {
+        return newNonLuxuryProduct;
     }
 
-    public void setNewProduct(Product newProduct) {
-        this.newProduct = newProduct;
+    public void setNewNonLuxuryProduct(Product newNonLuxuryProduct) {
+        this.newNonLuxuryProduct = newNonLuxuryProduct;
     }
 
     public Long getCategoryIdNew() {
@@ -245,6 +257,20 @@ public class ProductManagementManagedBean implements Serializable {
 
     public void setTagIdsUpdate(List<Long> tagIdsUpdate) {
         this.tagIdsUpdate = tagIdsUpdate;
+    }
+
+    /**
+     * @return the newLuxuryProduct
+     */
+    public LuxuryProduct getNewLuxuryProduct() {
+        return newLuxuryProduct;
+    }
+
+    /**
+     * @param newLuxuryProduct the newLuxuryProduct to set
+     */
+    public void setNewLuxuryProduct(LuxuryProduct newLuxuryProduct) {
+        this.newLuxuryProduct = newLuxuryProduct;
     }
 
 }
