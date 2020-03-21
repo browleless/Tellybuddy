@@ -47,7 +47,7 @@
 
                 <h:form id="formUpdateEmployee">
 
-                    <p:panelGrid>
+                    <p:panelGrid style="ui-noborder"> 
                         <p:row>
                             <p:column>
                                 <h:outputLabel value="First name: " />
@@ -73,7 +73,7 @@
                             </p:column>
                         </p:row>
 
-                        <h:panelGrid columns="2" id="matchGrid" cellpadding="5">  
+                        
                             <p:row>
                                 <p:column>
 
@@ -91,11 +91,11 @@
                                     <p:password id="pwd2" value="#{updateEmployeeManagedBean.employeeToUpdate.password}" label="Password 2" required="true" />
                                 </p:column>
                             </p:row>
-                        </h:panelGrid>
+                 
                     </p:panelGrid>
 
                     <div style="text-align: center; margin-top: 20px">
-                        <p:commandButton value="Save" update="matchGrid, @form formViewAccountDetails "  actionListener="#{updateEmployeeManagedBean.updateEmployee}" oncomplete="PF('dialogUpdateEmployee').show();" />
+                        <p:commandButton value="Save" update="@form formViewAccountDetails "  actionListener="#{updateEmployeeManagedBean.updateEmployee}" oncomplete="PF('dialogUpdateEmployee').show();" />
                     </div>
 
                 </h:form>
