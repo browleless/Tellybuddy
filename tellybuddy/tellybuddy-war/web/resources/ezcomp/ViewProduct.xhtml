@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <cc:interface>
+    </cc:interface>
+
+    <cc:implementation>
+
+        <h:form id="formViewProduct">
+
+            <p:dialog id="dialogViewProduct" widgetVar="dialogViewProduct" header="View Product" closable="true">
+
+                <p:panelGrid>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Product ID: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{viewProductManagedBean.productToView.productId}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="SKU Code: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{viewProductManagedBean.productToView.skuCode}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Name: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{viewProductManagedBean.productToView.name}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Description: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{viewProductManagedBean.productToView.description}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Quantity On Hand: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{viewProductManagedBean.productToView.quantityOnHand}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Reorder Quantity: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{viewProductManagedBean.productToView.reorderQuantity}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Unit Price: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{viewProductManagedBean.productToView.price}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Category: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{viewProductManagedBean.productToView.category.name}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Tag(s): " />
+                        </p:column>
+                        <p:column>
+                            <p:dataList value="#{viewProductManagedBean.productToView.tags}" var="tag" type="unordered">
+                                #{tag.name}
+                            </p:dataList>
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+
+            </p:dialog>
+
+        </h:form>
+
+    </cc:implementation>
+</html>

@@ -67,36 +67,24 @@ public class SecurityFilter implements Filter {
     private Boolean checkAccessRight(String path, AccessRightEnum accessRight) {
         if (accessRight.equals(AccessRightEnum.EMPLOYEE)) {
             if (path.equals("/management/home.xhtml")
-                    || path.equals("/management/account/main.xhtml")
-                    || path.equals("/management/plans/main.xhtml")
-                    || path.equals("/management/products/main.xhtml")
-                    || path.equals("/management/customers/main.xhtml")
-                    || path.equals("/management/announcements/main.xhtml")
-                    || path.equals("/management/promotions/main.xhtml")) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (accessRight.equals(AccessRightEnum.MANAGER)) {
-            if (path.equals("/management/home.xhtml")
-                    || path.equals("/management/account/main.xhtml")
+                    || path.equals("/management/account/updateParticulars.html")
                     || path.equals("/management/plans/main.xhtml")
                     || path.equals("/management/products/main.xhtml")
                     || path.equals("/management/customers/main.xhtml")
                     || path.equals("/management/announcements/main.xhtml")
                     || path.equals("/management/promotions/main.xhtml")
-                    || path.equals("/management/account/updateParticulars.xhtml")
-                    || path.equals("/management/plans/planManagement.xhtml")
-                    || path.equals("/management/customers/customerManagement.xhtml")
-                    || path.equals("/management/customers/passport.jpg")
-                    || path.equals("/management/customers/nricPhoto.jpg")
-                    || path.equals("/management/customers/nricPhoto2.jpg")) {
+                    || path.equals("/management/announcements/pastAnnouncement.xhtml")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (accessRight.equals(AccessRightEnum.MANAGER)) {
+            if (path.contains("/management")) {
                 return true;
             } else {
                 return false;
             }
         }
-
         return false;
     }
 
