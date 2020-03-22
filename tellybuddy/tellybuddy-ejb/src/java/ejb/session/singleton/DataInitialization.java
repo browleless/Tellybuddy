@@ -40,8 +40,6 @@ import util.enumeration.AnnouncementRecipientEnum;
  *
  * @author admin
  */
-
-
 @Singleton
 @LocalBean
 @Startup
@@ -61,11 +59,11 @@ public class DataInitialization {
 
     private void initialiseData() {
         try {
-            Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER);
+            Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER, "path");
             em.persist(newEmployee);
             em.flush();
 
-            newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE);
+            newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE,"path");
             em.persist(newEmployee);
             em.flush();
 
@@ -136,8 +134,12 @@ public class DataInitialization {
 
             Category newCat1 = new Category("Cat A", "test");
             Tag newTag1 = new Tag("Testing");
+            em.persist(newCat1);
+            em.flush();
+            em.persist(newTag1);
+            em.flush();
 
-            Product newProd = new Product("PROD001", "testing", "testing", BigDecimal.ONE, 20, 50);
+            Product newProd = new Product("SKU001", "testing", "testing", BigDecimal.ONE, 20, 50, "path");
             newProd.setCategory(newCat1);
             List<Tag> tags = new ArrayList<>();
             tags.add(newTag1);

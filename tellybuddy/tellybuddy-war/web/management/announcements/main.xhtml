@@ -14,6 +14,7 @@
             <h3>Announcements Main Page</h3>
 
             <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Announcement" oncomplete="PF('dialogCreateNewAnnouncement').show()" />
+            
             <h:form id="formAllOngoingAnct">
 
                 <p:dataTable id="dataTableAllOngoingAnct" widgetVar="dataTableAllOngoingAnct" value="#{announcementManagedBean.ongoingAnnouncements}" var="ongoingAnct" rowKey="#{ongoingAnct.announcementId}" rowIndexVar="row"

@@ -39,7 +39,6 @@ public class updateEmployeeManagedBean {
 
     private Employee currentEmployee;
     private Employee employeeToUpdate;
-    private UploadedFile file;
 
     public updateEmployeeManagedBean() {
 
@@ -80,16 +79,22 @@ public class updateEmployeeManagedBean {
     public void setEmployeeToUpdate(Employee employeeToUpdate) {
         this.employeeToUpdate = employeeToUpdate;
     }
+    
 
-    public void upload() {
-        if (file != null) {
-            FacesMessage message = new FacesMessage("Successful", file.getFileName() + " is uploaded.");
-            FacesContext.getCurrentInstance().addMessage(null, message);
-        }
-    }
-
-    public void handleFileUpload(FileUploadEvent event) {
-        FacesMessage msg = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded.");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
+//    public void upload() {
+//        if (file != null) {
+//            FacesMessage message = new FacesMessage("Successful", file.getFileName() + " is uploaded.");
+//            FacesContext.getCurrentInstance().addMessage(null, message);
+//        }
+//    }
+//
+//    public void handleFileUpload(FileUploadEvent event) {
+//        FacesMessage msg = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded.");
+//        try {
+//            event.getFile().getInputstream();
+//        } catch (IOException ex) {
+//            Logger.getLogger(updateEmployeeManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        FacesContext.getCurrentInstance().addMessage(null, msg);
+//    }
 }

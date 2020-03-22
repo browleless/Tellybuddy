@@ -19,6 +19,7 @@
                         <p:outputPanel>
 
                             <h:panelGrid columns="2" cellpadding="5">
+                                <p:graphicImage value="#{updateEmployeeManagedBean.currentEmployee.photoPath}" />
                                 <h:outputText value="ID: " />
                                 <h:outputText value="#{updateEmployeeManagedBean.currentEmployee.employeeId}" style="font-weight: bold"/>
                                 <h:outputText value="First name: " />
@@ -48,10 +49,10 @@
                 <h:form id="formUpdateEmployee">
 
                     <p:panelGrid> 
-                        <p:row>
+<!--                        <p:row>
                         Upload image<br />
                         <p:fileUpload value="#{fileUploadView.file}" mode="simple" skinSimple="true"/>
-                        </p:row>
+                        </p:row>-->
                         <p:row>
                             <p:column>
                                 <h:outputLabel value="First name: " />
