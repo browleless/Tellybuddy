@@ -23,6 +23,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import util.enumeration.SubscriptionStatusEnum;
 
 /**
  *
@@ -47,6 +48,10 @@ public class Subscription implements Serializable {
     @Column(nullable = false)
     @NotNull
     private HashMap<String, Integer> smsUnits;
+    
+    @Column(nullable = false)
+    @NotNull
+    private SubscriptionStatusEnum subscriptionStatusEnum;
 
     @Column(nullable = false)
     @NotNull
@@ -82,6 +87,7 @@ public class Subscription implements Serializable {
         this.dataUnits = new HashMap<>();
         this.smsUnits = new HashMap<>();
         this.talkTimeUnits = new HashMap<>();
+        this.subscriptionStatusEnum = subscriptionStatusEnum.PENDINGAPPROVAL;
     }
 
     public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits) {
@@ -219,6 +225,14 @@ public class Subscription implements Serializable {
     public String getFormattedStartDate() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         return dateFormat.format(this.subscriptionStartDate);
+    }
+
+    public SubscriptionStatusEnum getSubscriptionStatusEnum() {
+        return subscriptionStatusEnum;
+    }
+
+    public void setSubscriptionStatusEnum(SubscriptionStatusEnum subscriptionStatusEnum) {
+        this.subscriptionStatusEnum = subscriptionStatusEnum;
     }
 
 }

@@ -24,7 +24,7 @@ import util.exception.UnknownPersistenceException;
  */
 public interface SubscriptionSessonBeanLocal {
 
-    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException,CreateNewSubscriptionException;
+    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException, CreateNewSubscriptionException;
 
     public void updateSubscription(Subscription subscription) throws util.exception.SubscriptionNotFoundException, InputDataValidationException;
 
@@ -32,11 +32,11 @@ public interface SubscriptionSessonBeanLocal {
 
     public Subscription retrieveSubscriptionBySubscriptionId(Long subscriptionId) throws util.exception.SubscriptionNotFoundException;
 
-    public List<Subscription> retrieveAllCustomer();
-
     public List<Subscription> retrieveSubscriptionsOfFamilyByFamilyGroupId(Long familyGroupId);
 
     public void terminateSubscription(Long customerId, Long subscriptionId);
 
     public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer);
+
+    public List<Subscription> retrieveAllSubscriptions();
 }

@@ -26,6 +26,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.CreateNewSubscriptionException;
+import util.exception.CustomerNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
 import util.exception.PhoneNumberNotFoundException;
@@ -70,6 +71,8 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
 
                 Plan plan = planSessionBeanLocal.retrievePlanByPlanId(planId);
+                plan.setIsInUse(true);
+                
                 if (plan.getIsDisabled()) {
                     throw new PlanAlreadyDisabledException("Selected Plan has been discontinued! Please try again with a different plan!");
                 }
@@ -96,7 +99,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 em.flush();
                 return newSubscription;
 
-            } catch (PersistenceException ex) {
+            } catch (PersistenceException | CustomerNotFoundException ex) {
                 if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
                     if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
                         throw new SubscriptionExistException();
@@ -182,7 +185,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     }
     
     @Override
-    public List<Subscription> retrieveAllCustomer() {
+    public List<Subscription> retrieveAllSubscriptions(){
         Query q = em.createQuery("SELECT s FROM Subscription s");
         return q.getResultList();
     }
