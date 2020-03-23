@@ -19,7 +19,7 @@
                         <p:outputPanel>
 
                             <h:panelGrid columns="2" cellpadding="5">
-                                <p:graphicImage value="#{updateEmployeeManagedBean.currentEmployee.photoPath}" />
+                    
                                 <h:outputText value="ID: " />
                                 <h:outputText value="#{updateEmployeeManagedBean.currentEmployee.employeeId}" style="font-weight: bold"/>
                                 <h:outputText value="First name: " />
@@ -39,7 +39,7 @@
                 </p:dataViewListItem>
 
                 <p:column headerText="Action" >
-                    <p:commandButton update="dialogUpdateEmployee" oncomplete="PF('dialogUpdateEmployee').show()" icon="ui-icon-pencil" title="Update" style="margin-right:20px;" styleClass="ui-priority-primary" >
+                    <p:commandButton update="dialogUpdateEmployee" oncomplete="PF('dialogUpdateEmployee').show()" icon="ui-icon-pencil" value = "Update particulars" title="Update" style="margin-right:20px;" styleClass="ui-priority-primary" >
                         <f:setPropertyActionListener value="#{updateEmployeeManagedBean.currentEmployee}" target="#{updateEmployeeManagedBean.employeeToUpdate}" />
                     </p:commandButton>
                 </p:column>
@@ -49,10 +49,6 @@
                 <h:form id="formUpdateEmployee">
 
                     <p:panelGrid> 
-<!--                        <p:row>
-                        Upload image<br />
-                        <p:fileUpload value="#{fileUploadView.file}" mode="simple" skinSimple="true"/>
-                        </p:row>-->
                         <p:row>
                             <p:column>
                                 <h:outputLabel value="First name: " />
@@ -77,20 +73,17 @@
                                 <p:inputText id="username" value="#{updateEmployeeManagedBean.employeeToUpdate.username}" required="true" requiredMessage="Username is required" />
                             </p:column>
                         </p:row>
-
-
                         <p:row>
                             <p:column>
-
-                                <h:outputLabel for="pwd1" value="Password 1: *" />
+                                <h:outputLabel for="pwd1" value="Password: " />
                             </p:column>
                             <p:column>
-                                <p:password id="pwd1" value="#{updateEmployeeManagedBean.employeeToUpdate.password}" match="pwd2" label="Password 1" required="true" feedback ="true" />
+                                <p:password id="pwd1"  match="pwd2" label="Password 1" required="true" feedback ="true" />
                             </p:column>
                         </p:row>
                         <p:row>
                             <p:column>
-                                <h:outputLabel for="pwd2" value="Password 2: *" />
+                                <h:outputLabel for="pwd2" value="Re-enter password: " />
                             </p:column>
                             <p:column>
                                 <p:password id="pwd2" value="#{updateEmployeeManagedBean.employeeToUpdate.password}" label="Password 2" required="true" />

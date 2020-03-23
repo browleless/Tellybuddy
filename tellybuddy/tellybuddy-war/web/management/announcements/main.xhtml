@@ -13,48 +13,94 @@
         <div>
             <h3>Announcements Main Page</h3>
 
-            <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Announcement" oncomplete="PF('dialogCreateNewAnnouncement').show()" />
-            
-            <h:form id="formAllOngoingAnct">
+            <p:tabView id="tabView">
 
-                <p:dataTable id="dataTableAllOngoingAnct" widgetVar="dataTableAllOngoingAnct" value="#{announcementManagedBean.ongoingAnnouncements}" var="ongoingAnct" rowKey="#{ongoingAnct.announcementId}" rowIndexVar="row"
-                             filteredValue="#{announcementManagedBean.filteredAnnouncements}"
-                             rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+                <p:tab title="Ongoing announcement">
 
-                    <f:facet name="header">
-                        <p:outputPanel style="text-align: right;">
-                            <h:outputText value="Search all fields:" />
-                            <p:inputText id="globalFilter" onkeyup="PF('dataTableAllOngoingAnct').filter()" style="width:300px" placeholder="Enter keyword"/>
-                        </p:outputPanel>
-                    </f:facet>
+                    <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Announcement" oncomplete="PF('dialogCreateNewAnnouncement').show()" />
 
-                    <p:column headerText=" ID" sortBy="#{ongoingAnct.announcementId}" filterBy="#{ongoingAnct.announcementId}" filterMatchMode="contains">
-                        <h:outputText value="#{ongoingAnct.announcementId}" />
-                    </p:column>
 
-                    <p:column headerText="Title" sortBy="#{ongoingAnct.title}" filterBy="#{pongoingAnct.title}" filterMatchMode="contains">
-                        <h:outputText value="#{ongoingAnct.title}" />
-                    </p:column>
-                    <p:column headerText="Action" >
-                        <p:commandButton update="dialogViewAnnouncement" oncomplete="PF('dialogViewAnnouncement').show()" icon="ui-icon-document" title="View">
-                            <f:setPropertyActionListener value="#{ongoingAnct}" target="#{announcementManagedBean.announcementToView}" />
-                        </p:commandButton>
-                        <p:commandButton update="dialogUpdateOngoingAnct" oncomplete="PF('dialogUpdateOngoingAnct').show()" icon="ui-icon-pencil" title="Update">
-                            <f:setPropertyActionListener value="#{ongoingAnct}" target="#{announcementManagedBean.ongoingToUpdate}" />
-                        </p:commandButton>
-                        <p:commandButton update="@form formAllOngoingAnct:dataTableAllOngoingAnct" icon="ui-icon-trash" actionListener="#{announcementManagedBean.deleteAnnouncement}">
-                            <f:attribute name="announcementToDelete" value="#{ongoingAnct}" />
-                            <p:confirm header="Confirmation" message="Are you sure you want to delete #{ongoingAnct.announcementId}?" icon="ui-icon-alert" />
-                        </p:commandButton>
-                    </p:column>
-                </p:dataTable>
-                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-                </p:confirmDialog>
+                    <h:form id="formAllOngoingAnnouncements">
 
-            </h:form>
+                        <p:dataTable id="dataTableAllOngoingAnnouncements" widgetVar="dataTableAllOngoingAnnouncements" value="#{announcementManagedBean.ongoingAnnouncements}" var="announcement" rowKey="#{announcement.announcementId}" rowIndexVar="row"
+                                     filteredValue="#{announcementManagedBean.filteredAnnouncements}"
+                                     rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
 
+                            <f:facet name="header">
+                                <p:outputPanel style="text-align: right;">
+                                    <h:outputText value="Search all fields:" />
+                                    <p:inputText id="globalFilter" onkeyup="PF('dataTableAllAnnouncements').filter()" style="width:300px" placeholder="Enter keyword"/>
+                                </p:outputPanel>
+                            </f:facet>
+                            <p:column headerText=" ID" sortBy="#{announcement.announcementId}" filterBy="#{announcement.announcementId}" filterMatchMode="contains">
+                                <h:outputText value="#{announcement.announcementId}" />
+                            </p:column>
+                            <p:column headerText="Title" sortBy="#{announcement.title}" filterBy="#{announcement.title}" filterMatchMode="contains">
+                                <h:outputText value="#{announcement.title}" />
+                            </p:column>
+
+                            <p:column headerText="Action" >
+                                <p:commandButton update="dialogViewAnnouncement" oncomplete="PF('dialogViewAnnouncement').show()" icon="ui-icon-document" title="View">
+                                    <f:setPropertyActionListener value="#{announcement}" target="#{announcementManagedBean.announcementToView}" />
+                                </p:commandButton>
+
+                                <p:commandButton update="dialogUpdateOngoingAnct" oncomplete="PF('dialogUpdateOngoingAnct').show()" icon="ui-icon-pencil" title="Update">
+                                    <f:setPropertyActionListener value="#{announcement}" target="#{announcementManagedBean.ongoingToUpdate}" />
+                                </p:commandButton>
+
+                                <p:commandButton update="@form tabView:formAllOngoingAnnouncements:dataTableAllOngoingAnnouncements" icon="ui-icon-trash" actionListener="#{announcementManagedBean.deleteAnnouncement}">
+                                    <f:attribute name="announcementToDelete" value="#{announcement}" />
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{announcement.announcementId}?" icon="ui-icon-alert" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+
+                    </h:form>
+                </p:tab>
+
+                <p:tab title="Expired">
+                    <h:form id="formAllExpiredAnnouncements">
+
+                        <p:dataTable id="dataTableAllExpiredAnnouncements" widgetVar="dataTableAllExpiredAnnouncements" value="#{announcementManagedBean.expiredAnnouncements}" var="announcement" rowKey="#{announcement.announcementId}" rowIndexVar="row"
+                                     filteredValue="#{announcementManagedBean.filteredAnnouncements}"
+                                     rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                            <f:facet name="header">
+                                <p:outputPanel style="text-align: right;">
+                                    <h:outputText value="Search all fields:" />
+                                    <p:inputText id="globalFilter" onkeyup="PF('dataTableAllAnnouncements').filter()" style="width:300px" placeholder="Enter keyword"/>
+                                </p:outputPanel>
+                            </f:facet>
+
+                            <p:column headerText=" ID" sortBy="#{announcement.announcementId}" filterBy="#{announcement.announcementId}" filterMatchMode="contains">
+                                <h:outputText value="#{announcement.announcementId}" />
+                            </p:column>
+
+                            <p:column headerText="Title" sortBy="#{announcement.title}" filterBy="#{announcement.title}" filterMatchMode="contains">
+                                <h:outputText value="#{announcement.title}" />
+                            </p:column>
+                            <p:column headerText="Action" >
+                                <p:commandButton update="dialogViewAnnouncement" oncomplete="PF('dialogViewAnnouncement').show()" icon="ui-icon-document" title="View">
+                                    <f:setPropertyActionListener value="#{announcement}" target="#{announcementManagedBean.announcementToView}" />
+                                </p:commandButton>
+                                <p:commandButton update="@form tabView:formAllExpiredAnnouncements:dataTableAllExpiredAnnouncements" icon="ui-icon-trash" actionListener="#{announcementManagedBean.deleteAnnouncement}">
+                                    <f:attribute name="announcementToDelete" value="#{announcement}" />
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{announcement.announcementId}?" icon="ui-icon-alert" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </h:form>
+                </p:tab>
+
+            </p:tabView>
 
             <p:dialog id="dialogViewAnnouncement" widgetVar="dialogViewAnnouncement" header="View announcement" closable="true">
 
@@ -127,6 +173,7 @@
                                 <p:inputText id="title" value="#{announcementManagedBean.newAnnouncement.title}" required="true" requiredMessage="Title is required" />
                             </p:column>
                         </p:row>
+                        
                         <p:row>
                             <p:textEditor widgetVar="editor" value="#{announcementManagedBean.newAnnouncement.content}" height="300" style="margin-bottom:10px" placeholder="Enter your content" required="true" requiredMessage="Content is required">
                                 <f:facet name="toolbar">
@@ -143,6 +190,7 @@
                                 </f:facet>
                             </p:textEditor>
                         </p:row>
+                        
                         <p:row>
                             <p:column>
                                 <p:outputLabel for="postDate" value="Posting date: " style="font-weight: bold;" />
@@ -176,7 +224,7 @@
 
                     <div style="text-align: center; margin-top: 20px">
                         <p:commandButton type="reset" value="Clear" />&nbsp;
-                        <p:commandButton value="Create New Announcement" update="@form formAllOngoingAnct:dataTableAllOngoingAnct " actionListener="#{announcementManagedBean.createNewAnnouncement}" oncomplete="PF('dialogCreateNewAnnouncement').show();" />
+                        <p:commandButton value="Create New Announcement" update="@form tabView:formAllOngoingAnnouncements:dataTableAllOngoingAnnouncements " actionListener="#{announcementManagedBean.createNewAnnouncement}" oncomplete="PF('dialogCreateNewAnnouncement').show();" />
                     </div>
 
                 </h:form>
@@ -241,7 +289,7 @@
                         </p:row>
                     </p:panelGrid>
                     <div style="text-align: center; margin-top: 20px">
-                        <p:commandButton value="Update announcement" update="@form formAllOngoingAnct:dataTableAllOngoingAnct" actionListener="#{announcementManagedBean.updateAnnouncement}" oncomplete="PF('dialogUpdateOngoingAnct').show();" />
+                        <p:commandButton value="Update announcement" update="@form tabView:formAllOngoingAnnouncements:dataTableAllOngoingAnnouncements" actionListener="#{announcementManagedBean.updateAnnouncement}" oncomplete="PF('dialogUpdateOngoingAnct').show();" />
                     </div>
 
                 </h:form>

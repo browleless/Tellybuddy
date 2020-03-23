@@ -7,23 +7,18 @@ package jsf.managedbean;
 
 import ejb.session.stateless.EmployeeSessionBeanLocal;
 import entity.Employee;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
+import javax.faces.view.ViewScoped;
 import util.exception.EmployeeNotFoundException;
 
 /**
@@ -31,32 +26,33 @@ import util.exception.EmployeeNotFoundException;
  * @author kaikai
  */
 @Named(value = "updateEmployeeManagedBean")
-@RequestScoped
-public class updateEmployeeManagedBean {
+@ViewScoped
+public class updateEmployeeManagedBean implements Serializable{
 
     @EJB(name = "EmployeeSessionBeanLocal")
     private EmployeeSessionBeanLocal employeeSessionBeanLocal;
 
     private Employee currentEmployee;
     private Employee employeeToUpdate;
+    private String updatedPassword;
 
     public updateEmployeeManagedBean() {
-
+        employeeToUpdate = new Employee();
     }
 
     @PostConstruct
     public void postConstruct() {
-        employeeToUpdate = new Employee();
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalContext.getSessionMap();
         currentEmployee = (Employee) sessionMap.get("currentEmployee");
-        employeeToUpdate = currentEmployee;
     }
 
     public void updateEmployee(ActionEvent event) {
 
         try {
             employeeSessionBeanLocal.updateEmployee(getEmployeeToUpdate());
+            setCurrentEmployee(employeeToUpdate);
+            setEmployeeToUpdate(new Employee());
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Employee updated successfully", null));
         } catch (EmployeeNotFoundException ex) {
             Logger.getLogger(updateEmployeeManagedBean.class.getName()).log(Level.SEVERE, null, ex);

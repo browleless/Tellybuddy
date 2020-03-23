@@ -43,9 +43,12 @@ public class AnnouncementManagedBean implements Serializable{
     private Announcement ongoingToUpdate;
 
     private Announcement newAnnouncement;
+    private String selectedFilter;
+    
 
     public AnnouncementManagedBean() {
         newAnnouncement = new Announcement();
+        selectedFilter = "Ongoing";
     }
 
     @PostConstruct
@@ -133,8 +136,25 @@ public class AnnouncementManagedBean implements Serializable{
         this.announcementToView = announcementToView;
     }
 
+    public String getSelectedFilter() {
+        return selectedFilter;
+    }
+
+    public void setSelectedFilter(String selectedFilter) {
+        this.selectedFilter = selectedFilter;
+    }
+
     public Announcement getOngoingToUpdate() {
         return ongoingToUpdate;
+    }
+    
+    public void doFilter() {
+
+        if (selectedFilter.equals("Ongoing")) {
+            announcements = ongoingAnnouncements;
+        } else if (selectedFilter.equals("Expired")) {
+            announcements = expiredAnnouncements;
+        }
     }
 
     public void setOngoingToUpdate(Announcement ongoingToUpdate) {

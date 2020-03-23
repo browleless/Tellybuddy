@@ -134,6 +134,10 @@ public class Employee implements Serializable {
         return password;
     }
 
+    public void setUpdatedPassword(String password){
+        this.password = password;
+    }
+    
     public void setPassword(String password) {
         if (password != null) {
             this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
