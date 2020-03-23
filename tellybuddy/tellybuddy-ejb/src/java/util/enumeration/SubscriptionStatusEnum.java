@@ -10,8 +10,8 @@ package util.enumeration;
  * @author markt
  */
 public enum SubscriptionStatusEnum {
-    PENDINGAPPROVAL,
+    PENDING,
     ACTIVE,
-    PENDINGTERMINATION,
+    REQUESTTOTERMINATE,
     DISABLED
 }

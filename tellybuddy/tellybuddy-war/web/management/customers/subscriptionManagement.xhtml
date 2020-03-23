@@ -36,9 +36,21 @@
         </style>
         <h3>Subscription Management</h3>
 
-        <h:form id="formAllsubscriptions">
+        <h:form>
+            <h:panelGrid columns="2">
+                <p:outputLabel for="subscriptionsFilter" value="Show: " />
+                <p:selectOneMenu id="subscriptionsFilter" value="#{subscriptionManagementManagedBean.selectedFilter}">
+                    <p:ajax update="tabView:formAllFlashPlans:dataTableAllFlashPlans" listener="#{subscriptionManagementManagedBean.doFilter}" />
+                    <f:selectItem itemLabel="Pending" itemValue="Pending" />
+                    <f:selectItem itemLabel="Active" itemValue="Active" />
+                    <f:selectItem itemLabel="Terminating" itemValue="Terminating" />
+                    <f:selectItem itemLabel="Disabled" itemValue="Disabled" />
+                </p:selectOneMenu>
+            </h:panelGrid>
+        </h:form>
+        <h:form id="formAllSubscriptions">
 
-            <p:dataTable id="dataTableAllSubscriptions" widgetVar="dataTableAllsubscriptions" value="#{subscriptionManagedBean.subscriptions}" var="subscription" rowKey="#{customer.customerId}" rowIndexVar="row"
+            <p:dataTable id="dataTableAllSubscriptions" widgetVar="dataTableAllsubscriptions" value="#{subscriptionManagementManagedBean.subscriptions}" var="subscription" rowKey="#{customer.customerId}" rowIndexVar="row"
 
                          rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
 
@@ -64,15 +76,65 @@
                     <h:outputText value=" #{subscription.subscriptionStatusEnum}" />
                 </p:column>
 
-                <p:column style="width:16px">
-
-                    <p:rowToggler/>
+                <p:column style="width: 5%">
+                    <p:commandButton update="dialogViewSubscription" actionListener="#{subscriptionManagementManagedBean.assignModel}" oncomplete="PF('dialogViewSubscription').show()" icon="fa fa-expand" title="View Subscription">
+                        <f:setPropertyActionListener value="#{subscription}" target="#{subscriptionManagementManagedBean.subscriptionToView}" />
+                    </p:commandButton>
                 </p:column>
 
- 
+
             </p:dataTable>
         </h:form>
 
+        <p:dialog id="dialogViewSubscription" widgetVar="dialogViewSubscription" header="View Subscription" closable="true">
+
+            <h:form id="formViewSubscription">
+                <p:chart style="border: 0; text-align: center; background-color: white;width:400px;height:300px;" responsive="true" type="pie" model="#{subscriptionManagementManagedBean.allocationModel}" />
+                <p:panelGrid style="width:100%" columnClasses="ui-grid-col-4, ui-grid-col-8">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="id" value="Subscription ID: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="id" value="#{subscriptionManagementManagedBean.subscriptionToView.subcscriptionId}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Plan Name: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.plan.name}"/>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Start Date: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.formattedStartDate}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Phone Number: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.phoneNumber.phoneNumber}" />
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+
+                <p:outputPanel style="text-align: center; padding-top: 10px;" rendered="#{!subscriptionManagementManagedBean.subscriptionToView.isActive}">
+                    <p:commandButton update="@form formAllSubscriptions:dataTableAllSubscriptions" actionListener="#{subscriptionManagementManagedBean.approveSubscriptionRequest}" oncomplete="PF('dialogViewSubscription').hide()"  value="Approve Subscription Request">
+                    </p:commandButton>
+                </p:outputPanel>
+            </h:form>
+
+        </p:dialog>
     </ui:define>
 
 </ui:composition>

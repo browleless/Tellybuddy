@@ -87,7 +87,6 @@ public class DataInitialization {
 
             Subscription subscription = new Subscription(10, 10, 10);
             subscription.setCustomer(customer);
-            subscription.setIsActive(true);
             subscription.setPlan(newPlan);
             subscription.setPhoneNumber(phoneno1);
             subscription.setSubscriptionStartDate(new Date(2020, 4, 20));
@@ -97,7 +96,6 @@ public class DataInitialization {
 
             subscription = new Subscription(20, 5, 5);
             subscription.setCustomer(customer);
-            subscription.setIsActive(true);
             subscription.setPlan(newPlan);
             subscription.setPhoneNumber(phoneno2);
             subscription.setSubscriptionStartDate(new Date(2020, 3, 15));
@@ -111,7 +109,6 @@ public class DataInitialization {
 
             subscription = new Subscription(20, 5, 5);
             subscription.setCustomer(customer);
-            subscription.setIsActive(true);
             subscription.setPlan(newPlan);
             subscription.setPhoneNumber(phoneno3);
             subscription.setSubscriptionStartDate(new Date(2020, 4, 1));

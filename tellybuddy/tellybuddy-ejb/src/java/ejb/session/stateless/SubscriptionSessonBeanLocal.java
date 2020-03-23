@@ -16,6 +16,7 @@ import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
 import util.exception.PlanAlreadyDisabledException;
 import util.exception.SubscriptionExistException;
+import util.exception.SubscriptionNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -37,6 +38,10 @@ public interface SubscriptionSessonBeanLocal {
     public void terminateSubscription(Long customerId, Long subscriptionId);
 
     public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer);
+    
+    public List<Subscription> retrieveSubscriptionsByFilter(String filterString);
 
     public List<Subscription> retrieveAllSubscriptions();
+
+    public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException;
 }
