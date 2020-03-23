@@ -188,7 +188,7 @@ public class ProductManagementManagedBean implements Serializable {
         this.productImageFile = event.getFile();
         if (productImageFile != null) {
             String filePath = this.saveUploadedProductImage();
-            FacesMessage message = new FacesMessage("Successful", productImageFile.getFileName() + " is uploaded.");
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + productImageFile.getFileName(), null);
             FacesContext.getCurrentInstance().addMessage(null, message);
             System.out.println(filePath);
             this.newProduct.setProductImagePath(filePath);
