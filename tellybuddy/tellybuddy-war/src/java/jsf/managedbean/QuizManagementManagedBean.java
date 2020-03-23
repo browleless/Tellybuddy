@@ -15,6 +15,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
+import org.primefaces.component.tabview.TabView;
+import org.primefaces.event.TabChangeEvent;
 import util.exception.DeleteAnswerException;
 import util.exception.DeleteQuestionException;
 import util.exception.DeleteQuizException;
@@ -93,9 +95,15 @@ public class QuizManagementManagedBean implements Serializable {
 
     public void addNewQuestion(ActionEvent event) {
 
+        String quizType = (String) event.getComponent().getAttributes().get("quizType");
+
         newQuestion.getAnswers().get(answerIndex).setIsAnswer(Boolean.TRUE);
 
-        getQuestions().add(getNewQuestion());
+        if (quizType.equals("new")) {
+            getQuestions().add(getNewQuestion());
+        } else if (quizType.equals("existing")) {
+            getQuizToUpdate().getQuestions().add(getNewQuestion());
+        }
 
         setNewQuestion(new Question());
         setAnswerIndex(-1);
@@ -178,15 +186,15 @@ public class QuizManagementManagedBean implements Serializable {
     }
 
     public void deleteExistingQuestion(ActionEvent event) {
-        
-        System.out.println(quizToUpdate.getQuestions());
 
         Question existingQuestionToDelete = (Question) event.getComponent().getAttributes().get("existingQuestionToDelete");
-        
-        System.out.println(existingQuestionToDelete);
-        //quizToUpdate.getQuestions().remove(existingQuestionToDelete);
+        quizToUpdate.getQuestions().remove(existingQuestionToDelete);
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Question deleted successfully!", null));
+    }
+
+    public void updateQuiz(ActionEvent event) {
+
     }
 
     public long calculateTimerTime(Quiz quiz) {
