@@ -11,8 +11,8 @@ import ejb.session.stateless.TagSessionBeanLocal;
 import entity.Category;
 import entity.LuxuryProduct;
 import entity.Product;
+import entity.ProductItem;
 import entity.Tag;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -22,8 +22,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -99,6 +97,13 @@ public class ProductManagementManagedBean implements Serializable {
     }
 
     public void createNewProduct(ActionEvent ae) {
+
+        if (this.productType.equals("Luxury Product")) {
+            this.newProduct = new LuxuryProduct();
+        } else {
+            this.newProduct = new Product();
+        }
+
         if (categoryIdNew == 0) {
             categoryIdNew = null;
         }
@@ -115,6 +120,14 @@ public class ProductManagementManagedBean implements Serializable {
                 filteredProducts.add(p);
             }
 
+            if (this.productType.equals("Luxury Product")) {
+                Integer num = newProduct.getQuantityOnHand();
+                List<ProductItem> productItems = (LuxuryProduct) newProduct.getProductItems();
+
+                for (Integer i : num) {
+                    //luxury item has to have a list of product item
+                }
+            }
             this.newProduct = new Product();
             categoryIdNew = null;
             tagIdsNew = null;
@@ -347,6 +360,22 @@ public class ProductManagementManagedBean implements Serializable {
 
     public void setViewProductManagedBean(ViewProductManagedBean viewProductManagedBean) {
         this.viewProductManagedBean = viewProductManagedBean;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
+
+    public Product getNewProduct() {
+        return newProduct;
+    }
+
+    public void setNewProduct(Product newProduct) {
+        this.newProduct = newProduct;
     }
 
 }
