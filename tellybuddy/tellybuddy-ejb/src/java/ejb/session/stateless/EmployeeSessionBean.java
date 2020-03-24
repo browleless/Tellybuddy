@@ -126,7 +126,9 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
                 employeeToUpdate.setAccessRightEnum(employee.getAccessRightEnum());
                 employeeToUpdate.setFirstName(employee.getFirstName());
                 employeeToUpdate.setLastName(employee.getLastName());
-                employeeToUpdate.setPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(employee.getPassword() + employeeToUpdate.getSalt())));
+                employeeToUpdate.setUpdatedPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(employee.getPassword() + employeeToUpdate.getSalt())));
+                entityManager.flush();
+
             }
         } else {
             throw new EmployeeNotFoundException("Employee ID not provided for staff to be updated");

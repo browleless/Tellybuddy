@@ -13,13 +13,12 @@
             <h3>Update Particulars</h3>
 
             <h:form id="formViewAccountDetails">
-
                 <p:dataViewListItem>
                     <h:panelGrid columns="3" style="width:100%" columnClasses="logo,detail">
                         <p:outputPanel>
 
                             <h:panelGrid columns="2" cellpadding="5">
-                    
+
                                 <h:outputText value="ID: " />
                                 <h:outputText value="#{updateEmployeeManagedBean.currentEmployee.employeeId}" style="font-weight: bold"/>
                                 <h:outputText value="First name: " />
@@ -78,7 +77,7 @@
                                 <h:outputLabel for="pwd1" value="Password: " />
                             </p:column>
                             <p:column>
-                                <p:password id="pwd1"  match="pwd2" label="Password 1" required="true" feedback ="true" />
+                                <p:password id="pwd1"  value="#{updateEmployeeManagedBean.updatedPassword}" match="pwd2" label="Password 1" required="true" feedback ="true" />
                             </p:column>
                         </p:row>
                         <p:row>
@@ -86,7 +85,7 @@
                                 <h:outputLabel for="pwd2" value="Re-enter password: " />
                             </p:column>
                             <p:column>
-                                <p:password id="pwd2" value="#{updateEmployeeManagedBean.employeeToUpdate.password}" label="Password 2" required="true" />
+                                <p:password id="pwd2" value="#{updateEmployeeManagedBean.updatedPassword}" label="Password 2" required="true" />
                             </p:column>
                         </p:row>
 

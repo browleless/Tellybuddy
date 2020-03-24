@@ -36,6 +36,14 @@ public class updateEmployeeManagedBean implements Serializable{
     private Employee employeeToUpdate;
     private String updatedPassword;
 
+    public String getUpdatedPassword() {
+        return updatedPassword;
+    }
+
+    public void setUpdatedPassword(String updatedPassword) {
+        this.updatedPassword = updatedPassword;
+    }
+
     public updateEmployeeManagedBean() {
         employeeToUpdate = new Employee();
     }
@@ -50,6 +58,7 @@ public class updateEmployeeManagedBean implements Serializable{
     public void updateEmployee(ActionEvent event) {
 
         try {
+            employeeToUpdate.setUpdatedPassword(updatedPassword);
             employeeSessionBeanLocal.updateEmployee(getEmployeeToUpdate());
             setCurrentEmployee(employeeToUpdate);
             setEmployeeToUpdate(new Employee());
