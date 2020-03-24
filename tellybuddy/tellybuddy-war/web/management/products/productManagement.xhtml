@@ -226,8 +226,8 @@
                         <p:row>
                             <p:column colspan="3">
                                 <p:commandButton type="reset" value="Clear" />&nbsp;
-                                <p:commandButton  value="Create New Luxury Product" rendered="#{productManagementManagedBean.productType} == 'Luxury Product'" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').show();" />
-                                <p:commandButton  value="Create New Non-Luxury Product" rendered="#{productManagementManagedBean.productType} == 'Non-Luxury Product'" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').show();" />
+                                <p:commandButton  value="Create New Luxury Product" rendered="#{productManagementManagedBean.productType.equals('Luxury Product')}" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').show();" />
+                                <p:commandButton  value="Create New Non-Luxury Product" rendered="#{productManagementManagedBean.productType.equals('Non-Luxury Product')}" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').show();" />
                                 <p:commandButton  value="Create New Product" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').hide();" />
                             </p:column>
                         </p:row>
