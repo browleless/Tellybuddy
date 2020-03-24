@@ -9,9 +9,7 @@ package util.enumeration;
  *
  * @author markt
  */
-public enum SubscriptionStatusEnum {
+public enum CustomerStatusEnum {
     PENDING,
-    ACTIVE,
-    TERMINATING,
-    DISABLED
+    ACTIVE
 }

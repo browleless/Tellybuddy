@@ -11,6 +11,7 @@ import entity.Announcement;
 import entity.Category;
 
 import entity.Employee;
+import entity.FamilyGroup;
 import entity.PhoneNumber;
 import entity.Plan;
 import entity.Subscription;
@@ -59,6 +60,11 @@ public class DataInitialization {
 
     private void initialiseData() {
         try {
+
+            FamilyGroup familyGroup1 = new FamilyGroup("IS3106 Warriors");
+            em.persist(familyGroup1);
+            em.flush();
+
             Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER);
             em.persist(newEmployee);
             em.flush();
@@ -85,6 +91,8 @@ public class DataInitialization {
             em.persist(customer);
             em.flush();
 
+            familyGroup1.getCustomers().add(customer);
+
             Subscription subscription = new Subscription(10, 10, 10);
             subscription.setCustomer(customer);
             subscription.setPlan(newPlan);
@@ -106,6 +114,8 @@ public class DataInitialization {
             customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "This is my address", "117417", "tayjl@gmail.com", "S2341179A", "./nricPhoto2.jpg");
             em.persist(customer);
             em.flush();
+
+            familyGroup1.getCustomers().add(customer);
 
             subscription = new Subscription(20, 5, 5);
             subscription.setCustomer(customer);

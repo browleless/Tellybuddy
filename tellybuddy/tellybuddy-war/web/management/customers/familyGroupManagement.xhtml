@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/template/defaultTemplate.xhtml"
+                xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <h:form id="form">
+            <p:dataGrid var="group" value="#{familyGroupManagedBean.familyGroups}" columns="3" layout="grid"
+                        rows="12" paginator="true" id="groups"
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                        rowsPerPageTemplate="6,12,16">
+
+                <f:facet name="header">
+                    Family Groups
+                </f:facet>
+
+                <p:panel header="#{group.familyGroupId}" style="text-align:center">
+                    <h:panelGrid columns="1" style="width:100%; text-align: center">
+
+                        <h:outputText value="#{group.description}" />
+
+                        <p:commandLink oncomplete="PF('dialogGroupView').show()" title="View Family Group Details">
+                            <h:outputText styleClass="fa fa-expand" style="margin:0 auto;"/>
+                            <f:setPropertyActionListener value="#{group}" target="#{familyGroupManagedBean.selectedGroup}" />
+                        </p:commandLink>
+                    </h:panelGrid>
+                </p:panel>
+
+            </p:dataGrid>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

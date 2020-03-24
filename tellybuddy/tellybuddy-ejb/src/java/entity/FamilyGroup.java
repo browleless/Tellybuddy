@@ -39,23 +39,23 @@ public class FamilyGroup implements Serializable {
     
     @Column(nullable = false)
     @NotNull
-    @Positive
-    @Min(1)
-    @Max(5)
+//    @Positive
+//    @Min(1)
+//    @Max(5)
     private Integer numberOfMembers;
     
     @Column(nullable = false)
     @NotNull
-    @Positive
-    @Min(1)
-    @Max(1000)
+//    @Positive
+//    @Min(1)
+//    @Max(1000)
     private Integer donatedUnits;
     
     @Column(nullable = false)
     @NotNull
-    @Positive
-    @Min(10)
-    @Max(30)
+//    @Positive
+//    @Min(10)
+//    @Max(30)
     private Integer discountRate;
     
     @OneToMany(mappedBy = "familyGroup")

@@ -7,10 +7,8 @@ package jsf.managedbean;
 
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import entity.Customer;
-import entity.Plan;
 import entity.Subscription;
 import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -18,21 +16,15 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.inject.Inject;
-import util.exception.CustomerExistException;
+import javax.faces.view.ViewScoped;
 import util.exception.CustomerNotFoundException;
-import util.exception.InputDataValidationException;
-import util.exception.PlanAlreadyDisabledException;
-import util.exception.PlanExistException;
-import util.exception.PlanNotFoundException;
-import util.exception.UnknownPersistenceException;
 
 /**
  *
  * @author markt
  */
 @Named(value = "customerManagementManagedBean")
-@SessionScoped
+@ViewScoped
 public class CustomerManagementManagedBean implements Serializable {
 
     @EJB

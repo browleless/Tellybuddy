@@ -186,9 +186,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     }
 
     @Override
-    public List<Subscription> retrieveSubscriptionsByFilter(String filterString){
+    public List<Subscription> retrieveSubscriptionsByFilter(SubscriptionStatusEnum filterString){
         Query query = em.createQuery("Select s FROM Subscription s WHERE s.subscriptionStatusEnum = :filterString");
-        query.setParameter("filterString", filterString.toUpperCase());
+        query.setParameter("filterString", filterString);
         return query.getResultList();
     }
     @Override

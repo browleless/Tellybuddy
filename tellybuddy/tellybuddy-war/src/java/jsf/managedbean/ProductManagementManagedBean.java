@@ -97,7 +97,9 @@ public class ProductManagementManagedBean implements Serializable {
         if (categoryIdNew == 0) {
             categoryIdNew = null;
         }
-
+        String filePath = this.saveUploadedProductImage();
+        this.newProduct.setProductImagePath(filePath);
+        
         try {
 //            if (productImageFile == null) {
 //                System.out.println("Prodcut has REACHED HERE ______________________________________----------------------");
@@ -114,7 +116,7 @@ public class ProductManagementManagedBean implements Serializable {
             categoryIdNew = null;
             tagIdsNew = null;
             productImageFile = null;
-            
+
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New product created successfully (Product ID: " + p.getProductId() + ")", null));
         } catch (InputDataValidationException | CreateNewProductException | ProductSkuCodeExistException | UnknownPersistenceException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating the new product: " + ex.getMessage(), null));
@@ -191,7 +193,6 @@ public class ProductManagementManagedBean implements Serializable {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + productImageFile.getFileName(), null);
             FacesContext.getCurrentInstance().addMessage(null, message);
             System.out.println(filePath);
-            this.newProduct.setProductImagePath(filePath);
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "File upload unsuccessful. Please try again!", null));
 //            System.out.println("Uploaded file stilll null!!");

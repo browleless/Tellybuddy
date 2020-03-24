@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import javax.ejb.Local;
 import javax.validation.ConstraintViolation;
+import util.enumeration.SubscriptionStatusEnum;
 import util.exception.CreateNewSubscriptionException;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
@@ -39,7 +40,7 @@ public interface SubscriptionSessonBeanLocal {
 
     public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer);
     
-    public List<Subscription> retrieveSubscriptionsByFilter(String filterString);
+    public List<Subscription> retrieveSubscriptionsByFilter(SubscriptionStatusEnum filterString);
 
     public List<Subscription> retrieveAllSubscriptions();
 
