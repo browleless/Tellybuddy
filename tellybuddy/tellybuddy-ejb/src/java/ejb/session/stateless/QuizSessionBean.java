@@ -110,6 +110,14 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
 
         return query.getResultList();
     }
+    
+    @Override
+    public List<Quiz> retirevePastQuizzes() {
+        
+        Query query = entityManager.createQuery("SELECT q FROM Quiz q WHERE q.expiryDate < CURRENT_TIMESTAMP ORDER BY q.expiryDate");
+        
+        return query.getResultList();
+    }
 
     @Override
     public List<Quiz> retrieveUpcomingQuizzes() {
@@ -131,23 +139,45 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
             quizToUpdate.setExpiryDate(quiz.getExpiryDate());
             quizToUpdate.setUnitsWorth(quiz.getUnitsWorth());
 
-            List<Question> newQuizQuestions = quiz.getQuestions();
+            List<Question> updatedQuizQuestions = quiz.getQuestions();
             List<Question> questionsToDelete = new ArrayList<>();
             List<Question> questionsToAdd = new ArrayList<>();
 
+            List<Answer> answersToUpdate = new ArrayList<>();
+            List<Answer> answersToDelete = new ArrayList<>();
+
             for (Question questionToCheck : quizToUpdate.getQuestions()) {
-                if (!newQuizQuestions.contains(questionToCheck)) {
+                if (!updatedQuizQuestions.contains(questionToCheck)) {
                     questionsToDelete.add(questionToCheck);
                 } else {
-                    for (Question questionToUpdate : newQuizQuestions) {
+                    for (Question questionToUpdate : updatedQuizQuestions) {
                         if (questionToCheck.equals(questionToUpdate)) {
                             try {
+
                                 questionSessionBeanLocal.updateQuestion(questionToUpdate);
+
                                 for (Answer answerToUpdate : questionToUpdate.getAnswers()) {
+                                    if (questionToCheck.getAnswers().contains(answerToUpdate)) {
+                                        answersToUpdate.add(answerToUpdate);
+                                    }
+                                }
+
+                                for (Answer answerToDelete : questionToCheck.getAnswers()) {
+                                    if (!questionToUpdate.getAnswers().contains(answerToDelete)) {
+                                        answersToDelete.add(answerToDelete);
+                                    }
+                                }
+
+                                for (Answer answerToUpdate : answersToUpdate) {
                                     answerSessionBeanLocal.updateAnswer(answerToUpdate);
                                 }
+
+                                for (Answer answerToDelete : answersToDelete) {
+                                    answerSessionBeanLocal.deleteAnswer(answerToDelete);
+                                }
+
                                 break;
-                            } catch (QuestionNotFoundException | AnswerNotFoundException ex) {
+                            } catch (QuestionNotFoundException | AnswerNotFoundException | DeleteAnswerException ex) {
                                 // won't happen
                                 ex.printStackTrace();
                             }
@@ -156,7 +186,7 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
                 }
             }
 
-            for (Question questionToCheck : newQuizQuestions) {
+            for (Question questionToCheck : updatedQuizQuestions) {
                 if (!quizToUpdate.getQuestions().contains(questionToCheck)) {
                     questionsToAdd.add(questionToCheck);
                 }
@@ -187,7 +217,7 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
             for (Question questionToDelete : questionsToDelete) {
                 try {
 
-                    List<Answer> answersToDelete = new ArrayList<>();
+                    answersToDelete = new ArrayList<>();
 
                     for (Answer answerToDelete : questionToDelete.getAnswers()) {
                         answersToDelete.add(answerToDelete);

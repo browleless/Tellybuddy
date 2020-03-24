@@ -39,6 +39,24 @@
             }
         </style>
 
+        <script type="text/javascript">
+            window.formatTimer = function (value) {
+                var numDays = Math.floor(value / 86400);
+                var numHours = Math.floor((value % 86400) / 3600);
+                var numMinutes = Math.floor(((value % 86400) % 3600) / 60);
+                var numSeconds = ((value % 86400) % 3600) % 60;
+                return numDays + " days, " + pad(numHours, 2) + " hrs, "
+                        + pad(numMinutes, 2) + " mins, " + pad(numSeconds, 2) + " s";
+            }
+
+            function pad(num, size) {
+                var s = num + "";
+                while (s.length &lt; size)
+                        s = "0" + s;
+                return s;
+            }
+        </script>
+
         <div>
             <h3>Quiz Management</h3>
 
@@ -51,6 +69,7 @@
                         <p:ajax update="formAllQuizzes:dataTableAllQuizzes" listener="#{quizManagementManagedBean.doFilter}" />
                         <f:selectItem itemLabel="Active" itemValue="Active" />
                         <f:selectItem itemLabel="Upcoming" itemValue="Upcoming" />
+                        <f:selectItem itemLabel="Past" itemValue="Past" />
                     </p:selectOneMenu>
                 </h:panelGrid>
             </h:form>
@@ -81,13 +100,17 @@
                     </p:column>
 
                     <p:column sortBy="#{quizManagementManagedBean.calculateTimerTime(quiz)}" width="300" headerText="Timer" style="text-align: center;">
-                        <p:outputLabel rendered="#{quiz.openDate.after(flashDealManagementManagedBean.dateTimeNow)}" for="timerTillStartEnd"  value="Starting in " />
-                        <p:outputLabel rendered="#{quiz.openDate.before(flashDealManagementManagedBean.dateTimeNow)}" for="timerTillStartEnd" value="Ending in " />
-                        <pe:timer id="timerTillStartEnd" format="DDD [days,] HH [hrs, ] mm [mins, ] ss [s]" timeout="#{quizManagementManagedBean.calculateTimerTime(quiz)}" />
+                        <p:outputLabel rendered="#{quizManagementManagedBean.selectedFilter.equals('Upcoming')}" for="timerTillStartEnd"  value="Starting in " />
+                        <p:outputLabel rendered="#{quizManagementManagedBean.selectedFilter.equals('Active')}" for="timerTillStartEnd" value="Ending in " />
+                        <h:outputText rendered="#{quizManagementManagedBean.selectedFilter.equals('Past')}" value="Ended on: " />
+                        <h:outputText rendered="#{quizManagementManagedBean.selectedFilter.equals('Past')}" value="#{quiz.expiryDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT+8" />
+                        </h:outputText>
+                        <pe:timer rendered="#{!quizManagementManagedBean.selectedFilter.equals('Past')}" id="timerTillStartEnd" formatFunction="return formatTimer(value);" timeout="#{quizManagementManagedBean.calculateTimerTime(quiz)}" />
                     </p:column>
 
                     <p:column headerText="Action" >
-                        <p:commandButton update="dialogUpdateQuiz" oncomplete="PF('dialogUpdateQuiz').show()" icon="ui-icon-pencil" title="Update">
+                        <p:commandButton rendered="#{!quizManagementManagedBean.selectedFilter.equals('Past')}" update="dialogUpdateQuiz" oncomplete="PF('dialogUpdateQuiz').show()" icon="ui-icon-pencil" title="Update">
                             <f:setPropertyActionListener value="#{quiz}" target="#{quizManagementManagedBean.quizToUpdate}" />
                         </p:commandButton>
                         <p:commandButton update="@form formAllQuizzes:dataTableAllQuizzes" icon="ui-icon-trash" actionListener="#{quizManagementManagedBean.deleteQuiz}">
@@ -224,9 +247,10 @@
 
             </p:dialog>
 
-            <p:dialog id="dialogCreateNewQuestion" widgetVar="dialogCreateNewQuestion" header="Create New Question" closable="true" position="center center" onShow="PF('dialogCreateNewQuestion').initPosition()">
+            <p:dialog id="dialogCreateNewQuestion" widgetVar="dialogCreateNewQuestion" header="Create New Question" closable="true" position="center center" onShow="PF('dialogCreateNewQuestion').initPosition()" onHide="#{quizManagementManagedBean.clearTempVariables()}">
 
-                <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogCreateNewQuiz').show(); PF('dialogCreateNewQuestion').hide()" />
+                <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogCreateNewQuiz').show();
+                        PF('dialogCreateNewQuestion').hide()" />
 
                 <h:form id="formCreateNewQuestion">
 
@@ -253,18 +277,15 @@
 
                         <h:panelGrid>
 
-                            <p:selectOneRadio id="selectAnswer" value="#{quizManagementManagedBean.answerIndex}" layout="custom">
-                                <c:forEach items="#{quizManagementManagedBean.newQuestion.answers}" var="answer" varStatus="idx">
-                                    <f:selectItem itemValue="#{idx.index}"/>
-                                </c:forEach>
-                            </p:selectOneRadio>
-
                             <p:repeat value="#{quizManagementManagedBean.newQuestion.answers}" var="answer" varStatus="status">
 
-                                <p:radioButton id="radioOption" for="formCreateNewQuestion:selectAnswer" itemIndex="#{status.index}" />
-                                <h:outputLabel style="margin: 5px 10px 0 10px;" for="radioOption" value="Option #{status.index + 1}" />
+                                <p:selectBooleanCheckbox itemLabel="Option #{status.index + 1}" value="#{answer.isAnswer}">
+                                    <p:ajax process="@this formCreateNewQuestion" update="formCreateNewQuestion" listener="#{quizManagementManagedBean.setQuestionAnswer}" />
+                                    <f:attribute name="answerIndex" value="#{status.index}" />
+                                    <f:attribute name="questionType" value="new" />
+                                </p:selectBooleanCheckbox>
 
-                                <p:commandLink process="@this" update="formCreateNewQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
+                                <p:commandLink process="@this formCreateNewQuestion" update="formCreateNewQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
                                     <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
                                     <f:attribute name="questionType" value="new" />
                                     <f:attribute name="answerToDelete" value="#{answer}" />
@@ -304,7 +325,7 @@
 
             </p:dialog>
 
-            <p:dialog id="dialogEditQuestion" widgetVar="dialogEditQuestion" header="Edit Question" closable="true" position="center center" onShow="PF('dialogEditQuestion').initPosition()">
+            <p:dialog id="dialogEditQuestion" widgetVar="dialogEditQuestion" header="Edit Question" closable="true" position="center center" onShow="PF('dialogEditQuestion').initPosition()" onHide="#{quizManagementManagedBean.clearTempVariables()}">
 
                 <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogCreateNewQuiz').show(); PF('dialogEditQuestion').hide()" />
 
@@ -333,18 +354,15 @@
 
                         <h:panelGrid>
 
-                            <p:selectOneRadio id="selectAnswer" value="#{quizManagementManagedBean.answerIndex}" layout="custom">
-                                <c:forEach items="#{quizManagementManagedBean.questionToEdit.answers}" var="answer" varStatus="idx">
-                                    <f:selectItem itemValue="#{idx.index}"/>
-                                </c:forEach>
-                            </p:selectOneRadio>
-
                             <p:repeat value="#{quizManagementManagedBean.questionToEdit.answers}" var="answer" varStatus="status">
 
-                                <p:radioButton id="radioOption" for="formEditQuestion:selectAnswer" itemIndex="#{status.index}" />
-                                <h:outputLabel style="margin: 5px 10px 0 10px;" for="radioOption" value="Option #{status.index + 1}" />
+                                <p:selectBooleanCheckbox id="answerBooleanCheckbox" itemLabel="Option #{status.index + 1}" value="#{answer.isAnswer}">
+                                    <p:ajax process="@this formEditQuestion" update="formEditQuestion" listener="#{quizManagementManagedBean.setQuestionAnswer}" />
+                                    <f:attribute name="answerIndex" value="#{status.index}" />
+                                    <f:attribute name="questionType" value="existing" />
+                                </p:selectBooleanCheckbox>
 
-                                <p:commandLink process="@this" update="formEditQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
+                                <p:commandLink process="@this formEditQuestion" update="formEditQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
                                     <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
                                     <f:attribute name="answerToDelete" value="#{answer}" />
                                     <f:attribute name="questionType" value="existing" />
@@ -375,9 +393,7 @@
                         <p:commandButton process="@this formEditQuestion" update="formEditQuestion" icon="fa fa-plus" value="Add Answer Choice" actionListener="#{quizManagementManagedBean.addNewAnswer}">
                             <f:attribute name="questionType" value="existing" />
                         </p:commandButton>
-                        <p:commandButton process="@this formEditQuestion" update="formEditQuestion formCreateNewQuiz:formAllQuestions:dataGridAllQuestions" icon="fa fa-pencil" value="Amend Question" actionListener="#{quizManagementManagedBean.amendQuestion}" oncomplete="PF('dialogCreateNewQuiz').show(); PF('dialogEditQuestion').hide()">
-                            <f:attribute name="questionType" value="existing" />
-                        </p:commandButton>
+                        <p:commandButton process="@this formEditQuestion" update="formEditQuestion formCreateNewQuiz:formAllQuestions:dataGridAllQuestions" icon="fa fa-pencil" value="Amend Question" oncomplete="PF('dialogCreateNewQuiz').show(); PF('dialogEditQuestion').hide()" />
                     </div>
 
                 </h:form>
@@ -388,7 +404,9 @@
 
                 <h:form id="formUpdateQuiz">
 
-                    <p:tabView id="updateTabView">
+                    <p:tabView id="updateTabView" activeIndex="#{quizManagementManagedBean.currentTabIndex}">
+
+                        <p:ajax update="formUpdateQuiz" event="tabChange" listener="#{quizManagementManagedBean.onTabChange}"/>
 
                         <p:tab title="Details">
 
@@ -486,15 +504,16 @@
                     </p:tabView>
 
                     <div style="text-align: center; margin-bottom: 20px;">
-                        <p:commandButton style="text-align: right;" icon="fa fa-plus" value="Add New Question" process="@this" oncomplete="PF('dialogAddNewQuestion').show(); PF('dialogUpdateQuiz').hide()" />
-                        <p:commandButton style="text-align: left;" value="Update Quiz" update="formAllQuizzes:dataTableAllQuizzes" actionListener="#{quizManagementManagedBean.updateQuiz}" />
+                        <p:commandButton rendered="#{quizManagementManagedBean.currentTabIndex == 1}" style="margin-bottom: 20px;" icon="fa fa-plus" value="Add New Question" process="@this" oncomplete="PF('dialogAddNewQuestion').show(); PF('dialogUpdateQuiz').hide()" />
+                        <br />
+                        <p:commandButton value="Update Quiz" update="formAllQuizzes:dataTableAllQuizzes" actionListener="#{quizManagementManagedBean.updateQuiz}" />
                     </div>
 
                 </h:form>
 
             </p:dialog>
 
-            <p:dialog id="dialogAddNewQuestion" widgetVar="dialogAddNewQuestion" header="Create New Question" closable="true" position="center center" onShow="PF('dialogAddNewQuestion').initPosition()">
+            <p:dialog id="dialogAddNewQuestion" widgetVar="dialogAddNewQuestion" header="Create New Question" closable="true" position="center center" onShow="PF('dialogAddNewQuestion').initPosition()" onHide="#{quizManagementManagedBean.clearTempVariables()}">
 
                 <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogUpdateQuiz').show(); PF('dialogAddNewQuestion').hide()" />
 
@@ -523,18 +542,15 @@
 
                         <h:panelGrid>
 
-                            <p:selectOneRadio id="selectAnswer" value="#{quizManagementManagedBean.answerIndex}" layout="custom">
-                                <c:forEach items="#{quizManagementManagedBean.newQuestion.answers}" var="answer" varStatus="idx">
-                                    <f:selectItem itemValue="#{idx.index}"/>
-                                </c:forEach>
-                            </p:selectOneRadio>
-
                             <p:repeat value="#{quizManagementManagedBean.newQuestion.answers}" var="answer" varStatus="status">
 
-                                <p:radioButton id="radioOption" for="formAddNewQuestion:selectAnswer" itemIndex="#{status.index}" />
-                                <h:outputLabel style="margin: 5px 10px 0 10px;" for="radioOption" value="Option #{status.index + 1}" />
+                                <p:selectBooleanCheckbox itemLabel="Option #{status.index + 1}" value="#{answer.isAnswer}">
+                                    <p:ajax process="@this formAddNewQuestion" update="formAddNewQuestion" listener="#{quizManagementManagedBean.setQuestionAnswer}" />
+                                    <f:attribute name="answerIndex" value="#{status.index}" />
+                                    <f:attribute name="questionType" value="new" />
+                                </p:selectBooleanCheckbox>
 
-                                <p:commandLink process="@this" update="formAddNewQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
+                                <p:commandLink process="@this formAddNewQuestion" update="formAddNewQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
                                     <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
                                     <f:attribute name="questionType" value="new" />
                                     <f:attribute name="answerToDelete" value="#{answer}" />
@@ -574,7 +590,7 @@
 
             </p:dialog>
 
-            <p:dialog id="dialogUpdateQuestion" widgetVar="dialogUpdateQuestion" header="Edit Question" closable="true" position="center center" onShow="PF('dialogUpdateQuestion').initPosition()">
+            <p:dialog id="dialogUpdateQuestion" widgetVar="dialogUpdateQuestion" header="Edit Question" closable="true" position="center center" onShow="PF('dialogUpdateQuestion').initPosition()" onHide="#{quizManagementManagedBean.clearTempVariables()}">
 
                 <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogUpdateQuiz').show(); PF('dialogUpdateQuestion').hide()" />
 
@@ -603,18 +619,15 @@
 
                         <h:panelGrid>
 
-                            <p:selectOneRadio id="selectAnswer" value="#{quizManagementManagedBean.answerIndex}" layout="custom">
-                                <c:forEach items="#{quizManagementManagedBean.questionToEdit.answers}" var="answer" varStatus="idx">
-                                    <f:selectItem itemValue="#{idx.index}"/>
-                                </c:forEach>
-                            </p:selectOneRadio>
-
                             <p:repeat value="#{quizManagementManagedBean.questionToEdit.answers}" var="answer" varStatus="status">
 
-                                <p:radioButton id="radioOption" for="formUpdateQuestion:selectAnswer" itemIndex="#{status.index}" />
-                                <h:outputLabel style="margin: 5px 10px 0 10px;" for="radioOption" value="Option #{status.index + 1}" />
+                                <p:selectBooleanCheckbox itemLabel="Option #{status.index + 1}" value="#{answer.isAnswer}">
+                                    <p:ajax process="@this formUpdateQuestion" update="formUpdateQuestion" listener="#{quizManagementManagedBean.setQuestionAnswer}" />
+                                    <f:attribute name="answerIndex" value="#{status.index}" />
+                                    <f:attribute name="questionType" value="existing" />
+                                </p:selectBooleanCheckbox>
 
-                                <p:commandLink process="@this" update="formUpdateQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
+                                <p:commandLink process="@this formUpdateQuestion" update="formUpdateQuestion:answerList" title="Delete Answer" actionListener="#{quizManagementManagedBean.deleteAnswer}">
                                     <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
                                     <f:attribute name="answerToDelete" value="#{answer}" />
                                     <f:attribute name="questionType" value="existing" />
@@ -645,9 +658,7 @@
                         <p:commandButton process="@this formUpdateQuestion" update="formUpdateQuestion" icon="fa fa-plus" value="Add Answer Choice" actionListener="#{quizManagementManagedBean.addNewAnswer}">
                             <f:attribute name="questionType" value="existing" />
                         </p:commandButton>
-                        <p:commandButton process="@this formUpdateQuestion" update="formUpdateQuestion formUpdateQuiz:updateTabView:dataGridAllQuestions" icon="fa fa-pencil" value="Amend Question" actionListener="#{quizManagementManagedBean.amendQuestion}" oncomplete="PF('dialogUpdateQuiz').show(); PF('dialogUpdateQuestion').hide()">
-                            <f:attribute name="questionType" value="existing" />
-                        </p:commandButton>
+                        <p:commandButton process="@this formUpdateQuestion" update="formUpdateQuestion formUpdateQuiz:updateTabView:dataGridAllQuestions" icon="fa fa-pencil" value="Amend Question" oncomplete="PF('dialogUpdateQuiz').show(); PF('dialogUpdateQuestion').hide()" />
                     </div>
 
                 </h:form>

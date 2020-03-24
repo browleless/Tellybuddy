@@ -9,14 +9,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
+import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.event.TabChangeEvent;
 import util.exception.DeleteAnswerException;
@@ -35,14 +35,6 @@ import util.exception.QuizNotFoundException;
 
 public class QuizManagementManagedBean implements Serializable {
 
-    public int getQuestionToEditIndex() {
-        return questionToEditIndex;
-    }
-
-    public void setQuestionToEditIndex(int questionToEditIndex) {
-        this.questionToEditIndex = questionToEditIndex;
-    }
-
     @EJB
     private QuizSessionBeanLocal quizSessionBeanLocal;
 
@@ -52,7 +44,6 @@ public class QuizManagementManagedBean implements Serializable {
     private Integer quizUnitsWorth;
 
     private List<Question> questions;
-    private int answerIndex;
 
     private Question newQuestion;
 
@@ -69,6 +60,8 @@ public class QuizManagementManagedBean implements Serializable {
 
     private Quiz quizToUpdate;
 
+    private int currentTabIndex;
+
     public QuizManagementManagedBean() {
 
         dateTimeNow = new Date();
@@ -77,6 +70,7 @@ public class QuizManagementManagedBean implements Serializable {
         dateToday.setMinutes(0);
         dateToday.setSeconds(0);
         selectedFilter = "Active";
+        currentTabIndex = 0;
         initialiseState();
     }
 
@@ -99,8 +93,6 @@ public class QuizManagementManagedBean implements Serializable {
 
         String quizType = (String) event.getComponent().getAttributes().get("quizType");
 
-        newQuestion.getAnswers().get(answerIndex).setIsAnswer(Boolean.TRUE);
-
         if (quizType.equals("new")) {
             getQuestions().add(getNewQuestion());
         } else if (quizType.equals("existing")) {
@@ -108,7 +100,6 @@ public class QuizManagementManagedBean implements Serializable {
         }
 
         setNewQuestion(new Question());
-        setAnswerIndex(-1);
     }
 
     public void addNewAnswer(ActionEvent event) {
@@ -174,25 +165,6 @@ public class QuizManagementManagedBean implements Serializable {
         }
     }
 
-    public void amendQuestion(ActionEvent event) {
-
-        for (Answer answer : questionToEdit.getAnswers()) {
-            answer.setIsAnswer(Boolean.FALSE);
-        }
-
-        questionToEdit.getAnswers().get(answerIndex).setIsAnswer(Boolean.TRUE);
-
-        String questionType = (String) event.getComponent().getAttributes().get("questionType");
-
-        if (questionType.equals("new")) {
-            getQuestions().set(questionToEditIndex, questionToEdit);
-        } else if (questionType.equals("existing")) {
-            quizToUpdate.getQuestions().set(questionToEditIndex, questionToEdit);
-        }
-
-        setAnswerIndex(-1);
-    }
-
     public void deleteExistingQuestion(ActionEvent event) {
 
         Question existingQuestionToDelete = (Question) event.getComponent().getAttributes().get("existingQuestionToDelete");
@@ -216,10 +188,12 @@ public class QuizManagementManagedBean implements Serializable {
 
     public long calculateTimerTime(Quiz quiz) {
 
-        if (quiz.getOpenDate().before(new Date())) {
+        if (quiz.getOpenDate().before(dateTimeNow) && quiz.getExpiryDate().after(dateTimeNow)) {
             return (quiz.getExpiryDate().getTime() - dateTimeNow.getTime()) / 1000;
-        } else {
+        } else if (quiz.getOpenDate().after(dateTimeNow)) {
             return (quiz.getOpenDate().getTime() - dateTimeNow.getTime()) / 1000;
+        } else {
+            return (dateTimeNow.getTime() - quiz.getExpiryDate().getTime()) / 1000;
         }
     }
 
@@ -229,7 +203,43 @@ public class QuizManagementManagedBean implements Serializable {
             setQuizzes(quizSessionBeanLocal.retrieveActiveQuizzes());
         } else if (selectedFilter.equals("Upcoming")) {
             setQuizzes(quizSessionBeanLocal.retrieveUpcomingQuizzes());
+        } else if (selectedFilter.equals("Past")) {
+            setQuizzes(quizSessionBeanLocal.retirevePastQuizzes());
         }
+    }
+
+    public void setQuestionAnswer(AjaxBehaviorEvent event) {
+
+        int answerIndex = (int) event.getComponent().getAttributes().get("answerIndex");
+        String questionType = (String) event.getComponent().getAttributes().get("questionType");
+
+        if (questionType.equals("new")) {
+            for (int i = 0; i < newQuestion.getAnswers().size(); i++) {
+                if (i != answerIndex || (i == answerIndex && newQuestion.getAnswers().get(i).getIsAnswer() == false)) {
+                    newQuestion.getAnswers().get(i).setIsAnswer(Boolean.FALSE);
+                }
+            }
+        } else if (questionType.equals("existing")) {
+            for (int i = 0; i < questionToEdit.getAnswers().size(); i++) {
+                if (i != answerIndex || (i == answerIndex && questionToEdit.getAnswers().get(i).getIsAnswer() == false)) {
+                    questionToEdit.getAnswers().get(i).setIsAnswer(Boolean.FALSE);
+                }
+            }
+        }
+    }
+
+    public void clearTempVariables() {
+
+        this.questionToEdit = null;
+        this.newQuestion = null;
+    }
+
+    public void onTabChange(TabChangeEvent event) {
+
+        Tab activeTab = event.getTab();
+        currentTabIndex = ((TabView) event.getSource()).getChildren().indexOf(activeTab);
+
+        System.out.println(currentTabIndex);
     }
 
     public String getQuizName() {
@@ -288,14 +298,6 @@ public class QuizManagementManagedBean implements Serializable {
         this.dateTimeNow = dateTimeNow;
     }
 
-    public int getAnswerIndex() {
-        return answerIndex;
-    }
-
-    public void setAnswerIndex(int answerIndex) {
-        this.answerIndex = answerIndex;
-    }
-
     public Question getQuestionToEdit() {
         return questionToEdit;
     }
@@ -342,6 +344,22 @@ public class QuizManagementManagedBean implements Serializable {
 
     public void setQuizToUpdate(Quiz quizToUpdate) {
         this.quizToUpdate = quizToUpdate;
+    }
+
+    public int getQuestionToEditIndex() {
+        return questionToEditIndex;
+    }
+
+    public void setQuestionToEditIndex(int questionToEditIndex) {
+        this.questionToEditIndex = questionToEditIndex;
+    }
+
+    public int getCurrentTabIndex() {
+        return currentTabIndex;
+    }
+
+    public void setCurrentTabIndex(int currentTabIndex) {
+        this.currentTabIndex = currentTabIndex;
     }
 
 }
