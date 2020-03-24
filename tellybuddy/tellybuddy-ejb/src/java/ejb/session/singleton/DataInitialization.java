@@ -11,6 +11,7 @@ import entity.Announcement;
 import entity.Category;
 
 import entity.Employee;
+import entity.FamilyGroup;
 import entity.PhoneNumber;
 import entity.Plan;
 import entity.Subscription;
@@ -59,11 +60,16 @@ public class DataInitialization {
 
     private void initialiseData() {
         try {
-            Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER);
+
+            FamilyGroup familyGroup1 = new FamilyGroup("IS3106 Warriors");
+            em.persist(familyGroup1);
+            em.flush();
+
+            Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER, "path");
             em.persist(newEmployee);
             em.flush();
 
-            newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE);
+            newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE,"path");
             em.persist(newEmployee);
             em.flush();
 
@@ -85,9 +91,10 @@ public class DataInitialization {
             em.persist(customer);
             em.flush();
 
+            familyGroup1.getCustomers().add(customer);
+
             Subscription subscription = new Subscription(10, 10, 10);
             subscription.setCustomer(customer);
-            subscription.setIsActive(true);
             subscription.setPlan(newPlan);
             subscription.setPhoneNumber(phoneno1);
             subscription.setSubscriptionStartDate(new Date(2020, 4, 20));
@@ -97,7 +104,6 @@ public class DataInitialization {
 
             subscription = new Subscription(20, 5, 5);
             subscription.setCustomer(customer);
-            subscription.setIsActive(true);
             subscription.setPlan(newPlan);
             subscription.setPhoneNumber(phoneno2);
             subscription.setSubscriptionStartDate(new Date(2020, 3, 15));
@@ -109,9 +115,10 @@ public class DataInitialization {
             em.persist(customer);
             em.flush();
 
+            familyGroup1.getCustomers().add(customer);
+
             subscription = new Subscription(20, 5, 5);
             subscription.setCustomer(customer);
-            subscription.setIsActive(true);
             subscription.setPlan(newPlan);
             subscription.setPhoneNumber(phoneno3);
             subscription.setSubscriptionStartDate(new Date(2020, 4, 1));

@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+import util.enumeration.CustomerStatusEnum;
 import util.security.CryptographicHelper;
 
 /**
@@ -116,6 +117,10 @@ public class Customer implements Serializable {
 
     @Column(nullable = false)
     @NotNull
+    private CustomerStatusEnum customerStatusEnum;
+    
+    @Column(nullable = false)
+    @NotNull
     @Min(0)
     @Max(1000)
     private Integer consecutiveMonths;
@@ -191,6 +196,7 @@ public class Customer implements Serializable {
         this.email = email;
         this.newNric = newNric;
         this.newNricImagePath = newNricImagePath;
+        this.customerStatusEnum = CustomerStatusEnum.PENDING;
         setPassword(password);
     }
 
@@ -453,6 +459,14 @@ public class Customer implements Serializable {
 
     public void setIsApproved(Boolean isApproved) {
         this.isApproved = isApproved;
+    }
+
+    public CustomerStatusEnum getCustomerStatusEnum() {
+        return customerStatusEnum;
+    }
+
+    public void setCustomerStatusEnum(CustomerStatusEnum customerStatusEnum) {
+        this.customerStatusEnum = customerStatusEnum;
     }
 
 }

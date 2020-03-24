@@ -25,6 +25,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import util.enumeration.SubscriptionStatusEnum;
 import util.exception.CreateNewSubscriptionException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InputDataValidationException;
@@ -117,7 +118,14 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         }
 
     }
-
+    public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException{
+        Subscription subscriptionToApprove = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+        subscriptionToApprove.setIsActive(Boolean.TRUE);
+        subscriptionToApprove.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
+        subscriptionToApprove.setSubscriptionStartDate(Calendar.getInstance().getTime());
+        
+    }
+    
     @Override
     public void updateSubscription(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException {
         Set<ConstraintViolation<Subscription>> constraintViolations = validator.validate(subscription);
@@ -178,6 +186,12 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     }
 
     @Override
+    public List<Subscription> retrieveSubscriptionsByFilter(SubscriptionStatusEnum filterString){
+        Query query = em.createQuery("Select s FROM Subscription s WHERE s.subscriptionStatusEnum = :filterString");
+        query.setParameter("filterString", filterString);
+        return query.getResultList();
+    }
+    @Override
     public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer){
         Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer");
         q.setParameter("inCustomer",customer);
@@ -201,6 +215,8 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     public void terminateSubscription(Long customerId, Long subscriptionId){
         Subscription subscriptionToTerminate = em.find(Subscription.class, subscriptionId);
         Date today = Calendar.getInstance().getTime();
+        
+        subscriptionToTerminate.setSubscriptionStatusEnum(SubscriptionStatusEnum.DISABLED);
         subscriptionToTerminate.setSubscriptionEndDate(today);
         subscriptionToTerminate.setIsActive(false);
         

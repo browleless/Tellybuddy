@@ -48,7 +48,7 @@ public class Subscription implements Serializable {
     @Column(nullable = false)
     @NotNull
     private HashMap<String, Integer> smsUnits;
-    
+
     @Column(nullable = false)
     @NotNull
     private SubscriptionStatusEnum subscriptionStatusEnum;
@@ -87,7 +87,7 @@ public class Subscription implements Serializable {
         this.dataUnits = new HashMap<>();
         this.smsUnits = new HashMap<>();
         this.talkTimeUnits = new HashMap<>();
-        this.subscriptionStatusEnum = subscriptionStatusEnum.PENDINGAPPROVAL;
+        this.subscriptionStatusEnum = subscriptionStatusEnum.PENDING;
     }
 
     public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits) {
@@ -220,6 +220,18 @@ public class Subscription implements Serializable {
 
     public List<Integer> getDataAsList() {
         return new ArrayList<Integer>(this.dataUnits.values());
+    }
+
+    public Integer getAllocatedTalkTime() {
+        return this.talkTimeUnits.get("allocated");
+    }
+
+    public Integer getAllocatedData() {
+        return this.dataUnits.get("allocated");
+    }
+
+    public Integer getAllocatedSms() {
+        return this.smsUnits.get("allocated");
     }
 
     public String getFormattedStartDate() {

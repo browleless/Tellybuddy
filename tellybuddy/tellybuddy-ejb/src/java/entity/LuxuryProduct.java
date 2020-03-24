@@ -35,8 +35,8 @@ public class LuxuryProduct extends Product implements Serializable {
         this.productItems = new ArrayList<>();
     }
 
-    public LuxuryProduct(String serialNumber, String skuCode, String name, String description, BigDecimal price, Integer quantityOnHand, Integer reorderQuantity) {
-        super(skuCode, name, description, price, quantityOnHand, reorderQuantity);
+    public LuxuryProduct(String serialNumber, String skuCode, String name, String description, BigDecimal price, Integer quantityOnHand, Integer reorderQuantity, String productImagePath) {
+        super(skuCode, name, description, price, quantityOnHand, reorderQuantity, productImagePath);
         this.productItems = new ArrayList<>();
         this.serialNumber = serialNumber;
     }

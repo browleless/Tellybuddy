@@ -9,9 +9,10 @@ import ejb.session.stateless.CategorySessionBeanLocal;
 import ejb.session.stateless.ProductSessionBeanLocal;
 import ejb.session.stateless.TagSessionBeanLocal;
 import entity.Category;
+import entity.LuxuryProduct;
 import entity.Product;
+import entity.ProductItem;
 import entity.Tag;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -21,8 +22,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -65,7 +64,11 @@ public class ProductManagementManagedBean implements Serializable {
     private List<Product> allProducts;
     private List<Product> filteredProducts;
 
+    private String productType;
+
     private Product newProduct;
+    //private LuxuryProduct newLuxuryProduct;
+
     private Long categoryIdNew;
     private List<Long> tagIdsNew;
     private List<Category> allCategories;
@@ -94,10 +97,19 @@ public class ProductManagementManagedBean implements Serializable {
     }
 
     public void createNewProduct(ActionEvent ae) {
+
+        if (this.productType.equals("Luxury Product")) {
+            this.newProduct = new LuxuryProduct();
+        } else {
+            this.newProduct = new Product();
+        }
+
         if (categoryIdNew == 0) {
             categoryIdNew = null;
         }
-
+        String filePath = this.saveUploadedProductImage();
+        this.newProduct.setProductImagePath(filePath);
+        
         try {
 //            if (productImageFile == null) {
 //                System.out.println("Prodcut has REACHED HERE ______________________________________----------------------");
@@ -110,11 +122,19 @@ public class ProductManagementManagedBean implements Serializable {
                 filteredProducts.add(p);
             }
 
-            newProduct = new Product();
+            if (this.productType.equals("Luxury Product")) {
+                Integer num = newProduct.getQuantityOnHand();
+                List<ProductItem> productItems = (LuxuryProduct) newProduct.getProductItems();
+
+                for (Integer i : num) {
+                    //luxury item has to have a list of product item
+                }
+            }
+            this.newProduct = new Product();
             categoryIdNew = null;
             tagIdsNew = null;
             productImageFile = null;
-            
+
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New product created successfully (Product ID: " + p.getProductId() + ")", null));
         } catch (InputDataValidationException | CreateNewProductException | ProductSkuCodeExistException | UnknownPersistenceException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating the new product: " + ex.getMessage(), null));
@@ -188,10 +208,9 @@ public class ProductManagementManagedBean implements Serializable {
         this.productImageFile = event.getFile();
         if (productImageFile != null) {
             String filePath = this.saveUploadedProductImage();
-            FacesMessage message = new FacesMessage("Successful", productImageFile.getFileName() + " is uploaded.");
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + productImageFile.getFileName(), null);
             FacesContext.getCurrentInstance().addMessage(null, message);
             System.out.println(filePath);
-            this.newProduct.setProductImagePath(filePath);
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "File upload unsuccessful. Please try again!", null));
 //            System.out.println("Uploaded file stilll null!!");
@@ -246,14 +265,6 @@ public class ProductManagementManagedBean implements Serializable {
 
     public void setFilteredProducts(List<Product> filteredProducts) {
         this.filteredProducts = filteredProducts;
-    }
-
-    public Product getNewProduct() {
-        return newProduct;
-    }
-
-    public void setNewProduct(Product newProduct) {
-        this.newProduct = newProduct;
     }
 
     public Long getCategoryIdNew() {
@@ -350,6 +361,22 @@ public class ProductManagementManagedBean implements Serializable {
 
     public void setViewProductManagedBean(ViewProductManagedBean viewProductManagedBean) {
         this.viewProductManagedBean = viewProductManagedBean;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
+
+    public Product getNewProduct() {
+        return newProduct;
+    }
+
+    public void setNewProduct(Product newProduct) {
+        this.newProduct = newProduct;
     }
 
 }

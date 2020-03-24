@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.Set;
 import javax.ejb.Local;
 import javax.validation.ConstraintViolation;
+import util.enumeration.SubscriptionStatusEnum;
 import util.exception.CreateNewSubscriptionException;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
 import util.exception.PlanAlreadyDisabledException;
 import util.exception.SubscriptionExistException;
+import util.exception.SubscriptionNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -37,6 +39,10 @@ public interface SubscriptionSessonBeanLocal {
     public void terminateSubscription(Long customerId, Long subscriptionId);
 
     public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer);
+    
+    public List<Subscription> retrieveSubscriptionsByFilter(SubscriptionStatusEnum filterString);
 
     public List<Subscription> retrieveAllSubscriptions();
+
+    public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException;
 }

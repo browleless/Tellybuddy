@@ -61,9 +61,9 @@
                     <h:outputText value="#{customer.email}"  style="text-align: right;"/>
                 </p:column>
 
-<!--                <p:column headerText="Status" sortBy="#{customer.status}" filterBy="#{customer.status}" filterMatchMode="contains" style="text-align: right;">
-                    <h:outputText value="#{customer.status}"  style="text-align: right;"/>
-                </p:column>-->
+                <p:column headerText="Status" sortBy="#{customer.customerStatusEnum}" filterBy="#{customer.customerStatusEnum}" filterMatchMode="contains" style="text-align: right;">
+                    <h:outputText value="#{customer.customerStatusEnum}"  style="text-align: right;"/>
+                </p:column>
 
                 <p:column style="width:16px">
                     <p:rowToggler/>
@@ -77,7 +77,7 @@
 
                         <p:outputPanel   style="width:100%; border-left: 1px; border-left-color: #999999">
                             <p:panelGrid  columns="4" columnClasses="ui-grid-col-2, ui-grid-col-4,ui-grid-col-2, ui-grid-col-4">
-
+                               
                                 <h:outputText value="First Name:" />
                                 <h:outputText value="#{customer.firstName}" style="font-weight: bold"/>
 
@@ -94,13 +94,15 @@
                                 <h:outputText value="#{customer.subscriptions.size()}" style="font-weight: bold"/>
 
                                 <h:outputText value="Address:" />
-                                <h:outputText value="#{customer.address} #{customer.postalCode}" style="font-weight: bold"/>
+                                <h:outputText value="Customer not yet approved!" rendered="#{customer.address==null}" style="font-weight: lighter"/>
+                                <h:outputText value="#{customer.address} #{customer.postalCode}" rendered="#{customer.address!=null}" style="font-weight: bold"/>
 
                                 <h:outputText value="Loyalty Points:" />
                                 <h:outputText value="#{customer.loyaltyPoints}" style="font-weight: bold"/>
 
                                 <h:outputText value="NRIC:" />
-                                <h:outputText value="#{customer.nric}" style="font-weight: bold"/>
+                                <h:outputText value="Customer not yet approved!" rendered="#{customer.nric==null}" style="font-weight: lighter"/>
+                                <h:outputText value="#{customer.nric}" rendered="#{customer.nric!=null}" style="font-weight: bold"/>
 
                                 <h:outputText value="Approval Status:" />
                                 <h:outputText value="#{customer.isApproved}" style="font-weight: bold"/>

@@ -22,6 +22,7 @@ import javax.persistence.Query;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import util.enumeration.CustomerStatusEnum;
 import util.exception.CustomerExistException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
@@ -95,6 +96,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         customerToUpdate.setNricImagePath(customer.getNewNricImagePath());
         customerToUpdate.setNewNricImagePath(null);
         
+        customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.ACTIVE);
         customerToUpdate.setIsApproved(true);
 
     }
