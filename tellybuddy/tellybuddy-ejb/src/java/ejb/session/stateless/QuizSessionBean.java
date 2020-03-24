@@ -5,12 +5,15 @@ import entity.Question;
 import entity.Quiz;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import util.exception.AnswerNotFoundException;
 import util.exception.DeleteAnswerException;
 import util.exception.DeleteQuestionException;
 import util.exception.DeleteQuizException;
@@ -123,9 +126,84 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
 
             Quiz quizToUpdate = retrieveQuizByQuizId(quiz.getQuizId());
 
+            quizToUpdate.setName(quiz.getName());
             quizToUpdate.setOpenDate(quiz.getOpenDate());
             quizToUpdate.setExpiryDate(quiz.getExpiryDate());
             quizToUpdate.setUnitsWorth(quiz.getUnitsWorth());
+
+            List<Question> newQuizQuestions = quiz.getQuestions();
+            List<Question> questionsToDelete = new ArrayList<>();
+            List<Question> questionsToAdd = new ArrayList<>();
+
+            for (Question questionToCheck : quizToUpdate.getQuestions()) {
+                if (!newQuizQuestions.contains(questionToCheck)) {
+                    questionsToDelete.add(questionToCheck);
+                } else {
+                    for (Question questionToUpdate : newQuizQuestions) {
+                        if (questionToCheck.equals(questionToUpdate)) {
+                            try {
+                                questionSessionBeanLocal.updateQuestion(questionToUpdate);
+                                for (Answer answerToUpdate : questionToUpdate.getAnswers()) {
+                                    answerSessionBeanLocal.updateAnswer(answerToUpdate);
+                                }
+                                break;
+                            } catch (QuestionNotFoundException | AnswerNotFoundException ex) {
+                                // won't happen
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (Question questionToCheck : newQuizQuestions) {
+                if (!quizToUpdate.getQuestions().contains(questionToCheck)) {
+                    questionsToAdd.add(questionToCheck);
+                }
+            }
+
+            for (Question questionToAdd : questionsToAdd) {
+
+                List<Answer> answersToAdd = new ArrayList<>();
+
+                for (Answer answerToAdd : questionToAdd.getAnswers()) {
+                    answersToAdd.add(answerToAdd);
+                }
+
+                questionToAdd.getAnswers().clear();
+
+                questionSessionBeanLocal.createNewQuestion(quizToUpdate, questionToAdd);
+
+                for (Answer answerToAdd : answersToAdd) {
+                    try {
+                        answerSessionBeanLocal.createNewAnswer(questionToAdd, answerToAdd);
+                    } catch (QuestionNotFoundException ex) {
+                        // won't happen
+                        ex.printStackTrace();
+                    }
+                }
+            }
+
+            for (Question questionToDelete : questionsToDelete) {
+                try {
+
+                    List<Answer> answersToDelete = new ArrayList<>();
+
+                    for (Answer answerToDelete : questionToDelete.getAnswers()) {
+                        answersToDelete.add(answerToDelete);
+                    }
+
+                    for (Answer answerToDelete : answersToDelete) {
+                        answerSessionBeanLocal.deleteAnswer(answerToDelete);
+                    }
+
+                    questionSessionBeanLocal.deleteQuestion(questionToDelete);
+
+                } catch (AnswerNotFoundException | DeleteAnswerException | DeleteQuestionException | QuestionNotFoundException ex) {
+                    // won't happen
+                    ex.printStackTrace();
+                }
+            }
 
         } else {
             throw new QuizNotFoundException("Quiz ID not provided for quiz to be updated");

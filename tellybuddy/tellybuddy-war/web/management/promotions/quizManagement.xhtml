@@ -375,7 +375,9 @@
                         <p:commandButton process="@this formEditQuestion" update="formEditQuestion" icon="fa fa-plus" value="Add Answer Choice" actionListener="#{quizManagementManagedBean.addNewAnswer}">
                             <f:attribute name="questionType" value="existing" />
                         </p:commandButton>
-                        <p:commandButton process="@this formEditQuestion" update="formEditQuestion formCreateNewQuiz:formAllQuestions:dataGridAllQuestions" icon="fa fa-pencil" value="Amend Question" actionListener="#{quizManagementManagedBean.amendQuestion}" oncomplete="PF('dialogCreateNewQuiz').show(); PF('dialogEditQuestion').hide()" />
+                        <p:commandButton process="@this formEditQuestion" update="formEditQuestion formCreateNewQuiz:formAllQuestions:dataGridAllQuestions" icon="fa fa-pencil" value="Amend Question" actionListener="#{quizManagementManagedBean.amendQuestion}" oncomplete="PF('dialogCreateNewQuiz').show(); PF('dialogEditQuestion').hide()">
+                            <f:attribute name="questionType" value="existing" />
+                        </p:commandButton>
                     </div>
 
                 </h:form>
@@ -407,6 +409,15 @@
                                     </p:column>
                                     <p:column>
                                         <p:inputText id="name" value="#{quizManagementManagedBean.quizToUpdate.name}" />
+                                    </p:column>
+                                </p:row>
+
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel for="unitsWorth" value="Units Worth: " />
+                                    </p:column>
+                                    <p:column>
+                                        <p:spinner id="unitsWorth" value="#{quizManagementManagedBean.quizToUpdate.unitsWorth}" />
                                     </p:column>
                                 </p:row>
 
@@ -476,7 +487,7 @@
 
                     <div style="text-align: center; margin-bottom: 20px;">
                         <p:commandButton style="text-align: right;" icon="fa fa-plus" value="Add New Question" process="@this" oncomplete="PF('dialogAddNewQuestion').show(); PF('dialogUpdateQuiz').hide()" />
-                        <p:commandButton style="text-align: left;" value="Update Quiz" process="@this" actionListener="#{quizManagementManagedBean.updateQuiz}" />
+                        <p:commandButton style="text-align: left;" value="Update Quiz" update="formAllQuizzes:dataTableAllQuizzes" actionListener="#{quizManagementManagedBean.updateQuiz}" />
                     </div>
 
                 </h:form>
@@ -634,7 +645,9 @@
                         <p:commandButton process="@this formUpdateQuestion" update="formUpdateQuestion" icon="fa fa-plus" value="Add Answer Choice" actionListener="#{quizManagementManagedBean.addNewAnswer}">
                             <f:attribute name="questionType" value="existing" />
                         </p:commandButton>
-                        <p:commandButton process="@this formUpdateQuestion" update="formUpdateQuestion formUpdateQuiz:updateTabView:dataGridAllQuestions" icon="fa fa-pencil" value="Amend Question" actionListener="#{quizManagementManagedBean.amendQuestion}" oncomplete="PF('dialogUpdateQuiz').show(); PF('dialogUpdateQuestion').hide()" />
+                        <p:commandButton process="@this formUpdateQuestion" update="formUpdateQuestion formUpdateQuiz:updateTabView:dataGridAllQuestions" icon="fa fa-pencil" value="Amend Question" actionListener="#{quizManagementManagedBean.amendQuestion}" oncomplete="PF('dialogUpdateQuiz').show(); PF('dialogUpdateQuestion').hide()">
+                            <f:attribute name="questionType" value="existing" />
+                        </p:commandButton>
                     </div>
 
                 </h:form>

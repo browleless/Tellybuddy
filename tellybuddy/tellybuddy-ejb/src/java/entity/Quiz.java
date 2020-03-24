@@ -125,7 +125,7 @@ public class Quiz implements Serializable {
     }
 
     public void setUnitsWorth(Integer unitsWorth) {
-        this.setUnitsWorth(unitsWorth);
+        this.unitsWorth = unitsWorth;
     }
 
     public List<QuizAttempt> getQuizAttempts() {

@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -180,7 +182,13 @@ public class QuizManagementManagedBean implements Serializable {
 
         questionToEdit.getAnswers().get(answerIndex).setIsAnswer(Boolean.TRUE);
 
-        getQuestions().set(questionToEditIndex, questionToEdit);
+        String questionType = (String) event.getComponent().getAttributes().get("questionType");
+
+        if (questionType.equals("new")) {
+            getQuestions().set(questionToEditIndex, questionToEdit);
+        } else if (questionType.equals("existing")) {
+            quizToUpdate.getQuestions().set(questionToEditIndex, questionToEdit);
+        }
 
         setAnswerIndex(-1);
     }
@@ -195,6 +203,15 @@ public class QuizManagementManagedBean implements Serializable {
 
     public void updateQuiz(ActionEvent event) {
 
+        try {
+            quizSessionBeanLocal.updateQuiz(quizToUpdate);
+            if ((quizToUpdate.getOpenDate().before(dateTimeNow) && selectedFilter.equals("Upcoming")) || (quizToUpdate.getOpenDate().after(dateTimeNow) && selectedFilter.equals("Active"))) {
+                quizzes.remove(quizToUpdate);
+            }
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Quiz updated successfully!", null));
+        } catch (QuizNotFoundException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while updating the quiz: " + ex.getMessage(), null));
+        }
     }
 
     public long calculateTimerTime(Quiz quiz) {
