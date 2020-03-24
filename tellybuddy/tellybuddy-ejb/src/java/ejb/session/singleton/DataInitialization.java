@@ -59,11 +59,11 @@ public class DataInitialization {
 
     private void initialiseData() {
         try {
-            Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER);
+            Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER, "path");
             em.persist(newEmployee);
             em.flush();
 
-            newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE);
+            newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE,"path");
             em.persist(newEmployee);
             em.flush();
 

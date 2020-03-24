@@ -56,18 +56,36 @@ public class Employee implements Serializable {
     @Column(nullable = false)
     @NotNull
     private AccessRightEnum accessRightEnum;
+    
+    @Column(nullable = false, length = 128)
+//    @NotNull
+    @Size(max = 128)
+    private String photoPath;
+    
+    
 
     public Employee() {
         this.salt = CryptographicHelper.getInstance().generateRandomString(32);
     }
 
-    public Employee(String username, String password, String firstName, String lastName, AccessRightEnum accessRightEnum) {
+
+    public Employee(String username, String password, String firstName, String lastName, AccessRightEnum accessRightEnum, String photoPath) {
+
         this();
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.accessRightEnum = accessRightEnum;
+        this.photoPath = photoPath;
         setPassword(password);
+    }
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
     public Long getEmployeeId() {
@@ -116,6 +134,10 @@ public class Employee implements Serializable {
         return password;
     }
 
+    public void setUpdatedPassword(String password){
+        this.password = password;
+    }
+    
     public void setPassword(String password) {
         if (password != null) {
             this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));

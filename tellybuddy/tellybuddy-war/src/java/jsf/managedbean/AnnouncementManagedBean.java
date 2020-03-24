@@ -43,9 +43,12 @@ public class AnnouncementManagedBean implements Serializable{
     private Announcement ongoingToUpdate;
 
     private Announcement newAnnouncement;
+    private String selectedFilter;
+    
 
     public AnnouncementManagedBean() {
         newAnnouncement = new Announcement();
+        selectedFilter = "Ongoing";
     }
 
     @PostConstruct
@@ -58,6 +61,7 @@ public class AnnouncementManagedBean implements Serializable{
     public void createNewAnnouncement(ActionEvent event) {
             Long newAnnouncementId = announcementSessionBeanLocal.createNewAnnouncement(getNewAnnouncement());
             announcements.add(newAnnouncement);
+            ongoingAnnouncements.add(newAnnouncement);
             setNewAnnouncement(new Announcement());
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New announcement created successfully (Announcement ID: " + newAnnouncementId + ")", null));
         
@@ -79,7 +83,13 @@ public class AnnouncementManagedBean implements Serializable{
         try {
             Announcement announcementToDelete = (Announcement) event.getComponent().getAttributes().get("announcementToDelete");
             announcementSessionBeanLocal.deleteAnnouncement(announcementToDelete.getAnnouncementId());
+            if(ongoingAnnouncements.contains(announcementToDelete)){
+                ongoingAnnouncements.remove(announcementToDelete);
+            }else{
+                expiredAnnouncements.remove(announcementToDelete);
+            }
             announcements.remove(announcementToDelete);
+            
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Announcement deleted successfully", null));
         } catch (AnnouncementNotFoundException ex) {
             Logger.getLogger(AnnouncementManagedBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -133,8 +143,25 @@ public class AnnouncementManagedBean implements Serializable{
         this.announcementToView = announcementToView;
     }
 
+    public String getSelectedFilter() {
+        return selectedFilter;
+    }
+
+    public void setSelectedFilter(String selectedFilter) {
+        this.selectedFilter = selectedFilter;
+    }
+
     public Announcement getOngoingToUpdate() {
         return ongoingToUpdate;
+    }
+    
+    public void doFilter() {
+
+        if (selectedFilter.equals("Ongoing")) {
+            announcements = ongoingAnnouncements;
+        } else if (selectedFilter.equals("Expired")) {
+            announcements = expiredAnnouncements;
+        }
     }
 
     public void setOngoingToUpdate(Announcement ongoingToUpdate) {

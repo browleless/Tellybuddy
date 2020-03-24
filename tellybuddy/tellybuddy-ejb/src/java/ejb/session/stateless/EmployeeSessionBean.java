@@ -34,6 +34,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     private final ValidatorFactory validatorFactory;
 
     private final Validator validator;
+    private String salt;
 
     public EmployeeSessionBean() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
@@ -125,13 +126,9 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
                 employeeToUpdate.setAccessRightEnum(employee.getAccessRightEnum());
                 employeeToUpdate.setFirstName(employee.getFirstName());
                 employeeToUpdate.setLastName(employee.getLastName());
-                String password = employee.getPassword();
-                if (password != null) {
-                    this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
-                } else {
-                    this.password = null;
-                }
-                employeeToUpdate.setPassword();
+                employeeToUpdate.setUpdatedPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(employee.getPassword() + employeeToUpdate.getSalt())));
+                entityManager.flush();
+
             }
         } else {
             throw new EmployeeNotFoundException("Employee ID not provided for staff to be updated");
