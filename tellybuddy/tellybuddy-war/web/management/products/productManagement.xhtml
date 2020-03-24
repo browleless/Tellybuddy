@@ -61,7 +61,7 @@
 
                             <p:outputPanel>
 
-                                <!--<p:graphicImage width="100%" value="#{product.productImagePath}"/>--> 
+                                <p:graphicImage width="100%" value="#{product.productImagePath}"/> 
 
                                 <h:outputText value="#{product.name}" />
                                 <br></br> <br></br>
@@ -103,6 +103,17 @@
                     <p:messages id="messagesCreateNewProduct" redisplay="false" />
 
                     <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="ProductType" value="Product Type" style="font-weight: bold;" /> 
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:selectOneRadio id="ProductType" value="#{productManagementManagedBean.productType}" required="true" unselectable="true" requiredMessage="Type of product must be specified" >
+                                    <f:selectItem itemLabel="Non-Luxury Product" itemValue="Non-Luxury Product" />
+                                    <f:selectItem itemLabel="Luxury Product" itemValue="Luxury Product" />
+                                </p:selectOneRadio>
+                            </p:column>
+                        </p:row>
 
                         <p:row>
                             <p:column>
@@ -215,6 +226,8 @@
                         <p:row>
                             <p:column colspan="3">
                                 <p:commandButton type="reset" value="Clear" />&nbsp;
+                                <p:commandButton  value="Create New Luxury Product" rendered="#{productManagementManagedBean.productType.equals('Luxury Product')}" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').show();" />
+                                <p:commandButton  value="Create New Non-Luxury Product" rendered="#{productManagementManagedBean.productType.equals('Non-Luxury Product')}" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').show();" />
                                 <p:commandButton  value="Create New Product" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').hide();" />
                             </p:column>
                         </p:row>
