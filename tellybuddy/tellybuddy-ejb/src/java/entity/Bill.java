@@ -35,6 +35,18 @@ public class Bill implements Serializable {
     @DecimalMin("0.00")
     private BigDecimal price;
     
+    @Column(nullable = false, precision = 5, scale = 2)
+    @NotNull
+    @Digits(integer = 3, fraction = 2)
+    @DecimalMin("0.00")
+    private BigDecimal addOnPrice;
+    
+    @Column(nullable = false, precision = 5, scale = 2)
+    @NotNull
+    @Digits(integer = 3, fraction = 2)
+    @DecimalMin("0.00")
+    private BigDecimal exceedPenaltyPrice;
+    
     @Column(nullable = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
@@ -53,16 +65,18 @@ public class Bill implements Serializable {
     
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
-    private UsageDetails usageDetail;
+    private UsageDetail usageDetail;
 
     public Bill() {
         this.paid = false;
     }
 
-    public Bill(BigDecimal price, Date date) {
+    public Bill(BigDecimal price, Date date, BigDecimal addOnPrice, BigDecimal exceedPenaltyPrice) {
         this();
         this.price = price;
         this.date = date;
+        this.addOnPrice = addOnPrice;
+        this.exceedPenaltyPrice = exceedPenaltyPrice;
     }
 
     public Long getBillId() {
@@ -138,12 +152,28 @@ public class Bill implements Serializable {
         this.customer = customer;
     }
 
-    public UsageDetails getUsageDetails() {
+    public UsageDetail getUsageDetail() {
         return usageDetail;
     }
 
-    public void setUsageDetails(UsageDetails usageDetails) {
-        this.usageDetail = usageDetails;
+    public void setUsageDetail(UsageDetail usageDetail) {
+        this.usageDetail = usageDetail;
+    }
+
+    public BigDecimal getAddOnPrice() {
+        return addOnPrice;
+    }
+
+    public void setAddOnPrice(BigDecimal addOnPrice) {
+        this.addOnPrice = addOnPrice;
+    }
+
+    public BigDecimal getExceedPenaltyPrice() {
+        return exceedPenaltyPrice;
+    }
+
+    public void setExceedPenaltyPrice(BigDecimal exceedPenaltyPrice) {
+        this.exceedPenaltyPrice = exceedPenaltyPrice;
     }
     
 }

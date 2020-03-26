@@ -71,7 +71,7 @@ public class Subscription implements Serializable {
     private Customer customer;
 
     @OneToMany(mappedBy = "subscription")
-    private List<UsageDetails> usageDetails;
+    private List<UsageDetail> usageDetails;
 
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -88,6 +88,18 @@ public class Subscription implements Serializable {
         this.smsUnits = new HashMap<>();
         this.talkTimeUnits = new HashMap<>();
         this.subscriptionStatusEnum = subscriptionStatusEnum.PENDING;
+        this.dataUnits.put("nextMonth", -1);
+        this.smsUnits.put("nextMonth", -1);
+        this.talkTimeUnits.put("nextMonth", -1);
+        this.dataUnits.put("donated", -1);
+        this.smsUnits.put("donated", -1);
+        this.talkTimeUnits.put("donated", -1);
+        this.dataUnits.put("addOn", -1);
+        this.smsUnits.put("addOn", -1);
+        this.talkTimeUnits.put("addOn", -1);
+        this.dataUnits.put("familyGroup", -1);
+        this.smsUnits.put("familyGroup", -1);
+        this.talkTimeUnits.put("familyGroup", -1);
     }
 
     public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits) {
@@ -162,11 +174,11 @@ public class Subscription implements Serializable {
         this.customer = customer;
     }
 
-    public List<UsageDetails> getUsageDetails() {
+    public List<UsageDetail> getUsageDetails() {
         return usageDetails;
     }
 
-    public void setUsageDetails(List<UsageDetails> usageDetails) {
+    public void setUsageDetails(List<UsageDetail> usageDetails) {
         this.usageDetails = usageDetails;
     }
 

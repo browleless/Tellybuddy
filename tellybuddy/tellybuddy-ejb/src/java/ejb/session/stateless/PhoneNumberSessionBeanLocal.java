@@ -9,7 +9,9 @@ import entity.PhoneNumber;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.DeletePhoneNumberException;
+import util.exception.PhoneNumberExistException;
 import util.exception.PhoneNumberNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -18,7 +20,7 @@ import util.exception.PhoneNumberNotFoundException;
 @Local
 public interface PhoneNumberSessionBeanLocal {
 
-    public Long createNewPhoneNumber(PhoneNumber newPhoneNumber);
+    public Long createNewPhoneNumber(PhoneNumber newPhoneNumber) throws PhoneNumberExistException, UnknownPersistenceException;
 
     public PhoneNumber retrievePhoneNumberByPhoneNumberId(Long phoneNumberId) throws PhoneNumberNotFoundException;
 
