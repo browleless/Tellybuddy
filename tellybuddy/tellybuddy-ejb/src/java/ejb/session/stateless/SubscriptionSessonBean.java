@@ -145,10 +145,10 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException {
 
         Subscription subscriptionToApprove = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
-//        subscriptionToApprove.setIsActive(Boolean.TRUE);
-//
-//        subscriptionToApprove.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
-//        subscriptionToApprove.setSubscriptionStartDate(Calendar.getInstance().getTime());
+        subscriptionToApprove.setIsActive(Boolean.TRUE);
+
+        subscriptionToApprove.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
+        subscriptionToApprove.setSubscriptionStartDate(Calendar.getInstance().getTime());
         usageDetailSessionBeanLocal.createNewUsageDetail(subscriptionToApprove);
 
         Date dateInAMonthsTime = new Date();
