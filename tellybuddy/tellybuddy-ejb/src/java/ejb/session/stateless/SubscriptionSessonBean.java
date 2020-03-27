@@ -176,9 +176,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 addOnPrice = subscriptionToUpdate.getPlan().getAddOnPrice().multiply(BigDecimal.valueOf(totalAddOnUnits));
             }
 
-            Integer subscriptionTotalAllowedData = subscriptionToUpdate.getAllocatedData() * subscriptionToUpdate.getPlan().getDataConversionRate();
-            Integer subscriptionTotalAllowedSms = subscriptionToUpdate.getAllocatedSms() * subscriptionToUpdate.getPlan().getSmsConversionRate();
-            Integer subscriptionTotalAllowedTalktime = subscriptionToUpdate.getAllocatedTalkTime() * subscriptionToUpdate.getPlan().getTalktimeConversionRate();
+            Integer subscriptionTotalAllowedData = (subscriptionToUpdate.getAllocatedData() + subscriptionToUpdate.getDataUnits().get("addOn") + subscriptionToUpdate.getDataUnits().get("familyGroup")) * subscriptionToUpdate.getPlan().getDataConversionRate();
+            Integer subscriptionTotalAllowedSms = (subscriptionToUpdate.getAllocatedSms() + subscriptionToUpdate.getSmsUnits().get("addOn") + subscriptionToUpdate.getSmsUnits().get("familyGroup")) * subscriptionToUpdate.getPlan().getSmsConversionRate();
+            Integer subscriptionTotalAllowedTalktime = (subscriptionToUpdate.getAllocatedTalkTime() + subscriptionToUpdate.getTalkTimeUnits().get("addOn") + subscriptionToUpdate.getTalkTimeUnits().get("familyGroup")) * subscriptionToUpdate.getPlan().getTalktimeConversionRate();
 
             // latest usage detail for the month
             UsageDetail currentUsageDetail = subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() - 1);
@@ -205,37 +205,37 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
             // reset everything else
             // if customer got adjust for next month then update
-            if (subscriptionToUpdate.getDataUnits().get("nextMonth") != -1 && subscriptionToUpdate.getSmsUnits().get("nextMonth") != -1 && subscriptionToUpdate.getTalkTimeUnits().get("nextMonth") != -1) {
+            if (subscriptionToUpdate.getDataUnits().get("nextMonth") != 0 && subscriptionToUpdate.getSmsUnits().get("nextMonth") != 0 && subscriptionToUpdate.getTalkTimeUnits().get("nextMonth") != 0) {
                 amendAllocationOfUniis(subscriptionToUpdate);
             }
 
             // reset donated to allocated
-            if (subscriptionToUpdate.getDataUnits().get("donated") != -1) {
+            if (subscriptionToUpdate.getDataUnits().get("donated") != 0) {
                 subscriptionToUpdate.getDataUnits().put("allocated", subscriptionToUpdate.getDataUnits().get("allocated") + subscriptionToUpdate.getDataUnits().get("donated"));
-                subscriptionToUpdate.getDataUnits().put("donated", -1);
+                subscriptionToUpdate.getDataUnits().put("donated", 0);
             }
 
             // reset donated to allocated
-            if (subscriptionToUpdate.getSmsUnits().get("donated") != -1) {
+            if (subscriptionToUpdate.getSmsUnits().get("donated") != 0) {
                 subscriptionToUpdate.getSmsUnits().put("allocated", subscriptionToUpdate.getSmsUnits().get("allocated") + subscriptionToUpdate.getSmsUnits().get("donated"));
-                subscriptionToUpdate.getSmsUnits().put("donated", -1);
+                subscriptionToUpdate.getSmsUnits().put("donated", 0);
             }
 
             // reset donated to allocated
-            if (subscriptionToUpdate.getTalkTimeUnits().get("donated") != -1) {
+            if (subscriptionToUpdate.getTalkTimeUnits().get("donated") != 0) {
                 subscriptionToUpdate.getTalkTimeUnits().put("allocated", subscriptionToUpdate.getTalkTimeUnits().get("allocated") + subscriptionToUpdate.getTalkTimeUnits().get("donated"));
-                subscriptionToUpdate.getTalkTimeUnits().put("donated", -1);
+                subscriptionToUpdate.getTalkTimeUnits().put("donated", 0);
             }
 
             //reset purchased add on units
-            subscriptionToUpdate.getDataUnits().put("addOn", -1);
-            subscriptionToUpdate.getSmsUnits().put("addOn", -1);
-            subscriptionToUpdate.getTalkTimeUnits().put("addOn", -1);
+            subscriptionToUpdate.getDataUnits().put("addOn", 0);
+            subscriptionToUpdate.getSmsUnits().put("addOn", 0);
+            subscriptionToUpdate.getTalkTimeUnits().put("addOn", 0);
 
             //reset units gotten from family group
-            subscriptionToUpdate.getDataUnits().put("familyGroup", -1);
-            subscriptionToUpdate.getSmsUnits().put("familyGroup", -1);
-            subscriptionToUpdate.getTalkTimeUnits().put("familyGroup", -1);
+            subscriptionToUpdate.getDataUnits().put("familyGroup", 0);
+            subscriptionToUpdate.getSmsUnits().put("familyGroup", 0);
+            subscriptionToUpdate.getTalkTimeUnits().put("familyGroup", 0);
 
             // create new usage detail tracking for next month
             usageDetailSessionBeanLocal.createNewUsageDetail(subscriptionToUpdate);
@@ -292,9 +292,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         dataUnits.put("allocated", dataUnits.get("nextMonth"));
 
         //reset to 0 at the start of every month
-        smsUnits.put("nextMonth", -1);
-        talkTimeUnits.put("nextMonth", -1);
-        dataUnits.put("nextMonth", -1);
+        smsUnits.put("nextMonth", 0);
+        talkTimeUnits.put("nextMonth", 0);
+        dataUnits.put("nextMonth", 0);
 
         updateSubscription(subscriptionToAmend);
         return subscriptionToAmend;

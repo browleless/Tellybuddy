@@ -88,18 +88,18 @@ public class Subscription implements Serializable {
         this.smsUnits = new HashMap<>();
         this.talkTimeUnits = new HashMap<>();
         this.subscriptionStatusEnum = subscriptionStatusEnum.PENDING;
-        this.dataUnits.put("nextMonth", -1);
-        this.smsUnits.put("nextMonth", -1);
-        this.talkTimeUnits.put("nextMonth", -1);
-        this.dataUnits.put("donated", -1);
-        this.smsUnits.put("donated", -1);
-        this.talkTimeUnits.put("donated", -1);
-        this.dataUnits.put("addOn", -1);
-        this.smsUnits.put("addOn", -1);
-        this.talkTimeUnits.put("addOn", -1);
-        this.dataUnits.put("familyGroup", -1);
-        this.smsUnits.put("familyGroup", -1);
-        this.talkTimeUnits.put("familyGroup", -1);
+        this.dataUnits.put("nextMonth", 0);
+        this.smsUnits.put("nextMonth", 0);
+        this.talkTimeUnits.put("nextMonth", 0);
+        this.dataUnits.put("donated", 0);
+        this.smsUnits.put("donated", 0);
+        this.talkTimeUnits.put("donated", 0);
+        this.dataUnits.put("addOn", 0);
+        this.smsUnits.put("addOn", 0);
+        this.talkTimeUnits.put("addOn", 0);
+        this.dataUnits.put("familyGroup", 0);
+        this.smsUnits.put("familyGroup", 0);
+        this.talkTimeUnits.put("familyGroup", 0);
     }
 
     public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits) {
