@@ -6,6 +6,7 @@
 package jsf.managedbean;
 
 import ejb.session.stateless.CategorySessionBeanLocal;
+import ejb.session.stateless.ProductItemSessionBeanLocal;
 import ejb.session.stateless.ProductSessionBeanLocal;
 import ejb.session.stateless.TagSessionBeanLocal;
 import entity.Category;
@@ -16,12 +17,15 @@ import entity.Tag;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -30,6 +34,7 @@ import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.management.Query;
 import javax.servlet.ServletContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -37,6 +42,7 @@ import org.primefaces.shaded.commons.io.FilenameUtils;
 import util.exception.CreateNewProductException;
 import util.exception.DeleteProductException;
 import util.exception.InputDataValidationException;
+import util.exception.ProductItemExistException;
 import util.exception.ProductNotFoundException;
 import util.exception.ProductSkuCodeExistException;
 import util.exception.UnknownPersistenceException;
@@ -58,6 +64,9 @@ public class ProductManagementManagedBean implements Serializable {
     @EJB(name = "ProductSessionBeanLocal")
     private ProductSessionBeanLocal productSessionBeanLocal;
 
+    @EJB(name = "ProductItemSessionBeanLocal")
+    private ProductItemSessionBeanLocal productItemSessionBeanLocal;
+
     @Inject
     private ViewProductManagedBean viewProductManagedBean;
 
@@ -67,7 +76,7 @@ public class ProductManagementManagedBean implements Serializable {
     private String productType;
 
     private Product newProduct;
-    //private LuxuryProduct newLuxuryProduct;
+    private LuxuryProduct newLuxuryProduct;
 
     private Long categoryIdNew;
     private List<Long> tagIdsNew;
@@ -99,23 +108,47 @@ public class ProductManagementManagedBean implements Serializable {
     public void createNewProduct(ActionEvent ae) {
 
         if (this.productType.equals("Luxury Product")) {
-            this.newProduct = new LuxuryProduct();
-        } else {
-            this.newProduct = new Product();
+            this.newLuxuryProduct = new LuxuryProduct();
+
+            //query the database for unique serial number of luxury prod
+            String serialNumLuxury = productSessionBeanLocal.retrieveLatestSerialNum();
+            Integer uniqueLuxury = Integer.parseInt(serialNumLuxury) + 1;
+            this.newLuxuryProduct.setSerialNumber(serialNumLuxury);
+
+            //transfer the user input into the properties of newLuxuryProduct
+            this.newLuxuryProduct.setSkuCode(newProduct.getSkuCode());
+            this.newLuxuryProduct.setName(newProduct.getName());
+            this.newLuxuryProduct.setDescription(newProduct.getDescription());
+            this.newLuxuryProduct.setQuantityOnHand(newProduct.getQuantityOnHand());
+            this.newLuxuryProduct.setReorderQuantity(newProduct.getReorderQuantity());
+            this.newLuxuryProduct.setPrice(newProduct.getPrice());
+
         }
 
         if (categoryIdNew == 0) {
             categoryIdNew = null;
         }
+
         String filePath = this.saveUploadedProductImage();
-        this.newProduct.setProductImagePath(filePath);
-        
+        if (this.productType.equals("Luxury Product")) {
+            this.newLuxuryProduct.setProductImagePath(filePath);
+        } else {
+            this.newProduct.setProductImagePath(filePath);
+        }
+
         try {
 //            if (productImageFile == null) {
 //                System.out.println("Prodcut has REACHED HERE ______________________________________----------------------");
 //
 //            }
-            Product p = productSessionBeanLocal.createNewProduct(newProduct, categoryIdNew, tagIdsNew);
+
+            Product p;
+            if (this.productType.equals("Luxury Product")) {
+                p = productSessionBeanLocal.createNewProduct(newLuxuryProduct, categoryIdNew, tagIdsNew);
+            } else {
+                p = productSessionBeanLocal.createNewProduct(newProduct, categoryIdNew, tagIdsNew);
+            }
+
             allProducts.add(p);
 
             if (filteredProducts != null) {
@@ -123,14 +156,29 @@ public class ProductManagementManagedBean implements Serializable {
             }
 
             if (this.productType.equals("Luxury Product")) {
-                Integer num = newProduct.getQuantityOnHand();
-                List<ProductItem> productItems = (LuxuryProduct) newProduct.getProductItems();
+                Integer num = newLuxuryProduct.getQuantityOnHand();
+                List<ProductItem> productItems = newLuxuryProduct.getProductItems();
 
-                for (Integer i : num) {
+                //query the database for unique serial number of productItem
+                String serialNum = productItemSessionBeanLocal.retrieveLatestSerialNum();
+                Integer unique = Integer.parseInt(serialNum) + 1;
+
+                for (int i = 0; i < num; i++) {
                     //luxury item has to have a list of product item
+                    //instantiate every product item 
+                    ProductItem pi = new ProductItem(Integer.toString(unique), this.newLuxuryProduct.getPrice());
+                    ProductItem createdPI = pi;
+                    try {
+                        createdPI = productItemSessionBeanLocal.createNewProductItem(pi, p.getProductId());
+                    } catch (ProductItemExistException ex) {
+                        Logger.getLogger(ProductManagementManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    productItems.add(createdPI);
+                    unique++;
                 }
             }
             this.newProduct = new Product();
+            this.newLuxuryProduct = new LuxuryProduct();
             categoryIdNew = null;
             tagIdsNew = null;
             productImageFile = null;
