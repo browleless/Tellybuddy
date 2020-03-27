@@ -22,6 +22,6 @@ public interface BillSessionBeanLocal {
 
     public Bill retrieveBillByBillId(Long billId) throws BillNotFoundException;
 
-    public Long createNewBill(Bill newBill, UsageDetail usageDetail, Customer customer) throws CustomerNotFoundException, UsageDetailNotFoundException;
+    public Bill createNewBill(Bill newBill, UsageDetail usageDetail, Customer customer) throws CustomerNotFoundException, UsageDetailNotFoundException;
     
 }

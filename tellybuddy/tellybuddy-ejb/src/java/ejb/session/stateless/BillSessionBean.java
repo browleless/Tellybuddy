@@ -28,7 +28,7 @@ public class BillSessionBean implements BillSessionBeanLocal {
     private EntityManager entityManager;
 
     @Override
-    public Long createNewBill(Bill newBill, UsageDetail usageDetail, Customer customer) throws CustomerNotFoundException, UsageDetailNotFoundException {
+    public Bill createNewBill(Bill newBill, UsageDetail usageDetail, Customer customer) throws CustomerNotFoundException, UsageDetailNotFoundException {
         
         Customer customerToAssociateWith = customerSessionBeanLocal.retrieveCustomerByCustomerId(customer.getCustomerId());
         UsageDetail usageDetailToAssociateWith = usageDetailSessionBeanLocal.retrieveUsageDetailByUsageDetailId(usageDetail.getUsageDetailId());
@@ -42,7 +42,7 @@ public class BillSessionBean implements BillSessionBeanLocal {
         customerToAssociateWith.getBills().add(newBill);
         usageDetailToAssociateWith.setBill(newBill);
         
-        return newBill.getBillId();
+        return newBill;
     }
     
     @Override

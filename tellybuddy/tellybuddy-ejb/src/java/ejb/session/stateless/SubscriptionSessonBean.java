@@ -59,6 +59,9 @@ import util.exception.UsageDetailNotFoundException;
 public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
     @EJB
+    private EmailSessionBeanLocal emailSessionBeanLocal;
+
+    @EJB
     private BillSessionBeanLocal billSessionBeanLocal;
 
     @EJB
@@ -187,7 +190,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
             if (currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() > subscriptionTotalAllowedData) {
                 // hardcoded $3.50 per exceeded gb, int division on purpose
-                totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() - subscriptionTotalAllowedData) / 1000 * 3.50));
+                totalExceedPenaltyPrice.add(BigDecimal.valueOf(Math.ceil((double) (currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() - subscriptionTotalAllowedData) / 1000) * 3.50));
             }
 
             if (currentUsageDetail.getSmsUsage() > subscriptionTotalAllowedSms) {
@@ -201,7 +204,11 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             }
 
             Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice);
-            billSessionBeanLocal.createNewBill(bill, currentUsageDetail, subscriptionToUpdate.getCustomer());
+            bill = billSessionBeanLocal.createNewBill(bill, currentUsageDetail, subscriptionToUpdate.getCustomer());
+            
+            // send email asynchronously
+            // currently send to ownself for debugging, ot replace with actual customer email
+            emailSessionBeanLocal.emailBillNotificationAsync(bill, subscriptionTotalAllowedData, subscriptionTotalAllowedSms, subscriptionTotalAllowedTalktime, "Tellybuddy<tellybuddy3106@gmail.com>", "tellybuddy3106@gmail.com");
 
             // reset everything else
             // if customer got adjust for next month then update
@@ -247,7 +254,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             TimerService timerService = sessionContext.getTimerService();
             timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
 
-        } catch (SubscriptionNotFoundException | InputDataValidationException | CustomerNotFoundException | UsageDetailNotFoundException ex) {
+        } catch (SubscriptionNotFoundException | InputDataValidationException | CustomerNotFoundException | UsageDetailNotFoundException | InterruptedException ex) {
             // won't happen
             ex.printStackTrace();
         }
