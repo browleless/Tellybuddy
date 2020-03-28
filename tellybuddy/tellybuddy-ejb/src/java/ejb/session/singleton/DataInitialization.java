@@ -15,11 +15,13 @@ import entity.Category;
 
 import entity.Employee;
 import entity.FamilyGroup;
+import entity.LuxuryProduct;
 import entity.PhoneNumber;
 import entity.Plan;
 import entity.Subscription;
 import java.util.Date;
 import entity.Product;
+import entity.ProductItem;
 import entity.Tag;
 import java.math.BigDecimal;
 
@@ -172,6 +174,7 @@ public class DataInitialization {
             customer5.setFamilyGroup(fg2);
             em.persist(fg2);
             em.flush();
+            initialiseProducts();
         } catch (ParseException ex) {
             Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -243,4 +246,80 @@ public class DataInitialization {
     public void persist(Object object) {
         em.persist(object);
     }
+    private void initialiseProducts() {
+        Category phoneAccessories = new Category("Phone Accessories", "Phone Accessories");
+        em.persist(phoneAccessories);
+        em.flush();
+
+        Category handset = new Category("Handset", "Handsets");
+        em.persist(handset);
+        em.flush();
+
+        Category apple = new Category("Apple", "Brand");
+        em.persist(apple);
+        em.flush();
+
+        Category android = new Category("Android", "Brand");
+        em.persist(android);
+        em.flush();
+
+        //new tags
+        Tag popular = new Tag("Popular");
+        em.persist(popular);
+        em.flush();
+
+        Tag appleTag = new Tag("Apple");
+        em.persist(appleTag);
+        em.flush();
+
+        Tag discount = new Tag("Discount");
+        em.persist(discount);
+        em.flush();
+
+        Tag tagNew = new Tag("New");
+        em.persist(tagNew);
+        em.flush();
+
+        Tag mobile = new Tag("Mobile");
+        em.persist(mobile);
+        em.flush();
+
+        Tag cartoon = new Tag("Cartoon");
+        em.persist(cartoon);
+        em.flush();
+
+//        LuxuryProduct iphoneXS = new LuxuryProduct("0000000001", "SKU001", "iPhone XS", "iphone xs", BigDecimal.valueOf(1000.0), 10, 50, "./iphoneXS.jpg");
+//        em.persist(iphoneXS);
+//        em.flush();
+//        iphoneXS.setCategory(apple);
+//        List<Tag> tags = new ArrayList<>();
+//        tags.add(popular);
+//        tags.add(appleTag);
+//        tags.add(tagNew);
+//        tags.add(mobile);
+//        iphoneXS.setTags(tags);
+//
+//        List<ProductItem> productItems = iphoneXS.getProductItems();
+//
+//        Integer unique = 1;
+//
+//        for (int i = 0; i < 10; i++) {
+//            ProductItem pi = new ProductItem(Integer.toString(unique), iphoneXS.getPrice());
+//            em.persist(pi);
+//            unique++;
+//            productItems.add(pi);
+//        }
+
+//        Product iphoneXScover = new Product("SKU002", "iPhone XS WeBareBear Case", "iphone xs hp case", BigDecimal.valueOf(15.0), 10, 50, "./iphoneXSwbbcase.jpg");
+//        iphoneXScover.setCategory(phoneAccessories);
+//        tags = new ArrayList<>();
+//        tags.add(popular);
+//        tags.add(appleTag);
+//        tags.add(mobile);
+//        tags.add(cartoon);
+//        em.persist(iphoneXScover);
+//        em.flush();
+//        iphoneXScover.setTags(tags);
+    }
+
 }

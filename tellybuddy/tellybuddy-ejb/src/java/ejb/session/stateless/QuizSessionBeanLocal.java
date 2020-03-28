@@ -39,4 +39,6 @@ public interface QuizSessionBeanLocal {
 
     public Long createNewQuiz(Quiz newQuiz) throws QuizNameExistException, QuizNotFoundException, QuestionNotFoundException;
 
+    public List<Quiz> retirevePastQuizzes();
+
 }

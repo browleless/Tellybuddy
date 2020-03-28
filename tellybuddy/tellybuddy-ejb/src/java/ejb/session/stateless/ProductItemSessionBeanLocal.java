@@ -26,4 +26,6 @@ public interface ProductItemSessionBeanLocal {
 
     public List<ProductItem> retrieveAllProductItemUnderLuxuryProduct(Long luxuryProductId) throws ProductNotFoundException;
     public ProductItem createNewProductItem(ProductItem newProductItem, Long luxuryProductId) throws InputDataValidationException, UnknownPersistenceException, ProductItemExistException;
+
+    public String retrieveLatestSerialNum();
 }

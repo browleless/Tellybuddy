@@ -31,6 +31,24 @@
                 font-weight: normal;
             }
         </style>
+        
+        <script type="text/javascript">
+            window.formatTimer = function (value) {
+                var numDays = Math.floor(value / 86400);
+                var numHours = Math.floor((value % 86400) / 3600);
+                var numMinutes = Math.floor(((value % 86400) % 3600) / 60);
+                var numSeconds = ((value % 86400) % 3600) % 60;
+                return numDays + " days, " + pad(numHours, 2) + " hrs, "
+                        + pad(numMinutes, 2) + " mins, " + pad(numSeconds, 2) + " s";
+            }
+
+            function pad(num, size) {
+                var s = num + "";
+                while (s.length &lt; size)
+                        s = "0" + s;
+                return s;
+            }
+        </script>
 
         <div>
             <h3>Flash Coupon Management</h3>
@@ -79,7 +97,7 @@
                             <p:spacer />
                             <p:row>
                                 <p:column>
-                                    <pe:timer id="timerTillExpiry" format="DDD [days,] HH [hrs, ] mm [mins, ] ss [s]" timeout="#{flashCouponManagementManagedBean.calculateTimerTime(discountCode)}" />
+                                    <pe:timer id="timerTillExpiry" formatFunction="return formatTimer(value);" timeout="#{flashCouponManagementManagedBean.calculateTimerTime(discountCode)}" />
                                 </p:column>
                             </p:row>
                             <p:spacer />

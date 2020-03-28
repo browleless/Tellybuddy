@@ -56,6 +56,8 @@ public interface ProductSessionBeanLocal {
 
     public void creditQuantityOnHandForLuxuryProduct(Long productId, Integer quantityToCredit, List<ProductItem> pis) throws ProductNotFoundException;
 
+    public String retrieveLatestSerialNum();
+
  
     
     

@@ -16,6 +16,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
 import org.primefaces.model.chart.PieChartModel;
 import util.enumeration.SubscriptionStatusEnum;
 import util.exception.SubscriptionNotFoundException;
@@ -25,7 +26,7 @@ import util.exception.SubscriptionNotFoundException;
  * @author markt
  */
 @Named(value = "subscriptionManagementManagedBean")
-@SessionScoped
+@ViewScoped
 public class SubscriptionManagementManagedBean implements Serializable {
 
     @EJB

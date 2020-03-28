@@ -31,7 +31,7 @@ public class Tag implements Serializable {
     
     @Column(nullable = false, length = 32)
     @NotNull
-    @Size(min = 4, max = 32)
+    @Size(min = 2, max = 32)
     private String name;
     
     @ManyToMany

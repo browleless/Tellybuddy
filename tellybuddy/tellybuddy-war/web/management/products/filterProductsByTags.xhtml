@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/template/defaultTemplate.xhtml"
+                xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+                xmlns:p="http://primefaces.org/ui">
+
+
+
+    <ui:define name="content">
+
+        <style>
+            .ui-dialog {
+                border-radius: 15px;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+            }
+        </style>
+
+        <div>
+
+            <h3>Filter Product By Tags</h3>
+
+            <h:form id="formMain">
+                <p:layout>
+
+                    <p:layoutUnit position="north" resizable="true">
+                        <p:panel>
+                            <p:outputLabel for="selCondition" value="Condition: " style="font-weight: bold;" />
+                            <br />
+                            <p:selectOneMenu id="selCondition" value="#{filterProductsByTagsManagedBean.condition}">
+
+                                <f:selectItem itemValue="OR" itemLabel="OR" itemDescription="OR" />
+                                <f:selectItem itemValue="AND" itemLabel="AND" itemDescription="AND" />
+
+                                <p:ajax process="@form" update="formMain:dataGridAllProducts" listener="#{filterProductsByTagsManagedBean.filterProduct}" />
+
+                            </p:selectOneMenu>
+
+                        </p:panel>
+
+                        <p:panel>
+                            <p:outputLabel for="selTags" value="Tags: " style="font-weight: bold;" />
+                            <p:selectManyMenu id="selTags" value="#{filterProductsByTagsManagedBean.selectedTagIds}" showCheckbox="true" scrollHeight="60">
+                                <f:selectItems value="#{filterProductsByTagsManagedBean.selectItems}" />
+
+                                <p:ajax process="@form" update="formMain:dataGridAllProducts" listener="#{filterProductsByTagsManagedBean.filterProduct}" />
+
+                            </p:selectManyMenu> 
+
+                        </p:panel>
+                    </p:layoutUnit>    
+
+
+
+                    <p:layoutUnit position="center">
+
+                        <p:dataGrid id="dataGridAllProducts" var="product" value="#{filterProductsByTagsManagedBean.products}" columns="3" layout="grid"
+                                    rows="10" paginator="true"  
+                                    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                    rowsPerPageTemplate="10,20,50">
+                            <f:facet name="header">
+                                Filter Products By Tags
+                            </f:facet>
+
+                            <p:panel header="#{product.category.name}" style="text-align:center">
+                                <h:panelGrid columns="1" style="width:100%">
+
+                                    <p:outputPanel>
+
+                                        <p:graphicImage width="100%" value="#{product.productImagePath}"/> 
+
+                                        <h:outputText value="#{product.name}" />
+                                        <br></br> <br></br>
+
+                                        <p:commandLink update="ccViewProduct:formViewProduct" oncomplete="PF('dialogViewProduct').show()" title="View Details">
+                                            <h:outputText styleClass="fa fa-search" style="margin:0 auto;"/>
+                                            <f:setPropertyActionListener value="#{product}" target="#{viewProductManagedBean.productToView}" />
+                                        </p:commandLink>&nbsp;&nbsp;
+                                    </p:outputPanel>
+
+                                </h:panelGrid>
+
+                            </p:panel>
+
+                        </p:dataGrid>
+
+                    </p:layoutUnit>
+
+                </p:layout>
+            </h:form>
+            <ez:ViewProduct id="ccViewProduct" />
+        </div>
+
+    </ui:define>
+
+
+</ui:composition>
+
