@@ -5,9 +5,12 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.DeletePhoneNumberException;
+import util.exception.PhoneNumberExistException;
 import util.exception.PhoneNumberNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -20,12 +23,24 @@ public class PhoneNumberSessionBean implements PhoneNumberSessionBeanLocal {
     private EntityManager entityManager;
 
     @Override
-    public Long createNewPhoneNumber(PhoneNumber newPhoneNumber) {
+    public Long createNewPhoneNumber(PhoneNumber newPhoneNumber) throws PhoneNumberExistException, UnknownPersistenceException {
 
-        entityManager.persist(newPhoneNumber);
-        entityManager.flush();
+        try {
+            entityManager.persist(newPhoneNumber);
+            entityManager.flush();
 
-        return newPhoneNumber.getPhoneNumberId();
+            return newPhoneNumber.getPhoneNumberId();
+        } catch (PersistenceException ex) {
+            if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
+                if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
+                    throw new PhoneNumberExistException("A similar phone number already exists!");
+                } else {
+                    throw new UnknownPersistenceException(ex.getMessage());
+                }
+            } else {
+                throw new UnknownPersistenceException(ex.getMessage());
+            }
+        }
     }
 
     @Override

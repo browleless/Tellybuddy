@@ -31,6 +31,24 @@
                 font-weight: normal;
             }
         </style>
+        
+        <script type="text/javascript">
+            window.formatTimer = function (value) {
+                var numDays = Math.floor(value / 86400);
+                var numHours = Math.floor((value % 86400) / 3600);
+                var numMinutes = Math.floor(((value % 86400) % 3600) / 60);
+                var numSeconds = ((value % 86400) % 3600) % 60;
+                return numDays + " days, " + pad(numHours, 2) + " hrs, "
+                        + pad(numMinutes, 2) + " mins, " + pad(numSeconds, 2) + " s";
+            }
+
+            function pad(num, size) {
+                var s = num + "";
+                while (s.length &lt; size)
+                        s = "0" + s;
+                return s;
+            }
+        </script>
 
         <div>
             <h3>Flash Deals Management</h3>
@@ -82,7 +100,7 @@
                             <p:column sortBy="#{flashDealManagementManagedBean.calculateTimerTime(plan)}" width="300" headerText="Timer" style="text-align: center;">
                                 <p:outputLabel rendered="#{plan.startTime.after(flashDealManagementManagedBean.dateTimeNow)}" for="timerTillStartEnd"  value="Starting in " />
                                 <p:outputLabel rendered="#{plan.startTime.before(flashDealManagementManagedBean.dateTimeNow)}" for="timerTillStartEnd" value="Ending in " />
-                                <pe:timer id="timerTillStartEnd" format="DDD [days,] HH [hrs, ] mm [mins, ] ss [s]" timeout="#{flashDealManagementManagedBean.calculateTimerTime(plan)}" />
+                                <pe:timer id="timerTillStartEnd" formatFunction="return formatTimer(value);" timeout="#{flashDealManagementManagedBean.calculateTimerTime(plan)}" />
                             </p:column>
 
                             <p:column headerText="Action" >

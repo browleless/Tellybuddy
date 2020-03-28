@@ -25,22 +25,20 @@ import javax.validation.constraints.Positive;
  * @author tjle2
  */
 @Entity
-public class UsageDetails implements Serializable {
+public class UsageDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long usageDetailsId;
+    private Long usageDetailId;
 
     @Column(nullable = false)
     @NotNull
-    @Positive
     @Min(0)
     private Integer talktimeUsage;
 
     @Column(nullable = false)
     @NotNull
-    @Positive
     @Min(0)
     private Integer smsUsage;
 
@@ -68,41 +66,41 @@ public class UsageDetails implements Serializable {
     @JoinColumn(nullable = false)
     private Subscription subscription;
 
-    public UsageDetails() {
+    public UsageDetail() {
         this.dataUsage = BigDecimal.valueOf(0);
         this.smsUsage = 0;
         this.talktimeUsage = 0;
     }
 
-    public UsageDetails(Date startDate, Date endDate) {
+    public UsageDetail(Date startDate, Date endDate) {
         this();
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public Long getUsageDetailsId() {
-        return usageDetailsId;
+    public Long getUsageDetailId() {
+        return usageDetailId;
     }
 
-    public void setUsageDetailsId(Long usageDetailsId) {
-        this.usageDetailsId = usageDetailsId;
+    public void setUsageDetailId(Long usageDetailId) {
+        this.usageDetailId = usageDetailId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (usageDetailsId != null ? usageDetailsId.hashCode() : 0);
+        hash += (usageDetailId != null ? usageDetailId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the usageDetailsId fields are not set
-        if (!(object instanceof UsageDetails)) {
+        // TODO: Warning - this method won't work in the case the usageDetailId fields are not set
+        if (!(object instanceof UsageDetail)) {
             return false;
         }
-        UsageDetails other = (UsageDetails) object;
-        if ((this.usageDetailsId == null && other.usageDetailsId != null) || (this.usageDetailsId != null && !this.usageDetailsId.equals(other.usageDetailsId))) {
+        UsageDetail other = (UsageDetail) object;
+        if ((this.usageDetailId == null && other.usageDetailId != null) || (this.usageDetailId != null && !this.usageDetailId.equals(other.usageDetailId))) {
             return false;
         }
         return true;
@@ -110,7 +108,7 @@ public class UsageDetails implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.UsageDetails[ id=" + usageDetailsId + " ]";
+        return "entity.UsageDetails[ id=" + usageDetailId + " ]";
     }
 
     public Integer getTalktimeUsage() {
