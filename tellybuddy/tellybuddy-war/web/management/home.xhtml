@@ -12,37 +12,7 @@
         <div>
             <h3>Home Page</h3>
             <h:form>
-                <p:growl id="messages" showDetail="true" />
-
-                <h:panelGrid columnClasses="value">
-                    <h3 style="margin-top: 0">Upcoming event</h3>
-                    <p:schedule id="schedule" value="#{homeManagedBean.scheduleModel}" widgetVar="myschedule" timeZone="GMT+8">
-
-                       
-                        <p:ajax event="eventSelect" listener="#{homeManagedBean.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                        
-
-                    </p:schedule>
-
-                </h:panelGrid>
-
-
-                <p:dialog widgetVar="eventDialog" header="Announcement Details" showEffect="clip" hideEffect="clip">
-                    <h:panelGrid id="eventDetails" columns="2">
-                        <p:outputLabel for="title" value="Titles:" />
-                        <h:outputText id= "title" value="#{homeManagedBean.scheduleEvent.title}" />
-
-                        <p:outputLabel for="from" value="Start:" />
-                        <h:outputText id= "from" value="#{homeManagedBean.scheduleEvent.startDate}" />
-                        
-
-                        <p:outputLabel for="to" value="End:" />
-                        <h:outputText id= "to" value="#{homeManagedBean.scheduleEvent.endDate}" />
-
-                        
-                    </h:panelGrid>
-
-                </p:dialog>    
+               
             </h:form>
         </div>
 
