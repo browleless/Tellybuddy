@@ -9,6 +9,8 @@ import entity.Customer;
 import entity.PhoneNumber;
 import entity.Plan;
 import entity.Subscription;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,7 +75,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
                 Plan plan = planSessionBeanLocal.retrievePlanByPlanId(planId);
                 plan.setIsInUse(true);
-                
+
                 if (plan.getIsDisabled()) {
                     throw new PlanAlreadyDisabledException("Selected Plan has been discontinued! Please try again with a different plan!");
                 }
@@ -86,16 +88,10 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 newSubscription.setCustomer(customer);
                 newSubscription.setPlan(plan);
                 newSubscription.setPhoneNumber(phoneNumber);
-                
+
                 customer.getSubscriptions().add(newSubscription);
                 phoneNumber.setSubscription(newSubscription);
-                
-//                HashMap<String, Integer> dataUnits = new HashMap<>();
-//                dataUnits.put("")
-//                HashMap<String, Integer> smsUnits = new HashMap<>();
-//                HashMap<String, Integer> talkTimeUnits = new HashMap<>();
-//                
-                
+
                 em.persist(newSubscription);
                 em.flush();
                 return newSubscription;
@@ -110,7 +106,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 } else {
                     throw new UnknownPersistenceException(ex.getMessage());
                 }
-            } catch (PlanNotFoundException | PhoneNumberNotFoundException  ex) {
+            } catch (PlanNotFoundException | PhoneNumberNotFoundException ex) {
                 throw new CreateNewSubscriptionException("An error has occurred while creating the new subscription: " + ex.getMessage());
             }
         } else {
@@ -118,14 +114,14 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         }
 
     }
-    public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException{
+    
+    public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException {
         Subscription subscriptionToApprove = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
         subscriptionToApprove.setIsActive(Boolean.TRUE);
         subscriptionToApprove.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
         subscriptionToApprove.setSubscriptionStartDate(Calendar.getInstance().getTime());
-        
     }
-    
+
     @Override
     public void updateSubscription(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException {
         Set<ConstraintViolation<Subscription>> constraintViolations = validator.validate(subscription);
@@ -135,10 +131,10 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             subscriptionToUpdate.setCustomer(subscription.getCustomer());
             subscriptionToUpdate.setPlan(subscription.getPlan());
             subscriptionToUpdate.setPhoneNumber(subscription.getPhoneNumber());
-            
+
             subscriptionToUpdate.setSubscriptionStartDate(subscription.getSubscriptionStartDate());
             subscriptionToUpdate.setSubscriptionEndDate(subscription.getSubscriptionEndDate());
-            
+
             subscriptionToUpdate.setIsActive(subscription.getIsActive());
 
             subscriptionToUpdate.setDataUnits(subscription.getDataUnits());
@@ -150,28 +146,29 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         }
 
     }
+
     //to be done at the start of every month; before this just updateSubscription only
     @Override
-    public Subscription amendAllocationOfUniis(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException{
+    public Subscription amendAllocationOfUniis(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException {
         Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
-        
-        HashMap<String,Integer> smsUnits = subscriptionToAmend.getSmsUnits();
-        HashMap<String,Integer> talkTimeUnits = subscriptionToAmend.getTalkTimeUnits();
-        HashMap<String,Integer> dataUnits = subscriptionToAmend.getDataUnits();
-        
+
+        HashMap<String, Integer> smsUnits = subscriptionToAmend.getSmsUnits();
+        HashMap<String, Integer> talkTimeUnits = subscriptionToAmend.getTalkTimeUnits();
+        HashMap<String, Integer> dataUnits = subscriptionToAmend.getDataUnits();
+
         smsUnits.put("allocated", smsUnits.get("nextMonth"));
         talkTimeUnits.put("allocated", talkTimeUnits.get("nextMonth"));
         dataUnits.put("allocated", dataUnits.get("nextMonth"));
-        
+
         //reset to 0 at the start of every month
         smsUnits.put("nextMonth", 0);
         talkTimeUnits.put("nextMonth", 0);
         dataUnits.put("nextMonth", 0);
-        
+
         updateSubscription(subscriptionToAmend);
         return subscriptionToAmend;
     }
-    
+
     @Override
     public Subscription retrieveSubscriptionBySubscriptionId(Long subscriptionId) throws SubscriptionNotFoundException {
         Subscription subscription = em.find(Subscription.class, subscriptionId);
@@ -186,44 +183,51 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     }
 
     @Override
-    public List<Subscription> retrieveSubscriptionsByFilter(SubscriptionStatusEnum filterString){
+    public List<Subscription> retrieveSubscriptionsByFilter(SubscriptionStatusEnum filterString) {
         Query query = em.createQuery("Select s FROM Subscription s WHERE s.subscriptionStatusEnum = :filterString");
         query.setParameter("filterString", filterString);
         return query.getResultList();
     }
+
     @Override
-    public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer){
+    public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer) {
         Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer");
-        q.setParameter("inCustomer",customer);
+        q.setParameter("inCustomer", customer);
         return q.getResultList();
     }
-    
+
     @Override
-    public List<Subscription> retrieveAllSubscriptions(){
+    public List<Subscription> retrieveAllSubscriptions() {
         Query q = em.createQuery("SELECT s FROM Subscription s");
         return q.getResultList();
     }
-    
+
     @Override
     public List<Subscription> retrieveSubscriptionsOfFamilyByFamilyGroupId(Long familyGroupId) {
         Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer.familyGroup.familyGroupId = :inFamilyGroupId");
         q.setParameter("inFamilyGroupId", familyGroupId);
         return q.getResultList();
     }
-    
+
     @Override
-    public void terminateSubscription(Long customerId, Long subscriptionId){
-        Subscription subscriptionToTerminate = em.find(Subscription.class, subscriptionId);
-        Date today = Calendar.getInstance().getTime();
-        
-        subscriptionToTerminate.setSubscriptionStatusEnum(SubscriptionStatusEnum.DISABLED);
-        subscriptionToTerminate.setSubscriptionEndDate(today);
-        subscriptionToTerminate.setIsActive(false);
-        
-        PhoneNumber phoneNumber = subscriptionToTerminate.getPhoneNumber();
-        subscriptionToTerminate.setPhoneNumber(null);
-        phoneNumber.setSubscription(null);
+    public void terminateSubscription(Long customerId, Long subscriptionId) {
+        try {
+            Subscription subscriptionToTerminate = retrieveSubscriptionBySubscriptionId(subscriptionId);
+            Date terminatingDate = Calendar.getInstance().getTime();
+
+            subscriptionToTerminate.setSubscriptionStatusEnum(SubscriptionStatusEnum.DISABLED);
+            subscriptionToTerminate.setSubscriptionEndDate(terminatingDate);
+            subscriptionToTerminate.setIsActive(false);
+
+            PhoneNumber phoneNumber = subscriptionToTerminate.getPhoneNumber();
+            phoneNumber.setSubscription(null);
+            phoneNumber.setInUse(Boolean.FALSE);
+            
+        } catch (SubscriptionNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
+
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<Subscription>> constraintViolations) {
         String msg = "Input data validation error!:";
 

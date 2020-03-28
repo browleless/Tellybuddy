@@ -107,13 +107,20 @@
                         <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.plan.name}"/>
                     </p:column>
                 </p:row>
-
                 <p:row>
                     <p:column>
                         <h:outputLabel value="Start Date: " />
                     </p:column>
                     <p:column>
                         <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.formattedStartDate}" />
+                    </p:column>
+                </p:row>
+                <p:row rendered="#{subscriptionManagementManagedBean.subscriptionToView.subscriptionStatusEnum == 'DISABLED'}">
+                    <p:column>
+                        <h:outputLabel value="End Date: " />
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.formattedEndDate}" />
                     </p:column>
                 </p:row>
                 <p:row>
@@ -125,10 +132,15 @@
                     </p:column>
                 </p:row>
 
+
             </p:panelGrid>
 
-            <p:outputPanel style="text-align: center; padding-top: 10px;" rendered="#{!subscriptionManagementManagedBean.subscriptionToView.isActive}">
+            <p:outputPanel style="text-align: center; padding-top: 10px;" rendered="#{subscriptionManagementManagedBean.subscriptionToView.subscriptionStatusEnum == 'PENDING'}">
                 <p:commandButton update=" formAllSubscriptions:dataTableAllSubscriptions" actionListener="#{subscriptionManagementManagedBean.approveSubscriptionRequest}" oncomplete="PF('dialogViewSubscription').hide()"  value="Approve Subscription Request">
+                </p:commandButton>
+            </p:outputPanel>
+            <p:outputPanel style="text-align: center; padding-top: 10px;" rendered="#{subscriptionManagementManagedBean.subscriptionToView.subscriptionStatusEnum == 'TERMINATING'}">
+                <p:commandButton update=" formAllSubscriptions:dataTableAllSubscriptions" actionListener="#{subscriptionManagementManagedBean.terminateSubscriptionRequest}" oncomplete="PF('dialogViewSubscription').hide()"  value="Terminate Subscription Request">
                 </p:commandButton>
             </p:outputPanel>
 

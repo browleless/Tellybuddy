@@ -106,6 +106,9 @@
 
                                 <h:outputText value="Approval Status:" />
                                 <h:outputText value="#{customer.isApproved}" style="font-weight: bold"/>
+                                
+                                <h:outputText value="Join Date:" />
+                                <h:outputText value="#{customer.formattedJoinDate}" style="font-weight: bold"/>
                             </p:panelGrid>
                         </p:outputPanel>
                     </p:panelGrid>
@@ -124,12 +127,6 @@
                                 </p:commandButton>
                             </p:column>
 
-                            <p:column>
-                                <p:commandButton update="@form formAllPlans:dataTableAllPlans" icon="ui-icon-trash" actionListener="#{customerManagementManagedBean.deletePlan}" >
-                                    <f:attribute name="planToDelete" value="#{customer}" />
-                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{plan.name}?" icon="ui-icon-alert" />
-                                </p:commandButton>
-                            </p:column>
 
                         </div>
 
@@ -143,7 +140,7 @@
         <p:dialog id="dialogViewSubscriptions" width="80%"  widgetVar="dialogViewSubscriptions" header="View All Subscriptions" closable="true">
 
             <h:form id="formViewSubscriptions">
-                <p:dataTable id="ataTableCustomerSubscriptions" widgetVar="dataTableCustomerSubscriptions" style="text-align: center" value="#{customerManagementManagedBean.subscriptionsToView}" var="subscription" rowKey="#{subscription.subscriptionId}" rowIndexVar="row">
+                <p:dataTable id="dataTableCustomerSubscriptions" widgetVar="dataTableCustomerSubscriptions" style="text-align: center" value="#{customerManagementManagedBean.subscriptionsToView}" var="subscription" rowKey="#{subscription.subscriptionId}" rowIndexVar="row">
                     <p:column headerText="Id" width="5%" style="text-align: center">
                         <h:outputText value="#{subscription.subcscriptionId}" />
                     </p:column>

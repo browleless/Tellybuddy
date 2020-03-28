@@ -10,6 +10,7 @@ import entity.FamilyGroup;
 import entity.Subscription;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.CustomerAlreadyInFamilyGroupException;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
 import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
@@ -27,7 +28,7 @@ import util.exception.InsufficientTalktimeUnitsToDonateToFamilyGroupException;
 @Local
 public interface FamilyGroupSessionBeanLocal {
 
-    public Long createFamilyGroup(FamilyGroup newFamilyGroup) throws CustomersDoNotHaveSameAddressOrPostalCodeException;
+    public FamilyGroup createFamilyGroup(String desc, Customer customer) throws CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException;
 
     public FamilyGroup retrieveFamilyGroupByFamilyGroupId(Long familyGroupId) throws FamilyGroupNotFoundException;
 

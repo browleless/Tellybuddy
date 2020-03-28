@@ -8,12 +8,11 @@ package jsf.managedbean;
 import ejb.session.stateless.SubscriptionSessonBeanLocal;
 import entity.Subscription;
 import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
-import javafx.scene.chart.PieChart;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -80,6 +79,12 @@ public class SubscriptionManagementManagedBean implements Serializable {
         doFilter();
     }
 
+    public void terminateSubscriptionRequest(ActionEvent ae) {
+        subscriptionSessonBeanLocal.terminateSubscription(subscriptionToView.getCustomer().getCustomerId(), subscriptionToView.getSubcscriptionId());
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Subscription termination successful", null));
+        doFilter();
+    }
+
     public void doFilter() {
 
         if (selectedFilter.equals("All")) {
@@ -95,6 +100,7 @@ public class SubscriptionManagementManagedBean implements Serializable {
             setSubscriptions(subscriptionSessonBeanLocal.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.DISABLED));
         }
     }
+
     public List<Subscription> getSubscriptions() {
         return subscriptions;
     }

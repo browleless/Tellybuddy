@@ -9,10 +9,12 @@ import entity.Customer;
 import entity.FamilyGroup;
 import entity.Subscription;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.CustomerAlreadyInFamilyGroupException;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
 import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
@@ -30,6 +32,9 @@ import util.exception.InsufficientTalktimeUnitsToDonateToFamilyGroupException;
 @Stateless
 public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
 
+    @EJB
+    private CustomerSessionBeanLocal customerSessionBeanLocal;
+
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
 
@@ -38,25 +43,32 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
     }
 
     @Override
-    public Long createFamilyGroup(FamilyGroup newFamilyGroup) throws CustomersDoNotHaveSameAddressOrPostalCodeException {
+    public FamilyGroup createFamilyGroup(String desc, Customer customer) throws CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException {
+        try {
+            Customer customerToJoin = customerSessionBeanLocal.retrieveCustomerByCustomerId(customer.getCustomerId());
 
-        //check if all customers have the same addressn & postalCode fields
-        String checkAddress = newFamilyGroup.getCustomers().get(0).getAddress();
-        String checkPostalCode = newFamilyGroup.getCustomers().get(0).getPostalCode();
-
-        for (Customer c : newFamilyGroup.getCustomers()) {
-            if (!c.getAddress().equals(checkAddress) || !c.getPostalCode().equals(checkPostalCode)) {
-                throw new CustomersDoNotHaveSameAddressOrPostalCodeException("Family Group cannot be created as "
-                        + "the customers: " + newFamilyGroup.getCustomers().get(0).getFirstName()
-                        + newFamilyGroup.getCustomers().get(0).getLastName() + " and "
-                        + c.getFirstName() + c.getLastName() + " do not have the same address/postal code!");
-            }
+            FamilyGroup newFamilyGroup = new FamilyGroup(desc);
+            newFamilyGroup.getCustomers().add(customerToJoin);
+            customer.setFamilyGroup(newFamilyGroup);
+            em.persist(newFamilyGroup);
+            em.flush();
+            return newFamilyGroup;
+        } catch (Exception ex) {
         }
+//        if(customer.getFamilyGroup() != null){
+//            throw new CustomerAlreadyInFamilyGroupException();
+//        }
+//        
 
-        em.persist(newFamilyGroup);
-        em.flush();
-
-        return newFamilyGroup.getFamilyGroupId();
+//        for (Customer c : newFamilyGroup.getCustomers()) {
+//            if (!c.getAddress().equals(checkAddress) || !c.getPostalCode().equals(checkPostalCode)) {
+//                throw new CustomersDoNotHaveSameAddressOrPostalCodeException("Family Group cannot be created as "
+//                        + "the customers: " + newFamilyGroup.getCustomers().get(0).getFirstName()
+//                        + newFamilyGroup.getCustomers().get(0).getLastName() + " and "
+//                        + c.getFirstName() + c.getLastName() + " do not have the same address/postal code!");
+//            }
+//        }
+        return null;
     }
 
     @Override
@@ -96,7 +108,8 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
         String checkPostalCode = fg.getCustomers().get(0).getPostalCode();
 
         //check for the same address and postal code
-        if (newMember.getAddress().equals(checkAddress) && newMember.getPostalCode().equals(checkPostalCode)) {
+        //Rmb change bck to get Address and postal code
+        if (newMember.getNewAddress().equals(checkAddress) && newMember.getNewPostalCode().equals(checkPostalCode)) {
             //check if the family group has reached its limit of 5
             if (fg.getNumberOfMembers() < 5) {
                 fg.getCustomers().add(newMember);
