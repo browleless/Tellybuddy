@@ -110,12 +110,12 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
 
         return query.getResultList();
     }
-    
+
     @Override
     public List<Quiz> retirevePastQuizzes() {
-        
+
         Query query = entityManager.createQuery("SELECT q FROM Quiz q WHERE q.expiryDate < CURRENT_TIMESTAMP ORDER BY q.expiryDate");
-        
+
         return query.getResultList();
     }
 
@@ -143,6 +143,7 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
             List<Question> questionsToDelete = new ArrayList<>();
             List<Question> questionsToAdd = new ArrayList<>();
 
+            List<Answer> answersToAdd = new ArrayList<>();
             List<Answer> answersToUpdate = new ArrayList<>();
             List<Answer> answersToDelete = new ArrayList<>();
 
@@ -156,9 +157,11 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
 
                                 questionSessionBeanLocal.updateQuestion(questionToUpdate);
 
-                                for (Answer answerToUpdate : questionToUpdate.getAnswers()) {
-                                    if (questionToCheck.getAnswers().contains(answerToUpdate)) {
-                                        answersToUpdate.add(answerToUpdate);
+                                for (Answer answer : questionToUpdate.getAnswers()) {
+                                    if (answer.getAnswerId() == null) {
+                                        answersToAdd.add(answer);
+                                    } else if (questionToCheck.getAnswers().contains(answer)) {
+                                        answersToUpdate.add(answer);
                                     }
                                 }
 
@@ -168,13 +171,23 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
                                     }
                                 }
 
+                                for (Answer answerToAdd : answersToAdd) {
+                                    answerSessionBeanLocal.createNewAnswer(questionToCheck, answerToAdd);
+                                }
+
+                                answersToAdd.clear();
+
                                 for (Answer answerToUpdate : answersToUpdate) {
                                     answerSessionBeanLocal.updateAnswer(answerToUpdate);
                                 }
 
+                                answersToUpdate.clear();
+
                                 for (Answer answerToDelete : answersToDelete) {
                                     answerSessionBeanLocal.deleteAnswer(answerToDelete);
                                 }
+
+                                answersToDelete.clear();
 
                                 break;
                             } catch (QuestionNotFoundException | AnswerNotFoundException | DeleteAnswerException ex) {
@@ -194,7 +207,7 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
 
             for (Question questionToAdd : questionsToAdd) {
 
-                List<Answer> answersToAdd = new ArrayList<>();
+                answersToAdd = new ArrayList<>();
 
                 for (Answer answerToAdd : questionToAdd.getAnswers()) {
                     answersToAdd.add(answerToAdd);
