@@ -128,7 +128,7 @@
 
             </h:form>
 
-            <p:dialog id="dialogCreateNewQuiz" widgetVar="dialogCreateNewQuiz" header="Create New Quiz" closable="true" position="center center" onShow="PF('dialogCreateNewQuiz').initPosition()">
+            <p:dialog id="dialogCreateNewQuiz" widgetVar="dialogCreateNewQuiz" header="Create New Quiz" closable="true" position="center center" onShow="PF('dialogCreateNewQuiz').initPosition();">
 
                 <h:form id="formCreateNewQuiz">
 
@@ -181,7 +181,6 @@
                                                     <p:commandLink process="@this dialogEditQuestion" update="dialogEditQuestion" oncomplete="PF('dialogEditQuestion').show(); PF('dialogCreateNewQuiz').hide()" title="Edit Question">
                                                         <h:outputText styleClass="pi pi-pencil" style="margin:0 auto;"/>
                                                         <f:setPropertyActionListener value="#{question}" target="#{quizManagementManagedBean.questionToEdit}" />
-                                                        <f:setPropertyActionListener value="#{index}" target="#{quizManagementManagedBean.questionToEditIndex}" />
                                                     </p:commandLink>
                                                 </p:column>
                                                 <p:column>
@@ -247,7 +246,7 @@
 
             </p:dialog>
 
-            <p:dialog id="dialogCreateNewQuestion" widgetVar="dialogCreateNewQuestion" header="Create New Question" closable="true" position="center center" onShow="PF('dialogCreateNewQuestion').initPosition()" onHide="#{quizManagementManagedBean.clearTempVariables()}">
+            <p:dialog id="dialogCreateNewQuestion" widgetVar="dialogCreateNewQuestion" header="Create New Question" closable="true" position="center center" onShow="PF('dialogCreateNewQuestion').initPosition(); #{quizManagementManagedBean.clearNewQuestion()}">
 
                 <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogCreateNewQuiz').show();
                         PF('dialogCreateNewQuestion').hide()" />
@@ -325,7 +324,7 @@
 
             </p:dialog>
 
-            <p:dialog id="dialogEditQuestion" widgetVar="dialogEditQuestion" header="Edit Question" closable="true" position="center center" onShow="PF('dialogEditQuestion').initPosition()" onHide="#{quizManagementManagedBean.clearTempVariables()}">
+            <p:dialog id="dialogEditQuestion" widgetVar="dialogEditQuestion" header="Edit Question" closable="true" position="center center" onShow="PF('dialogEditQuestion').initPosition()">
 
                 <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogCreateNewQuiz').show(); PF('dialogEditQuestion').hide()" />
 
@@ -483,7 +482,6 @@
                                                 <p:commandLink process="@this dialogUpdateQuestion" update="dialogUpdateQuestion" oncomplete="PF('dialogUpdateQuestion').show(); PF('dialogUpdateQuiz').hide()" title="Update Question">
                                                     <h:outputText styleClass="pi pi-pencil" style="margin:0 auto;"/>
                                                     <f:setPropertyActionListener value="#{question}" target="#{quizManagementManagedBean.questionToEdit}" />
-                                                    <f:setPropertyActionListener value="#{index}" target="#{quizManagementManagedBean.questionToEditIndex}" />
                                                 </p:commandLink>
 
                                                 <p:commandLink process="@this" update="formUpdateQuiz:updateTabView:dataGridAllQuestions" title="Delete Question" actionListener="#{quizManagementManagedBean.deleteExistingQuestion}">
@@ -513,7 +511,7 @@
 
             </p:dialog>
 
-            <p:dialog id="dialogAddNewQuestion" widgetVar="dialogAddNewQuestion" header="Create New Question" closable="true" position="center center" onShow="PF('dialogAddNewQuestion').initPosition()" onHide="#{quizManagementManagedBean.clearTempVariables()}">
+            <p:dialog id="dialogAddNewQuestion" widgetVar="dialogAddNewQuestion" header="Create New Question" closable="true" position="center center" onShow="PF('dialogAddNewQuestion').initPosition(); #{quizManagementManagedBean.clearNewQuestion()}">
 
                 <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogUpdateQuiz').show(); PF('dialogAddNewQuestion').hide()" />
 
@@ -590,7 +588,7 @@
 
             </p:dialog>
 
-            <p:dialog id="dialogUpdateQuestion" widgetVar="dialogUpdateQuestion" header="Edit Question" closable="true" position="center center" onShow="PF('dialogUpdateQuestion').initPosition()" onHide="#{quizManagementManagedBean.clearTempVariables()}">
+            <p:dialog id="dialogUpdateQuestion" widgetVar="dialogUpdateQuestion" header="Edit Question" closable="true" position="center center" onShow="PF('dialogUpdateQuestion').initPosition()">
 
                 <p:button icon="pi pi-arrow-left" style="margin-bottom: 10px;" onmousedown="PF('dialogUpdateQuiz').show(); PF('dialogUpdateQuestion').hide()" />
 

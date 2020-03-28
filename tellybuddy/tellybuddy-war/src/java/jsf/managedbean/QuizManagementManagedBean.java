@@ -48,7 +48,6 @@ public class QuizManagementManagedBean implements Serializable {
     private Question newQuestion;
 
     private Question questionToEdit;
-    private int questionToEditIndex;
 
     private String selectedFilter;
 
@@ -228,18 +227,15 @@ public class QuizManagementManagedBean implements Serializable {
         }
     }
 
-    public void clearTempVariables() {
+    public void clearNewQuestion() {
 
-        this.questionToEdit = null;
-        this.newQuestion = null;
+        this.newQuestion = new Question();
     }
 
     public void onTabChange(TabChangeEvent event) {
 
         Tab activeTab = event.getTab();
         currentTabIndex = ((TabView) event.getSource()).getChildren().indexOf(activeTab);
-
-        System.out.println(currentTabIndex);
     }
 
     public String getQuizName() {
@@ -344,14 +340,6 @@ public class QuizManagementManagedBean implements Serializable {
 
     public void setQuizToUpdate(Quiz quizToUpdate) {
         this.quizToUpdate = quizToUpdate;
-    }
-
-    public int getQuestionToEditIndex() {
-        return questionToEditIndex;
-    }
-
-    public void setQuestionToEditIndex(int questionToEditIndex) {
-        this.questionToEditIndex = questionToEditIndex;
     }
 
     public int getCurrentTabIndex() {
