@@ -18,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -25,8 +26,9 @@ import javax.validation.ValidatorFactory;
 import util.enumeration.CustomerStatusEnum;
 import util.exception.CustomerExistException;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
-import util.exception.ProductNotFoundException;
+import util.exception.UnknownPersistenceException;
 import util.security.CryptographicHelper;
 
 /**
@@ -53,20 +55,34 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
 //    @RolesAllowed({"customer"})
     @Override
-    public Long createCustomer(Customer newCustomer) throws CustomerExistException {
+    public Long createCustomer(Customer newCustomer) throws CustomerExistException, CustomerUsernameExistException {
 
-        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername OR c.email = :inEmail");
+        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername");
         query.setParameter("inUsername", newCustomer.getUsername());
-        query.setParameter("inUsername", newCustomer.getEmail());
 
-        if (query.getSingleResult() != null) {
-            throw new CustomerExistException("Chosen username for employee already exists! Try another username.");
-        } else {
-            em.persist(newCustomer);
-            em.flush();
-
-            return newCustomer.getCustomerId();
+        if (query.getResultList().size() > 0) {
+            throw new CustomerUsernameExistException("Customer with the same username already exists, please try another username.");
         }
+
+        query = em.createQuery("SELECT c FROM Customer c WHERE c.email = :inEmail");
+        query.setParameter("inEmail", newCustomer.getEmail());
+
+        if (query.getResultList().size() > 0) {
+            throw new CustomerExistException("A customer with the same email already exists! Try with another email or login with your account.");
+        }
+
+        query = em.createQuery("SELECT c FROM Customer c WHERE c.nric = :inNewNric OR c.newNric = :inNewNric");
+        query.setParameter("inNewNric", newCustomer.getNewNric());
+
+        if (query.getResultList().size() > 0) {
+            throw new CustomerExistException("A customer with the same NRIC already exists! Try with another NRIC or login with your account.");
+        }
+
+        // never check unique file path since it should be unique with random string added behind if file name is the same
+        em.persist(newCustomer);
+        em.flush();
+
+        return newCustomer.getCustomerId();
     }
 
 //    @RolesAllowed({"customer"})
@@ -85,7 +101,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
 //    @RolesAllowed({"employee"})
     @Override
-    public void employeeApprovePendingCustomerAndUpdate(Customer customer) throws CustomerNotFoundException{
+    public void employeeApprovePendingCustomerAndUpdate(Customer customer) throws CustomerNotFoundException {
         Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
         customerToUpdate.setAddress(customer.getNewAddress());
         customerToUpdate.setNewAddress(null);
@@ -95,7 +111,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         customerToUpdate.setNewNric(null);
         customerToUpdate.setNricImagePath(customer.getNewNricImagePath());
         customerToUpdate.setNewNricImagePath(null);
-        
+
         customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.ACTIVE);
         customerToUpdate.setIsApproved(true);
 
@@ -272,9 +288,9 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             throw new InvalidLoginCredentialException("Username does not exist or invalid password!");
         }
     }
-    
-    public void deleteCustomer(Long customerId){
+
+    public void deleteCustomer(Long customerId) {
         em.remove(em.find(Customer.class, customerId));
-    
+
     }
 }
