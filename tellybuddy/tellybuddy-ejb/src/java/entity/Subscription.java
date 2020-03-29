@@ -35,7 +35,7 @@ public class Subscription implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long subcscriptionId;
+    private Long subscriptionId;
 
     @Column(nullable = false)
     @NotNull
@@ -109,29 +109,29 @@ public class Subscription implements Serializable {
         this.talkTimeUnits.put("allocated", allocatedTalktimeUnits);
     }
 
-    public Long getSubcscriptionId() {
-        return subcscriptionId;
+    public Long getSubscriptionId() {
+        return subscriptionId;
     }
 
-    public void setSubcscriptionId(Long subcscriptionId) {
-        this.subcscriptionId = subcscriptionId;
+    public void setSubscriptionId(Long subscriptionId) {
+        this.subscriptionId = subscriptionId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (subcscriptionId != null ? subcscriptionId.hashCode() : 0);
+        hash += (subscriptionId != null ? subscriptionId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the subcscriptionId fields are not set
+        // TODO: Warning - this method won't work in the case the subscriptionId fields are not set
         if (!(object instanceof Subscription)) {
             return false;
         }
         Subscription other = (Subscription) object;
-        if ((this.subcscriptionId == null && other.subcscriptionId != null) || (this.subcscriptionId != null && !this.subcscriptionId.equals(other.subcscriptionId))) {
+        if ((this.subscriptionId == null && other.subscriptionId != null) || (this.subscriptionId != null && !this.subscriptionId.equals(other.subscriptionId))) {
             return false;
         }
         return true;
@@ -139,7 +139,7 @@ public class Subscription implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Subscription[ id=" + subcscriptionId + " ]";
+        return "entity.Subscription[ id=" + subscriptionId + " ]";
     }
 
     public Boolean getIsActive() {

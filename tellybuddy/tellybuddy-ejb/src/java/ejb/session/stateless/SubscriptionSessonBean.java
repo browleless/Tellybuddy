@@ -147,7 +147,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
     public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException {
 
-        Subscription subscriptionToApprove = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+        Subscription subscriptionToApprove = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
         subscriptionToApprove.setIsActive(Boolean.TRUE);
 
         subscriptionToApprove.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
@@ -170,7 +170,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         Subscription subscription = (Subscription) timer.getInfo();
 
         try {
-            Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+            Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
 
             BigDecimal addOnPrice = BigDecimal.ZERO;
             int totalAddOnUnits = subscriptionToUpdate.getDataUnits().get("addOn") + subscriptionToUpdate.getSmsUnits().get("addOn") + subscriptionToUpdate.getTalkTimeUnits().get("addOn");
@@ -205,7 +205,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
             Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice);
             bill = billSessionBeanLocal.createNewBill(bill, currentUsageDetail, subscriptionToUpdate.getCustomer());
-            
+
             // send email asynchronously
             // currently send to ownself for debugging, ot replace with actual customer email
             emailSessionBeanLocal.emailBillNotificationAsync(bill, subscriptionTotalAllowedData, subscriptionTotalAllowedSms, subscriptionTotalAllowedTalktime, "Tellybuddy<tellybuddy3106@gmail.com>", "tellybuddy3106@gmail.com");
@@ -265,7 +265,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         Set<ConstraintViolation<Subscription>> constraintViolations = validator.validate(subscription);
 
         if (constraintViolations.isEmpty()) {
-            Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+            Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
             subscriptionToUpdate.setCustomer(subscription.getCustomer());
             subscriptionToUpdate.setPlan(subscription.getPlan());
             subscriptionToUpdate.setPhoneNumber(subscription.getPhoneNumber());
@@ -288,7 +288,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     //to be done at the start of every month; before this just updateSubscription only
     @Override
     public Subscription amendAllocationOfUniis(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException {
-        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
 
         HashMap<String, Integer> smsUnits = subscriptionToAmend.getSmsUnits();
         HashMap<String, Integer> talkTimeUnits = subscriptionToAmend.getTalkTimeUnits();
@@ -305,6 +305,26 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
         updateSubscription(subscriptionToAmend);
         return subscriptionToAmend;
+    }
+
+    @Override
+    public Subscription allocateUnitsForNextMonth(Subscription subscription, Integer dataUnits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException {
+
+        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
+
+        subscriptionToAmend.getDataUnits().put("nextMonth", dataUnits);
+        subscriptionToAmend.getSmsUnits().put("nextMonth", smsUnits);
+        subscriptionToAmend.getTalkTimeUnits().put("nextMonth", talktimeUnits);
+
+        return subscriptionToAmend;
+    }
+
+    @Override
+    public void requestToTerminateSubscription(Subscription subscription) throws SubscriptionNotFoundException {
+
+        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
+
+        subscriptionToAmend.setSubscriptionStatusEnum(SubscriptionStatusEnum.TERMINATING);
     }
 
     @Override

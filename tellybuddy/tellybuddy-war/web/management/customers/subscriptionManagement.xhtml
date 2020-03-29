@@ -61,8 +61,8 @@
                     </p:outputPanel>
                 </f:facet>
 
-                <p:column headerText="ID" sortBy="#{subscription.subcscriptionId}" filterBy="#{subscription.subcscriptionId}" filterMatchMode="contains" width="10%" style="text-align: center;" >
-                    <h:outputText value="#{subscription.subcscriptionId}" />
+                <p:column headerText="ID" sortBy="#{subscription.subscriptionId}" filterBy="#{subscription.subscriptionId}" filterMatchMode="contains" width="10%" style="text-align: center;" >
+                    <h:outputText value="#{subscription.subscriptionId}" />
                 </p:column>
 
                 <p:column headerText="Subscription Mobile No." sortBy="#{subscription.phoneNumber.phoneNumber}" filterBy="#{subscription.phoneNumber.phoneNumber}" filterMatchMode="contains" style="text-align: center;"   >
@@ -95,7 +95,7 @@
                         <p:outputLabel for="id" value="Subscription ID: " />
                     </p:column>
                     <p:column>
-                        <h:outputText id="id" value="#{subscriptionManagementManagedBean.subscriptionToView.subcscriptionId}" />
+                        <h:outputText id="id" value="#{subscription.subscriptionId}" />
                     </p:column>
                 </p:row>
 
