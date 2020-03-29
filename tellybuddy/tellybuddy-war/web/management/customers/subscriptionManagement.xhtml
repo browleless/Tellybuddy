@@ -38,7 +38,7 @@
         <h:form>
             <h:panelGrid columns="4">
                 <p:selectOneMenu id="subscriptionsFilter" value="#{subscriptionManagementManagedBean.selectedFilter}">
-                    <p:ajax update="formAllSubscriptions:dataTableAllSubscriptions" process="@this formAllSubscriptions:dataTableAllSubscriptions" listener="#{subscriptionManagementManagedBean.doFilter}" />
+                    <p:ajax update="@form formAllSubscriptions:dataTableAllSubscriptions" process="@this formAllSubscriptions:dataTableAllSubscriptions" listener="#{subscriptionManagementManagedBean.doFilter}" />
                     <f:selectItem  itemLabel="All" itemValue="All" />
                     <f:selectItem itemLabel="Pending" itemValue="Pending" />
                     <f:selectItem itemLabel="Active" itemValue="Active" />

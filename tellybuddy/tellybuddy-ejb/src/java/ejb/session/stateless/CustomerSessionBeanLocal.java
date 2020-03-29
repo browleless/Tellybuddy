@@ -23,9 +23,9 @@ public interface CustomerSessionBeanLocal {
 
     public Long createCustomer(Customer newCustomer) throws CustomerExistException;
 
-    public void updateCustomerDetailsForCustomer(Customer customer)throws CustomerNotFoundException;
+    public void updateCustomerDetailsForCustomer(Customer customer) throws CustomerNotFoundException;
 
-    public void employeeApprovePendingCustomerAndUpdate(Customer customer)throws CustomerNotFoundException;
+    public void employeeApprovePendingCustomerAndUpdate(Customer customer) throws CustomerNotFoundException;
 
     public void updateCustomerTransaction();
 
@@ -37,14 +37,19 @@ public interface CustomerSessionBeanLocal {
 
     public Customer retrieveCustomerFromSubscription(Long subscriptionId);
 
-    public Customer retrieveCustomerByCustomerId(Long customerId)throws CustomerNotFoundException;
+    public Customer retrieveCustomerByCustomerId(Long customerId) throws CustomerNotFoundException;
 
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException;
 
     public List<Customer> retrieveCustomerFromFamilyGroupId(Long familyGroupId);
 
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException;
+
     public void updateCustomerConsecutiveMonths();
+
+    public int retrieveNoActiveSubscriptions(Customer customer);
+
+    public List<Customer> retrieveAllPendingCustomers();
 
     //   public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription);
     public void terminateCustomerSubscriptionToAPlan(Long customerId) throws CustomerNotFoundException;

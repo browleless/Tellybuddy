@@ -49,7 +49,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
 
             FamilyGroup newFamilyGroup = new FamilyGroup(desc);
             newFamilyGroup.getCustomers().add(customerToJoin);
-            customer.setFamilyGroup(newFamilyGroup);
+            customerToJoin.setFamilyGroup(newFamilyGroup);
             em.persist(newFamilyGroup);
             em.flush();
             return newFamilyGroup;

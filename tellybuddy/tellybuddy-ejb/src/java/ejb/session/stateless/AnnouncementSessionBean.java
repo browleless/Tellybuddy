@@ -6,12 +6,15 @@
 package ejb.session.stateless;
 
 import entity.Announcement;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.AnnouncementRecipientEnum;
 import util.exception.AnnouncementAlreadyExpiredException;
 import util.exception.AnnouncementNotFoundException;
 
@@ -64,8 +67,26 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
 
         return q.getResultList();
     }
+
     @Override
-    public List<Announcement> retrieveAllExpiredAnnouncements(){
+    public List<Announcement> retrieveAllActiveAnnoucementsForEmployees() {
+        Date current = new Date();
+
+        Query q = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate >= :inCurrent AND a.announcementRecipientEnum = :inRecipient");
+        q.setParameter("inCurrent", current);
+        q.setParameter("inRecipient", AnnouncementRecipientEnum.EMPLOYEES);
+        List<Announcement> activeAnnouncements = q.getResultList();
+        Collections.sort(activeAnnouncements, new Comparator<Announcement>() {
+            //Sort to return latest first
+            public int compare(Announcement o1, Announcement o2) {
+                return o2.getPostedDate().compareTo(o1.getPostedDate());
+            }
+        });
+        return activeAnnouncements;
+    }
+
+    @Override
+    public List<Announcement> retrieveAllExpiredAnnouncements() {
         Date current = new Date();
 
         Query q = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate <= :inCurrent");
@@ -100,7 +121,7 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
      */
     public void deleteAnnouncement(Long announcementId) throws AnnouncementNotFoundException {
         Announcement announcementToDelete = retrieveAnnouncementByAnnouncementId(announcementId);
-        
+
         em.remove(announcementToDelete);
     }
 }

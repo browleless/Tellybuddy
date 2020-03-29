@@ -39,8 +39,10 @@ public interface SubscriptionSessonBeanLocal {
     public void terminateSubscription(Long customerId, Long subscriptionId);
 
     public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer);
-    
+
     public List<Subscription> retrieveSubscriptionsByFilter(SubscriptionStatusEnum filterString);
+
+    public List<Subscription> retrieveAllPendingSubscriptions();
 
     public List<Subscription> retrieveAllSubscriptions();
 

@@ -341,6 +341,13 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         q.setParameter("inFamilyGroupId", familyGroupId);
         return q.getResultList();
     }
+    
+    @Override
+    public List<Subscription> retrieveAllPendingSubscriptions(){
+         Query q = em.createQuery("Select s FROM Subscription s WHERE s.subscriptionStatusEnum = :inStatus");
+        q.setParameter("inStatus", SubscriptionStatusEnum.PENDING);
+        return q.getResultList();
+    }
 
     @Override
     public void terminateSubscription(Long customerId, Long subscriptionId) {

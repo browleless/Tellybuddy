@@ -247,8 +247,25 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             throw new CustomerNotFoundException("Customer Username " + username + " does not exist!");
         }
     }
+    
+    @Override
+    public int retrieveNoActiveSubscriptions(Customer customer){
+        int count = 0;
+        for(Subscription s:customer.getSubscriptions()){
+            if(s.getIsActive()){
+                count++;
+            }
+        }
+        return count;
+    }
 //    @RolesAllowed({"employee", "customer"})
-
+    
+    @Override
+    public List<Customer> retrieveAllPendingCustomers(){
+        Query q = em.createQuery("Select c FROM Customer c WHERE c.customerStatusEnum = :inStatus");
+        q.setParameter("inStatus", CustomerStatusEnum.PENDING);
+        return q.getResultList();
+    }
     @Override
     public List<Customer> retrieveCustomerFromFamilyGroupId(Long familyGroupId) {
         Query q = em.createQuery("SELECT fg.customers FROM FamilyGroup fg WHERE fg.familyGroupId = :inFamilyGroupId");

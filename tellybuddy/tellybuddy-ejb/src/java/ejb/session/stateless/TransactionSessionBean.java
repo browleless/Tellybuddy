@@ -9,6 +9,9 @@ import entity.Customer;
 import entity.DiscountCode;
 import entity.Transaction;
 import entity.TransactionLineItem;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -34,31 +37,25 @@ import util.exception.TransactionNotFoundException;
 @Local(TransactionSessionBeanLocal.class)
 public class TransactionSessionBean implements TransactionSessionBeanLocal {
 
-
-
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
     @Resource
     private EJBContext eJBContext;
-    
+
     @EJB
     private CustomerSessionBeanLocal customerSessionBeanLocal;
     @EJB
     private ProductSessionBeanLocal productSessionBeanLocal;
     @EJB
     private DiscountCodeSessionBeanLocal discountCodeSessionBeanLocal;
-        
-    public TransactionSessionBean()
-    {
+
+    public TransactionSessionBean() {
     }
-       
+
     @Override
-    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException
-    {
-        if(newTransaction != null)
-        {
-            try
-            {
+    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException {
+        if (newTransaction != null) {
+            try {
                 Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
                 DiscountCode discountCode = discountCodeSessionBeanLocal.retrieveDiscountCodeByDiscountCodeName(discountCodeName);
                 newTransaction.setCustomer(customer);
@@ -67,8 +64,7 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
 
                 em.persist(newTransaction);
 
-                for(TransactionLineItem transactionLineItem:newTransaction.getTransactionLineItems())
-                {
+                for (TransactionLineItem transactionLineItem : newTransaction.getTransactionLineItems()) {
                     productSessionBeanLocal.debitQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
                     em.persist(transactionLineItem);
                 }
@@ -76,104 +72,85 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
                 em.flush();
 
                 return newTransaction;
-            }
-            catch(ProductNotFoundException | ProductInsufficientQuantityOnHandException ex)
-            {
+            } catch (ProductNotFoundException | ProductInsufficientQuantityOnHandException ex) {
                 // The line below rolls back all changes made to the database.
                 eJBContext.setRollbackOnly();
                 throw new CreateNewSaleTransactionException(ex.getMessage());
             }
-        }
-        else
-        {
+        } else {
             throw new CreateNewSaleTransactionException("Sale transaction information not provided");
         }
     }
-    
-    
-    
+
     @Override
-    public List<Transaction> retrieveAllTransactions()
-    {
+    public List<Transaction> retrieveAllTransactions() {
         Query query = em.createQuery("SELECT st FROM Transaction st");
-        
+
         return query.getResultList();
     }
-    
-    
-    
-    // Added in v4.1
-    
+
     @Override
-    public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId)
-    {
+    public List<Transaction> retrieveAllMonthlyTransactions() {
+
+        Query query = em.createQuery("SELECT st FROM Transaction st WHERE st.transactionDateTime BETWEEN :inputMonthStart AND :inputMonthEnd");
+
+        LocalDateTime monthBegin = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime monthEnd = LocalDateTime.now().withDayOfMonth(1).plusMonths(1).minusDays(-1).withHour(23).withMinute(59).withSecond(59);
+        Date inputMonthStart = Date.from(monthBegin.atZone(ZoneId.systemDefault()).toInstant());
+        Date inputMonthEnd = Date.from(monthEnd.atZone(ZoneId.systemDefault()).toInstant());
+        query.setParameter("inputMonthStart", inputMonthStart);
+        query.setParameter("inputMonthEnd", inputMonthEnd);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId) {
         Query query = em.createNamedQuery("selectAllTransactionLineItemsByProductId");
         query.setParameter("inProductId", productId);
-        
+
         return query.getResultList();
     }
-    
-    
-    
+
     @Override
-    public Transaction retrieveTransactionByTransactionId(Long transactionId) throws TransactionNotFoundException
-    {
+    public Transaction retrieveTransactionByTransactionId(Long transactionId) throws TransactionNotFoundException {
         Transaction transaction = em.find(Transaction.class, transactionId);
-        
-        if(transaction != null)
-        {
+
+        if (transaction != null) {
             transaction.getTransactionLineItems().size();
-            
+
             return transaction;
-        }
-        else
-        {
+        } else {
             throw new TransactionNotFoundException("Sale Transaction ID " + transactionId + " does not exist!");
-        }                
+        }
     }
-    
-    
-    
+
     @Override
-    public void updateTransaction(Transaction Transaction)
-    {
+    public void updateTransaction(Transaction Transaction) {
         em.merge(Transaction);
     }
-    
-    
-    
+
     // Updated in v4.1
-    
     @Override
-    public void voidRefundTransaction(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException
-    {
+    public void voidRefundTransaction(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException {
         Transaction transaction = retrieveTransactionByTransactionId(transactionId);
-        
-        if(!transaction.getVoidRefund())
-        {
-            for(TransactionLineItem transactionLineItem:transaction.getTransactionLineItems())
-            {
-                try
-                {
+
+        if (!transaction.getVoidRefund()) {
+            for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
+                try {
                     productSessionBeanLocal.creditQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
-                }
-                catch(ProductNotFoundException ex)
-                {
+                } catch (ProductNotFoundException ex) {
                     ex.printStackTrace(); // Ignore exception since this should not happen
-                }                
+                }
             }
-            
+
             transaction.setVoidRefund(true);
-        }
-        else
-        {
+        } else {
             throw new TransactionAlreadyVoidedRefundedException("The sale transaction has aready been voided/refunded");
         }
     }
-    
+
     @Override
-    public void deleteTransaction(Transaction transaction)
-    {
+    public void deleteTransaction(Transaction transaction) {
         throw new UnsupportedOperationException();
     }
 
@@ -181,5 +158,4 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         em.persist(object);
     }
 
-    
 }
