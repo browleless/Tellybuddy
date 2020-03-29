@@ -1,70 +1,73 @@
 package ws.restful;
 
 import ejb.session.stateless.CustomerSessionBeanLocal;
-import ejb.session.stateless.PhoneNumberSessionBeanLocal;
+import ejb.session.stateless.DiscountCodeSessionBeanLocal;
 import entity.Customer;
-import entity.PhoneNumber;
+import entity.DiscountCode;
 import java.util.List;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import util.exception.DiscountCodeNotFoundException;
 import util.exception.InvalidLoginCredentialException;
-import util.exception.PhoneNumberNotFoundException;
 import ws.datamodel.ErrorRsp;
-import ws.datamodel.RetrieveAllAvailablePhoneNumbersRsp;
-import ws.datamodel.RetrievePhoneNumberRsp;
+import ws.datamodel.RetrieveAllAvailableDiscountCodesRsp;
+import ws.datamodel.RetrieveDiscountCodeRsp;
 
 /**
  * REST Web Service
  *
  * @author tjle2
  */
-@Path("PhoneNumber")
-public class PhoneNumberResource {
+@Path("DiscountCode")
+public class DiscountCodeResource {
 
     @Context
     private UriInfo context;
 
     private final SessionBeanLookup sessionBeanLookup;
 
+    private final DiscountCodeSessionBeanLocal discountCodeSessionBeanLocal;
     private final CustomerSessionBeanLocal customerSessionBeanLocal;
-    private final PhoneNumberSessionBeanLocal phoneNumberSessionBeanLocal;
 
-    public PhoneNumberResource() {
+    public DiscountCodeResource() {
 
         sessionBeanLookup = new SessionBeanLookup();
 
+        discountCodeSessionBeanLocal = sessionBeanLookup.lookupDiscountCodeSessionBeanLocal();
         customerSessionBeanLocal = sessionBeanLookup.lookupCustomerSessionBeanLocal();
-        phoneNumberSessionBeanLocal = sessionBeanLookup.lookupPhoneNumberSessionBeanLocal();
     }
 
     /**
-     * Retrieves representation of an instance of ws.restful.PhoneNumberResource
+     * Retrieves representation of an instance of
+     * ws.restful.DiscountCodeResource
      *
      * @return an instance of java.lang.String
      */
+    @Path("retrieveAllAvailableDiscountCodes")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retrieveAllAvaialblePhoneNumbers(@QueryParam("username") String username, @QueryParam("password") String password) {
+    public Response retrieveAllAvailableDiscountCodes(@QueryParam("username") String username, @QueryParam("password") String password) {
+
         try {
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
-            System.out.println("********** PhoneNumberResource.retrieveAllAvaialblePhoneNumbers(): Customer " + customer.getUsername() + " login remotely via web service");
+            System.out.println("********** DiscountCodeResource.retrieveAllAvailableDiscountCodes(): Customer " + customer.getUsername() + " login remotely via web service");
 
-            List<PhoneNumber> phoneNumbers = phoneNumberSessionBeanLocal.retrieveListOfAvailablePhoneNumbers();
+            List<DiscountCode> discountCodes = discountCodeSessionBeanLocal.retrieveAllActiveDiscountCodes();
 
-            for (PhoneNumber phoneNumber : phoneNumbers) {
-                phoneNumber.setSubscription(null);
+            for (DiscountCode discountCode : discountCodes) {
+                discountCode.setTransaction(null);
             }
 
-            return Response.status(Response.Status.OK).entity(new RetrieveAllAvailablePhoneNumbersRsp(phoneNumbers)).build();
+            return Response.status(Response.Status.OK).entity(new RetrieveAllAvailableDiscountCodesRsp(discountCodes)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
@@ -74,23 +77,23 @@ public class PhoneNumberResource {
         }
     }
 
-    @Path("retrievePhoneNumber/{phoneNumberId}")
+    @Path("retrieveDiscountCode/{discountCodeId}")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retrievePhoneNumber(@QueryParam("username") String username, @QueryParam("password") String password, @PathParam("phoneNumberId") Long phoneNumberId) {
+    public Response retrieveDiscountCode(@QueryParam("username") String username, @QueryParam("password") String password, @PathParam("discountCodeId") Long discountCodeId) {
         try {
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
-            System.out.println("********** PhoneNumberResource.retrievePhoneNumber(): Customer " + customer.getUsername() + " login remotely via web service");
+            System.out.println("********** DiscountCodeResource.retrieveDiscountCode(): Customer " + customer.getUsername() + " login remotely via web service");
 
-            PhoneNumber phoneNumber = phoneNumberSessionBeanLocal.retrievePhoneNumberByPhoneNumberId(phoneNumberId);
-            phoneNumber.setSubscription(null);
+            DiscountCode discountCode = discountCodeSessionBeanLocal.retrieveDiscountCodeByDiscountCodeId(discountCodeId);
+            discountCode.setTransaction(null);
 
-            return Response.status(Response.Status.OK).entity(new RetrievePhoneNumberRsp(phoneNumber)).build();
+            return Response.status(Response.Status.OK).entity(new RetrieveDiscountCodeRsp(discountCode)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
-        } catch (PhoneNumberNotFoundException ex) {
+        } catch (DiscountCodeNotFoundException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         } catch (Exception ex) {
