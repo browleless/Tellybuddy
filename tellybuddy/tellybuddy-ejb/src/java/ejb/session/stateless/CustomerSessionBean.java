@@ -10,6 +10,8 @@ import entity.Subscription;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Schedule;
@@ -39,6 +41,9 @@ import util.security.CryptographicHelper;
 @Local
 //@DeclareRoles({"employee", "customer"})
 public class CustomerSessionBean implements CustomerSessionBeanLocal {
+
+    @EJB(name = "EmailSessionBeanLocal")
+    private EmailSessionBeanLocal emailSessionBeanLocal;
 
     @EJB(name = "SubscriptionSessonBeanLocal")
     private SubscriptionSessonBeanLocal subscriptionSessonBeanLocal;
@@ -81,6 +86,13 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         // never check unique file path since it should be unique with random string added behind if file name is the same
         em.persist(newCustomer);
         em.flush();
+
+        try {
+            // for now just hardcoded to send to own account, to change to customer.getEmail() when we want to
+            emailSessionBeanLocal.emailCustomerAccountCreationNotification(newCustomer, "Tellybuddy<tellybuddy3106@gmail.com>", "tellybuddy3106@gmail.com");
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
 
         return newCustomer.getCustomerId();
     }
