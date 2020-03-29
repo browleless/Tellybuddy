@@ -12,6 +12,7 @@ import java.util.List;
 import javax.ejb.Local;
 import util.exception.CustomerAlreadyInFamilyGroupException;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
+import util.exception.CustomerNotFoundException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
 import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
 import util.exception.FamilyGroupNotFoundException;
@@ -28,7 +29,7 @@ import util.exception.InsufficientTalktimeUnitsToDonateToFamilyGroupException;
 @Local
 public interface FamilyGroupSessionBeanLocal {
 
-    public Long createFamilyGroup(FamilyGroup newFamilyGroup) throws CustomersDoNotHaveSameAddressOrPostalCodeException;
+    public Long createFamilyGroup(FamilyGroup newFamilyGroup, Customer customer) throws CustomerNotFoundException;
 
     public FamilyGroup retrieveFamilyGroupByFamilyGroupId(Long familyGroupId) throws FamilyGroupNotFoundException;
 
@@ -50,5 +51,7 @@ public interface FamilyGroupSessionBeanLocal {
             InsufficientDonatedUnitsInFamilyGroupException;
 
     public FamilyGroup retrieveFamilyGroupByCustomer(Customer customer) throws FamilyGroupNotFoundException;
+
+    public void deleteFamilyGroup(Long familyGroupId) throws FamilyGroupNotFoundException;
 
 }

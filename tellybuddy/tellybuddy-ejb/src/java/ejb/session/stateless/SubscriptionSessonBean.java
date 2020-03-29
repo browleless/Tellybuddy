@@ -179,9 +179,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 addOnPrice = subscriptionToUpdate.getPlan().getAddOnPrice().multiply(BigDecimal.valueOf(totalAddOnUnits));
             }
 
-            Integer subscriptionTotalAllowedData = (subscriptionToUpdate.getAllocatedData() + subscriptionToUpdate.getDataUnits().get("addOn") + subscriptionToUpdate.getDataUnits().get("familyGroup")) * subscriptionToUpdate.getPlan().getDataConversionRate();
-            Integer subscriptionTotalAllowedSms = (subscriptionToUpdate.getAllocatedSms() + subscriptionToUpdate.getSmsUnits().get("addOn") + subscriptionToUpdate.getSmsUnits().get("familyGroup")) * subscriptionToUpdate.getPlan().getSmsConversionRate();
-            Integer subscriptionTotalAllowedTalktime = (subscriptionToUpdate.getAllocatedTalkTime() + subscriptionToUpdate.getTalkTimeUnits().get("addOn") + subscriptionToUpdate.getTalkTimeUnits().get("familyGroup")) * subscriptionToUpdate.getPlan().getTalktimeConversionRate();
+            Integer subscriptionTotalAllowedData = (subscriptionToUpdate.getAllocatedData() + subscriptionToUpdate.getDataUnits().get("addOn") + subscriptionToUpdate.getDataUnits().get("familyGroup") - subscriptionToUpdate.getDataUnits().get("donated")) * subscriptionToUpdate.getPlan().getDataConversionRate();
+            Integer subscriptionTotalAllowedSms = (subscriptionToUpdate.getAllocatedSms() + subscriptionToUpdate.getSmsUnits().get("addOn") + subscriptionToUpdate.getSmsUnits().get("familyGroup") - subscriptionToUpdate.getSmsUnits().get("donated")) * subscriptionToUpdate.getPlan().getSmsConversionRate();
+            Integer subscriptionTotalAllowedTalktime = (subscriptionToUpdate.getAllocatedTalkTime() + subscriptionToUpdate.getTalkTimeUnits().get("addOn") + subscriptionToUpdate.getTalkTimeUnits().get("familyGroup") - subscriptionToUpdate.getTalkTimeUnits().get("donated")) * subscriptionToUpdate.getPlan().getTalktimeConversionRate();
 
             // latest usage detail for the month
             UsageDetail currentUsageDetail = subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() - 1);
@@ -216,23 +216,10 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 amendAllocationOfUniis(subscriptionToUpdate);
             }
 
-            // reset donated to allocated
-            if (subscriptionToUpdate.getDataUnits().get("donated") != 0) {
-                subscriptionToUpdate.getDataUnits().put("allocated", subscriptionToUpdate.getDataUnits().get("allocated") + subscriptionToUpdate.getDataUnits().get("donated"));
-                subscriptionToUpdate.getDataUnits().put("donated", 0);
-            }
-
-            // reset donated to allocated
-            if (subscriptionToUpdate.getSmsUnits().get("donated") != 0) {
-                subscriptionToUpdate.getSmsUnits().put("allocated", subscriptionToUpdate.getSmsUnits().get("allocated") + subscriptionToUpdate.getSmsUnits().get("donated"));
-                subscriptionToUpdate.getSmsUnits().put("donated", 0);
-            }
-
-            // reset donated to allocated
-            if (subscriptionToUpdate.getTalkTimeUnits().get("donated") != 0) {
-                subscriptionToUpdate.getTalkTimeUnits().put("allocated", subscriptionToUpdate.getTalkTimeUnits().get("allocated") + subscriptionToUpdate.getTalkTimeUnits().get("donated"));
-                subscriptionToUpdate.getTalkTimeUnits().put("donated", 0);
-            }
+            // reset donated units
+            subscriptionToUpdate.getDataUnits().put("donated", 0);
+            subscriptionToUpdate.getSmsUnits().put("donated", 0);
+            subscriptionToUpdate.getTalkTimeUnits().put("donated", 0);
 
             //reset purchased add on units
             subscriptionToUpdate.getDataUnits().put("addOn", 0);
