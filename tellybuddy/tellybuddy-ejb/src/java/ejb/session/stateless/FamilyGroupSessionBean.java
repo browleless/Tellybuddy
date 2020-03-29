@@ -9,11 +9,14 @@ import entity.Customer;
 import entity.FamilyGroup;
 import entity.Subscription;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.CustomerAlreadyInFamilyGroupException;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
+import util.exception.CustomerNotFoundException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
 import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
 import util.exception.FamilyGroupNotFoundException;
@@ -29,6 +32,9 @@ import util.exception.InsufficientTalktimeUnitsToDonateToFamilyGroupException;
  */
 @Stateless
 public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
+
+    @EJB
+    private CustomerSessionBeanLocal customerSessionBeanLocal;
 
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
@@ -78,6 +84,19 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
     }
 
     @Override
+    public FamilyGroup retrieveFamilyGroupByCustomer(Customer customer) throws FamilyGroupNotFoundException {
+
+        Query query = em.createQuery("SELECT fg FROM FamilyGroup fg WHERE :inCustomer MEMBER OF fg.customers");
+        query.setParameter("inCustomer", customer);
+
+        if (query.getResultList().size() == 0) {
+            throw new FamilyGroupNotFoundException("Customer does not have a family group yet!");
+        } else {
+            return (FamilyGroup) query.getSingleResult();
+        }
+    }
+
+    @Override
     public void updateFamilyPlan(FamilyGroup fg) throws FamilyGroupNotFoundException {
         if (fg.getFamilyGroupId() != null) {
             FamilyGroup fgToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
@@ -91,46 +110,68 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
 
     @Override
     public void addFamilyMember(Customer newMember, FamilyGroup fg) throws FamilyGroupReachedLimitOf5MembersException,
-            CustomersDoNotHaveSameAddressOrPostalCodeException {
-        String checkAddress = fg.getCustomers().get(0).getAddress();
-        String checkPostalCode = fg.getCustomers().get(0).getPostalCode();
+            CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException {
 
-        //check for the same address and postal code
-        if (newMember.getAddress().equals(checkAddress) && newMember.getPostalCode().equals(checkPostalCode)) {
-            //check if the family group has reached its limit of 5
-            if (fg.getNumberOfMembers() < 5) {
-                fg.getCustomers().add(newMember);
-                newMember.setFamilyGroup(fg);
-                fg.setNumberOfMembers(fg.getNumberOfMembers() + 1);
-            } else {
-                throw new FamilyGroupReachedLimitOf5MembersException("New family member cannot be added into family "
-                        + "group as family group has reached its limit of 5 members!");
+        try {
+            FamilyGroup familyGroupToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
+            Customer familyMemberToAdd = customerSessionBeanLocal.retrieveCustomerByCustomerId(newMember.getCustomerId());
+
+            if (familyMemberToAdd.getFamilyGroup() != null) {
+                throw new CustomerAlreadyInFamilyGroupException("Customer already has a family group!");
             }
-        } else {
-            throw new CustomersDoNotHaveSameAddressOrPostalCodeException("Customer " + newMember.getFirstName()
-                    + " " + newMember.getLastName() + "cannot join the family group as he/she does not have"
-                    + " the same address/postal code as the other member(s) in the family group!");
+
+            String checkAddress = familyGroupToUpdate.getCustomers().get(0).getAddress();
+            String checkPostalCode = familyGroupToUpdate.getCustomers().get(0).getPostalCode();
+
+            //check for the same address and postal code
+            if (familyMemberToAdd.getAddress().equals(checkAddress) && familyMemberToAdd.getPostalCode().equals(checkPostalCode)) {
+                //check if the family group has reached its limit of 5
+                if (familyGroupToUpdate.getNumberOfMembers() < 5) {
+                    familyGroupToUpdate.getCustomers().add(familyMemberToAdd);
+                    familyMemberToAdd.setFamilyGroup(familyGroupToUpdate);
+                    familyGroupToUpdate.setNumberOfMembers(familyGroupToUpdate.getNumberOfMembers() + 1);
+                } else {
+                    throw new FamilyGroupReachedLimitOf5MembersException("New family member cannot be added into family "
+                            + "group as family group has reached its limit of 5 members!");
+                }
+            } else {
+                throw new CustomersDoNotHaveSameAddressOrPostalCodeException("Customer " + familyMemberToAdd.getFirstName()
+                        + " " + familyMemberToAdd.getLastName() + " cannot join the family group as he/she does not have"
+                        + " the same address/postal code as the other member(s) in the family group!");
+            }
+        } catch (FamilyGroupNotFoundException | CustomerNotFoundException ex) {
+            // won't happen
+            ex.printStackTrace();
         }
     }
 
     @Override
     public void removeFamilyMember(Customer familyMember, FamilyGroup fg) throws CustomerDoesNotBelongToFamilyGroupException,
             FamilyGroupNotFoundException {
-        //check if the customer belongs to the family group
-        if (fg.getCustomers().contains(familyMember)) {
-            fg.getCustomers().remove(familyMember);
-            familyMember.setFamilyGroup(null);
 
-            fg.setNumberOfMembers(fg.getNumberOfMembers() - 1);
+        try {
+            FamilyGroup familyGroupToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
+            Customer familyMemberToDelete = customerSessionBeanLocal.retrieveCustomerByCustomerId(familyMember.getCustomerId());
+            
+            //check if the customer belongs to the family group
+            if (familyGroupToUpdate.getCustomers().contains(familyMemberToDelete)) {
+                familyGroupToUpdate.getCustomers().remove(familyMemberToDelete);
+                familyMemberToDelete.setFamilyGroup(null);
 
-            //check if family group only has 1 member, auto delete the family group
-            if (fg.getNumberOfMembers() == 1) {
-                deleteFamilyGroup(fg.getFamilyGroupId());
+                familyGroupToUpdate.setNumberOfMembers(familyGroupToUpdate.getNumberOfMembers() - 1);
+
+                //check if family group only has 1 member, auto delete the family group
+                if (familyGroupToUpdate.getNumberOfMembers() == 1) {
+                    deleteFamilyGroup(familyGroupToUpdate.getFamilyGroupId());
+                }
+
+            } else {
+                throw new CustomerDoesNotBelongToFamilyGroupException("Customer: " + familyMemberToDelete.getFirstName()
+                        + " " + familyMemberToDelete.getLastName() + " does not belong to Family Group: FamilyGroupID" + familyGroupToUpdate.getFamilyGroupId());
             }
-
-        } else {
-            throw new CustomerDoesNotBelongToFamilyGroupException("Customer: " + familyMember.getFirstName()
-                    + " " + familyMember.getLastName() + " does not belong to Family Group: FamilyGroupID" + fg.getFamilyGroupId());
+        } catch (CustomerNotFoundException | FamilyGroupNotFoundException ex) {
+            // won't happen
+            ex.printStackTrace();
         }
     }
 
