@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.AnnouncementRecipientEnum;
 import util.exception.AnnouncementAlreadyExpiredException;
 import util.exception.AnnouncementNotFoundException;
 
@@ -64,8 +65,18 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
 
         return q.getResultList();
     }
+
     @Override
-    public List<Announcement> retrieveAllExpiredAnnouncements(){
+    public List<Announcement> retrieveAllActiveAnnouncementsForCustomers() {
+
+        Query query = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate > CURRENT_TIMESTAMP AND a.announcementRecipientEnum = :inAnnouncementRecipientEnum");
+        query.setParameter("inAnnouncementRecipientEnum", AnnouncementRecipientEnum.CUSTOMER);
+
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Announcement> retrieveAllExpiredAnnouncements() {
         Date current = new Date();
 
         Query q = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate <= :inCurrent");
@@ -100,7 +111,7 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
      */
     public void deleteAnnouncement(Long announcementId) throws AnnouncementNotFoundException {
         Announcement announcementToDelete = retrieveAnnouncementByAnnouncementId(announcementId);
-        
+
         em.remove(announcementToDelete);
     }
 }
