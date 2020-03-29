@@ -1,12 +1,11 @@
 package ejb.session.stateless;
 
 import entity.Answer;
+import entity.Customer;
 import entity.Question;
 import entity.Quiz;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -125,6 +124,22 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
         Query query = entityManager.createQuery("SELECT q FROM Quiz q WHERE CURRENT_TIMESTAMP < q.openDate ORDER BY q.openDate");
 
         return query.getResultList();
+    }
+
+    @Override
+    public List<Quiz> retrieveAllUnattemptedActiveQuizzes(Customer customer) {
+
+        List<Quiz> quizzesToReturn = new ArrayList<>();
+
+        Query query = entityManager.createQuery("SELECT q FROM Quiz q WHERE q.quizAttempts IS EMPTY AND (CURRENT_TIMESTAMP BETWEEN q.openDate AND q.expiryDate)");
+        quizzesToReturn = query.getResultList();
+
+        query = entityManager.createQuery("SELECT q FROM Quiz q, IN (q.quizAttempts) qa WHERE (CURRENT_TIMESTAMP BETWEEN q.openDate AND q.expiryDate) AND qa.customer <> :inCustomer");
+        query.setParameter("inCustomer", customer);
+
+        quizzesToReturn.addAll(query.getResultList());
+
+        return quizzesToReturn;
     }
 
     @Override

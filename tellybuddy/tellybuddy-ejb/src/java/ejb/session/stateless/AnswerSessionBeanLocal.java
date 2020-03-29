@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.Answer;
 import entity.Question;
+import java.util.List;
 import javax.ejb.Local;
 import util.exception.AnswerNotFoundException;
 import util.exception.DeleteAnswerException;
@@ -26,5 +27,7 @@ public interface AnswerSessionBeanLocal {
     public void updateAnswer(Answer answer) throws AnswerNotFoundException;
 
     public void deleteAnswer(Answer answer) throws DeleteAnswerException, AnswerNotFoundException;
+
+    public List<Answer> retrieveAnswersByQuestionId(Long questionId);
     
 }

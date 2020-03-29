@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.Question;
 import entity.Quiz;
+import java.util.List;
 import javax.ejb.Local;
 import util.exception.DeleteAnswerException;
 import util.exception.DeleteQuestionException;
@@ -27,5 +28,7 @@ public interface QuestionSessionBeanLocal {
     public void updateQuestion(Question question) throws QuestionNotFoundException;
 
     public void deleteQuestion(Question question) throws QuestionNotFoundException, DeleteQuestionException, DeleteAnswerException;
+
+    public List<Question> retrieveQuestionsByQuizId(Long quizId);
     
 }

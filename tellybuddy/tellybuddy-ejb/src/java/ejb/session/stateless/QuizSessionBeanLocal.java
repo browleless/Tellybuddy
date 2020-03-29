@@ -5,10 +5,8 @@
  */
 package ejb.session.stateless;
 
-import entity.Answer;
-import entity.Question;
+import entity.Customer;
 import entity.Quiz;
-import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.DeleteAnswerException;
@@ -40,5 +38,7 @@ public interface QuizSessionBeanLocal {
     public Long createNewQuiz(Quiz newQuiz) throws QuizNameExistException, QuizNotFoundException, QuestionNotFoundException;
 
     public List<Quiz> retirevePastQuizzes();
+
+    public List<Quiz> retrieveAllUnattemptedActiveQuizzes(Customer customer);
 
 }
