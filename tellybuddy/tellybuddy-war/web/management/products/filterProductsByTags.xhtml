@@ -51,7 +51,7 @@
 
                         <p:panel>
                             <p:outputLabel for="selTags" value="Tags: " style="font-weight: bold;" />
-                            <p:selectManyMenu id="selTags" value="#{filterProductsByTagsManagedBean.selectedTagIds}" showCheckbox="true" scrollHeight="60">
+                            <p:selectManyMenu id="selTags" value="#{filterProductsByTagsManagedBean.selectedTagIds}" showCheckbox="true" scrollHeight="80">
                                 <f:selectItems value="#{filterProductsByTagsManagedBean.selectItems}" />
 
                                 <p:ajax process="@form" update="formMain:dataGridAllProducts" listener="#{filterProductsByTagsManagedBean.filterProduct}" />

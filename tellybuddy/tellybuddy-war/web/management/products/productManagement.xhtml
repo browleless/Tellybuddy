@@ -97,7 +97,7 @@
 
 
 
-            <p:dialog id="dialogCreateNewProduct" widgetVar="dialogCreateNewProduct" header="Create New Product" closable="true" resizable="true">
+            <p:dialog id="dialogCreateNewProduct" widgetVar="dialogCreateNewProduct" header="Create New Product" closable="true" resizable="true" width="450" height="400">
                 <h:form id="formCreateNewProduct"  enctype="multipart/form-data">
 
                     <p:messages id="messagesCreateNewProduct" redisplay="false" />
@@ -120,7 +120,7 @@
                                 <p:outputLabel for="skuCode" value="SKU Code: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="skuCode" value="#{productManagementManagedBean.newProduct.skuCode}" placeholder="PROD999" required="true" requiredMessage="SKU Code is required" />
+                                <p:inputText id="skuCode" value="#{productManagementManagedBean.newProduct.skuCode}" placeholder="SKU999" required="true" requiredMessage="SKU Code is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="skuCode" />
@@ -144,7 +144,7 @@
                                 <p:outputLabel for="description" value="Description " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="description" value="#{productManagementManagedBean.newProduct.description}" placeholder="Product 1" required="true" requiredMessage="Description is required" />
+                                <p:inputTextarea id="description" value="#{productManagementManagedBean.newProduct.description}" placeholder="Product 1" required="true" requiredMessage="Description is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="description" />
@@ -236,7 +236,7 @@
 
             <h:form id="formUpdateProduct">
 
-                <p:dialog id="dialogUpdateProduct" widgetVar="dialogUpdateProduct" header="Update Product" closable="true" resizable="true">
+                <p:dialog id="dialogUpdateProduct" widgetVar="dialogUpdateProduct" header="Update Product" closable="true" resizable="true" width="450" height="400">
 
                     <p:messages id="messagesUpdateProduct" redisplay="false" />
 
@@ -283,7 +283,7 @@
                                 <p:outputLabel for="description" value="Description " />
                             </p:column>
                             <p:column>
-                                <p:inputText id="description" value="#{productManagementManagedBean.selectedProductToUpdate.description}" placeholder="Product 1" required="true" requiredMessage="Description is required" />
+                                <p:inputTextarea id="description" value="#{productManagementManagedBean.selectedProductToUpdate.description}" placeholder="Product 1" required="true" requiredMessage="Description is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="description" />

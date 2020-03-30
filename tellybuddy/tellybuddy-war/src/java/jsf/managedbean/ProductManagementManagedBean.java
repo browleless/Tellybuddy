@@ -113,7 +113,8 @@ public class ProductManagementManagedBean implements Serializable {
             //query the database for unique serial number of luxury prod
             String serialNumLuxury = productSessionBeanLocal.retrieveLatestSerialNum();
             Integer uniqueLuxury = Integer.parseInt(serialNumLuxury) + 1;
-            this.newLuxuryProduct.setSerialNumber(serialNumLuxury);
+            String s = uniqueSerialNum(uniqueLuxury);
+            this.newLuxuryProduct.setSerialNumber(s);
 
             //transfer the user input into the properties of newLuxuryProduct
             this.newLuxuryProduct.setSkuCode(newProduct.getSkuCode());
@@ -164,10 +165,11 @@ public class ProductManagementManagedBean implements Serializable {
                 Integer unique = Integer.parseInt(serialNum) + 1;
 
                 for (int i = 0; i < num; i++) {
-                    //luxury item has to have a list of product item
-                    //instantiate every product item 
-                    ProductItem pi = new ProductItem(Integer.toString(unique), this.newLuxuryProduct.getPrice());
+                    //instantiate every product item
+                    String s1 = uniqueSerialNum(unique);
+                    ProductItem pi = new ProductItem(s1, this.newLuxuryProduct.getPrice());
                     ProductItem createdPI = pi;
+                    pi.setLuxuryProduct(this.newLuxuryProduct);
                     try {
                         createdPI = productItemSessionBeanLocal.createNewProductItem(pi, p.getProductId());
                     } catch (ProductItemExistException ex) {
@@ -187,6 +189,16 @@ public class ProductManagementManagedBean implements Serializable {
         } catch (InputDataValidationException | CreateNewProductException | ProductSkuCodeExistException | UnknownPersistenceException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating the new product: " + ex.getMessage(), null));
         }
+    }
+
+    private String uniqueSerialNum(int unique) {
+        String s = Integer.toString(unique);
+
+        while (s.length() < 10) {
+            s = "0" + s;
+        }
+
+        return s;
     }
 
     public void doUpdateProduct(ActionEvent ae) {
