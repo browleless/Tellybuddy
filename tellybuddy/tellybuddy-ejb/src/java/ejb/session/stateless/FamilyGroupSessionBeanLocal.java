@@ -13,6 +13,7 @@ import javax.ejb.Local;
 import util.exception.CustomerAlreadyInFamilyGroupException;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerNotVerifiedException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
 import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
 import util.exception.FamilyGroupNotFoundException;
@@ -29,7 +30,7 @@ import util.exception.InsufficientTalktimeUnitsToDonateToFamilyGroupException;
 @Local
 public interface FamilyGroupSessionBeanLocal {
 
-    public Long createFamilyGroup(FamilyGroup newFamilyGroup, Customer customer) throws CustomerNotFoundException;
+    public Long createFamilyGroup(FamilyGroup newFamilyGroup, Customer customer) throws CustomerNotFoundException, CustomerNotVerifiedException, CustomerAlreadyInFamilyGroupException;
 
     public FamilyGroup retrieveFamilyGroupByFamilyGroupId(Long familyGroupId) throws FamilyGroupNotFoundException;
 
@@ -38,7 +39,7 @@ public interface FamilyGroupSessionBeanLocal {
     public void updateFamilyPlan(FamilyGroup fg) throws FamilyGroupNotFoundException;
 
     public void addFamilyMember(Customer newMember, FamilyGroup fg) throws FamilyGroupReachedLimitOf5MembersException,
-            CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException;
+            CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException, CustomerNotVerifiedException;
 
     public void removeFamilyMember(Customer familyMember, FamilyGroup fg) throws CustomerDoesNotBelongToFamilyGroupException, FamilyGroupNotFoundException;
 

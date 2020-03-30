@@ -18,8 +18,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import util.exception.CustomerAlreadyInFamilyGroupException;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerNotVerifiedException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
 import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
 import util.exception.FamilyGroupNotFoundException;
@@ -115,7 +117,7 @@ public class FamilyGroupResource {
             } catch (InvalidLoginCredentialException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
-            } catch (CustomerNotFoundException ex) {
+            } catch (CustomerNotFoundException | CustomerNotVerifiedException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
             } catch (Exception ex) {
@@ -132,7 +134,7 @@ public class FamilyGroupResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retrieveCustomerFamilyGroup(AddFamilyGroupMemberReq addFamilyGroupMemberReq) {
+    public Response addFamilyGroupMember(AddFamilyGroupMemberReq addFamilyGroupMemberReq) {
 
         if (addFamilyGroupMemberReq != null) {
             try {
@@ -145,7 +147,7 @@ public class FamilyGroupResource {
             } catch (InvalidLoginCredentialException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
-            } catch (CustomersDoNotHaveSameAddressOrPostalCodeException | FamilyGroupReachedLimitOf5MembersException ex) {
+            } catch (CustomersDoNotHaveSameAddressOrPostalCodeException | FamilyGroupReachedLimitOf5MembersException | CustomerAlreadyInFamilyGroupException | CustomerNotVerifiedException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
             } catch (Exception ex) {
