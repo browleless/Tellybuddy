@@ -100,6 +100,9 @@ public class Subscription implements Serializable {
         this.dataUnits.put("familyGroup", 0);
         this.smsUnits.put("familyGroup", 0);
         this.talkTimeUnits.put("familyGroup", 0);
+        this.dataUnits.put("quizExtraUnits", 0);
+        this.smsUnits.put("quizExtraUnits", 0);
+        this.talkTimeUnits.put("quizExtraUnits", 0);
     }
 
     public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits) {

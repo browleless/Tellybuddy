@@ -143,6 +143,12 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                     familyGroupToUpdate.getCustomers().add(familyMemberToAdd);
                     familyMemberToAdd.setFamilyGroup(familyGroupToUpdate);
                     familyGroupToUpdate.setNumberOfMembers(familyGroupToUpdate.getNumberOfMembers() + 1);
+
+                    if (familyGroupToUpdate.getNumberOfMembers() == 2) {
+                        familyGroupToUpdate.setDiscountRate(10);
+                    } else {
+                        familyGroupToUpdate.setDiscountRate(familyGroupToUpdate.getDiscountRate() + 5);
+                    }
                 } else {
                     throw new FamilyGroupReachedLimitOf5MembersException("New family member cannot be added into family "
                             + "group as family group has reached its limit of 5 members!");
@@ -172,6 +178,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                 familyMemberToDelete.setFamilyGroup(null);
 
                 familyGroupToUpdate.setNumberOfMembers(familyGroupToUpdate.getNumberOfMembers() - 1);
+                familyGroupToUpdate.setDiscountRate(familyGroupToUpdate.getDiscountRate() - 5);
 
                 //check if family group only has 1 member, auto delete the family group
                 if (familyGroupToUpdate.getNumberOfMembers() == 1) {

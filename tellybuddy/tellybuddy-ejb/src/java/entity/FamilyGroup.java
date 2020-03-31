@@ -31,40 +31,38 @@ public class FamilyGroup implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long familyGroupId;
-    
+
     @Column(nullable = false, length = 64)
     @NotNull
     @Size(max = 64)
     private String description;
-    
+
     @Column(nullable = false)
     @NotNull
-//    @Positive
-//    @Min(1)
-//    @Max(5)
+    @Positive
+    @Min(1)
+    @Max(5)
     private Integer numberOfMembers;
-    
+
     @Column(nullable = false)
     @NotNull
-//    @Positive
-//    @Min(1)
-//    @Max(1000)
+    @Min(0)
+    @Max(1000)
     private Integer donatedUnits;
-    
+
     @Column(nullable = false)
     @NotNull
-//    @Positive
-//    @Min(10)
-//    @Max(30)
+    @Min(0)
+    @Max(25)
     private Integer discountRate;
-    
+
     @OneToMany(mappedBy = "familyGroup")
     private List<Customer> customers;
 
     public FamilyGroup() {
         this.numberOfMembers = 1;
         this.donatedUnits = 0;
-        this.discountRate = 10;
+        this.discountRate = 0;
         this.customers = new ArrayList<>();
     }
 
@@ -145,5 +143,5 @@ public class FamilyGroup implements Serializable {
     public void setCustomers(List<Customer> customers) {
         this.customers = customers;
     }
-    
+
 }
