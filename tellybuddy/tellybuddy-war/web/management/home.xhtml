@@ -15,7 +15,7 @@
                 padding: 1.5em;
                 border-radius: 6px;
                 vertical-align: middle;
-                height: 60px;
+                height: 70px;
             }
             .stickynote {
                 background-color: #f9fbc5;
@@ -82,23 +82,25 @@
                 border-color: #d6d6d6;
                 vertical-align: middle;
             }
-
+            div.card {
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.09);
+            }
         </style>
         <h2></h2>
         <div class="p-grid" style="padding: 0px 15px 0px 15px">
             <div class="p-col-12">
                 <div class="heading">
                     Welcome, 
-                    <h:outputText style="font-weight: 800" value="#{dashboardManagedBean.currentEmployee.username}"/>
+                    <h:outputText style="font-weight: 800; color: #ffffff" value="#{dashboardManagedBean.currentEmployee.username}"/>
                     to TellyBuddy !
                 </div>
             </div>
 
         </div>
 
-        <div class="p-grid nested-grid" style=" padding:5px 15px 5px 15px">
+        <div class="p-grid nested-grid " style=" padding:5px 15px 5px 15px">
             <div class="p-col-12 p-md-3 ">
-                <div class="box">
+                <div class="box card">
                     <div class="p-grid">
                         <div class="p-col-3 "><p:graphicImage width="120%" url="https://image.flaticon.com/icons/svg/684/684812.svg" style="filter: brightness(200%);"/></div>
                         <div class="p-col-9 ">
@@ -113,7 +115,7 @@
             </div>
 
             <div class="p-col-12 p-md-3" >
-                <div class="box " style="background-color: #ff9999;">
+                <div class="box card" style="background-color: #ff9999;">
                     <div class="p-grid">
                         <div class="p-col-3 "><p:graphicImage width="120%" url="https://image.flaticon.com/icons/svg/482/482507.svg" style="filter: brightness(200%);"/></div>
                         <div class="p-col-9 ">
@@ -128,7 +130,7 @@
             </div>
 
             <div class="p-col-12 p-md-3" >
-                <div class="box " style="background-color: #ccccff;">
+                <div class="box card" style="background-color: #ccccff;">
                     <div class="p-grid">
                         <div class="p-col-3 "><p:graphicImage width="120%" url="https://image.flaticon.com/icons/svg/985/985698.svg" style="filter: brightness(200%);"/></div>
                         <div class="p-col-9 ">
@@ -144,7 +146,7 @@
             </div>
 
             <div class="p-col-12 p-md-3" >
-                <div class="box " style="background-color: #b6e7ce;">
+                <div class="box card" style="background-color: #b6e7ce;">
                     <div class="p-grid">
                         <div class="p-col-3 ">
                             <p:graphicImage width="120%" url="https://image.flaticon.com/icons/svg/1827/1827422.svg" style="filter: brightness(200%);"/>
@@ -163,15 +165,22 @@
 
         <div class="p-grid nested-grid" style="padding: 15px">
             <div class="p-col-12 p-md-6 ">
-                <div class="p-grid">
-
-                    <p:lineChart model="#{dashboardManagedBean.subscriptionGrowthModel}" style="width: 100%; height: 300px;"/>
-                    <div class="p-col-12 p-md-6 ">	
-                        <p:pieChart model="#{dashboardManagedBean.subscriptionLinesModel}" style="width: 100%; height: 300px;"/>
+                <div class="p-grid nested-grid" style="padding: 10px;">
+                    <div class="p-col-12 card">	
+                        <p:lineChart model="#{dashboardManagedBean.subscriptionGrowthModel}" style="width: 100%; height: 300px;"/>
                     </div>
-                    <div class="p-col-12 p-md-6 ">	
-                        <p:barChart model="#{dashboardManagedBean.salesGrowthModel}" style="width: 100%; height: 300px;"/>
+                    <div class="p-col-12 card " style="margin-top: 20px; padding: 10px;">
+                        <div class="p-grid">
+                            
+                            <div class="p-col-12 p-md-6 " >	
+                                <p:pieChart model="#{dashboardManagedBean.subscriptionLinesModel}" style="width: 100%; height: 300px;"/>
+                            </div>
+                            <div class="p-col-12 p-md-6" >	
+                                <p:barChart model="#{dashboardManagedBean.salesGrowthModel}" style="width: 100%; height: 300px;"/>
+                            </div>
+                        </div>
                     </div>
+                    
                 </div>
             </div>
             <div class="p-col-12 p-md-3 ">
@@ -180,7 +189,7 @@
                         <div class="p-grid" >
                             <div class="p-col-12">
                                 <div class="ui-inputgroup">
-                                    <p:inputTextarea style="width:100%;" value="#{dashboardManagedBean.newStickyNote}" rows="1"  placeholder="Add a Sticky Note Here" />
+                                    <p:inputTextarea style="width:100%;" value="#{dashboardManagedBean.newStickyNote}" rows="1"  placeholder="Add a Sticky Note Here" maxlength="200"/>
                                     <p:commandButton icon="pi pi-plus"  styleClass="white-button" action="#{dashboardManagedBean.addStickyNote}" update="@form formStickyNote:stickyNotes" />  
                                 </div>
                             </div>
@@ -190,8 +199,8 @@
                                         <div class="p-col-10">
                                             <p:inputTextarea rows="1" readonly="true" style="background-color: f9fbc5; border: 0; width: 100%; font-family: Courier New; font-size: 90%" autoResize="true" value="#{note}"/>
                                         </div>
-                                        <div class="p-col-2" style="padding-right: 0px; margin-right: 0px; text-align: right; vertical-align: middle">
-                                            <p:commandButton style="background-color: f9fbc5; border: 0; vertical-align: middle" icon="pi pi-minus" styleClass="white-button" action="#{dashboardManagedBean.deleteStickyNote}" update="@form formStickyNote:stickyNotes">
+                                        <div class="p-col-2" style="padding-right: 0px; margin-right: 0px; margin-left: 0px; padding-left: 0px; text-align: right; vertical-align: middle">
+                                            <p:commandButton style="background-color: rgba(255, 0, 0, 0);; border: 0; vertical-align: middle; " icon="pi pi-minus" styleClass="white-button" action="#{dashboardManagedBean.deleteStickyNote}" update="@form formStickyNote:stickyNotes">
                                                 <f:setPropertyActionListener value="#{note}" target="#{dashboardManagedBean.stickyNoteToDelete}" />
                                             </p:commandButton>
                                         </div>
@@ -228,23 +237,95 @@
 
         </div>
 
+        <p:dialog id="dialogMyParticulars" widgetVar="dialogMyParticulars" header="My Particulars" closable="true" closeOnEscape="true" style="text-align: center">
+            <h:form id="formViewAccountDetails">
+                <p:dataViewListItem>
+                    <h:panelGrid columns="3" style="width:300px" columnClasses="logo,detail">
+                        <p:outputPanel>
 
-        <!--        <p:dialog widgetVar="eventDialog" header="Announcement Details" rendered="true" visible="true" showEffect="clip" hideEffect="clip">
-                    <h:panelGrid id="eventDetails" columns="2">
-                        <p:outputLabel for="title" value="Titles:" />
-                        <h:outputText id= "title" value="#{homeManagedBean.scheduleEvent.title}" />
-        
-                        <p:outputLabel for="from" value="Start:" />
-                        <h:outputText id= "from" value="#{homeManagedBean.scheduleEvent.startDate}" />
-        
-        
-                        <p:outputLabel for="to" value="End:" />
-                        <h:outputText id= "to" value="#{homeManagedBean.scheduleEvent.endDate}" />
-        
-        
+                            <h:panelGrid columns="2" cellpadding="5">
+
+                                <h:outputText value="ID: " />
+                                <h:outputText value="#{updateEmployeeManagedBean.currentEmployee.employeeId}" style="font-weight: bold"/>
+                                <h:outputText value="First name: " />
+                                <h:outputText value="#{updateEmployeeManagedBean.currentEmployee.firstName}" style="font-weight: bold"/>
+
+                                <h:outputText value="Last name: " />
+                                <h:outputText value="#{updateEmployeeManagedBean.currentEmployee.lastName}" style="font-weight: bold"/>
+
+                                <h:outputText value="Username: " />
+                                <h:outputText value="#{updateEmployeeManagedBean.currentEmployee.username}" style="font-weight: bold"/>
+                                <h:outputText value="Access: " />
+                                <h:outputText value="#{updateEmployeeManagedBean.currentEmployee.accessRightEnum}" style="font-weight: bold"/>
+                            </h:panelGrid>
+                        </p:outputPanel>
+
                     </h:panelGrid>
-        
-                </p:dialog> -->
+                </p:dataViewListItem>
+
+                <p:column headerText="Action" >
+                    <p:commandButton update="dialogUpdateEmployee" oncomplete="PF('dialogMyParticulars').hide(); PF('dialogUpdateEmployee').show()" icon="ui-icon-pencil" value = "Update particulars" title="Update" style="margin-right:20px;" styleClass="ui-priority-primary" >
+                        <f:setPropertyActionListener value="#{updateEmployeeManagedBean.currentEmployee}" target="#{updateEmployeeManagedBean.employeeToUpdate}" />
+                    </p:commandButton>
+                </p:column>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dialogUpdateEmployee" widgetVar="dialogUpdateEmployee" header="Update Particulars" closable="true" closeOnEscape="true" style="text-align: center">
+
+            <h:form id="formUpdateEmployee">
+
+                <p:panelGrid> 
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="First name: " />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="firstName" value="#{updateEmployeeManagedBean.employeeToUpdate.firstName}" required="true" requiredMessage="First name is required" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Last name: " />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="lastName" value="#{updateEmployeeManagedBean.employeeToUpdate.lastName}" required="true" requiredMessage="Last name is required" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Username: " />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="username" value="#{updateEmployeeManagedBean.employeeToUpdate.username}" required="true" requiredMessage="Username is required" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel for="pwd1" value="Password: " />
+                        </p:column>
+                        <p:column>
+                            <p:password id="pwd1"  value="#{updateEmployeeManagedBean.updatedPassword}" match="pwd2" label="Password 1" required="true" feedback ="true" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel for="pwd2" value="Re-enter password: " />
+                        </p:column>
+                        <p:column>
+                            <p:password id="pwd2" value="#{updateEmployeeManagedBean.updatedPassword}" label="Password 2" required="true" />
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+
+                <div style="text-align: center; margin-top: 20px">
+                    <p:commandButton value="Save" update="@form formViewAccountDetails "  actionListener="#{updateEmployeeManagedBean.updateEmployee}" oncomplete="PF('dialogUpdateEmployee').hide();PF('dialogMyParticulars').show()" />
+                </div>
+
+            </h:form>
+
+        </p:dialog>
 
     </ui:define>
 

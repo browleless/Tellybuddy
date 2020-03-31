@@ -118,6 +118,12 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     }
 
     @Override
+    public void updateStickyNotes(List<String> newNote, Employee employee) throws EmployeeNotFoundException{
+        Employee employeeToUpdate = retrieveEmployeeByEmployeeId(employee.getEmployeeId());
+        employeeToUpdate.setStickyNotes(newNote);
+    }
+    
+    @Override
     public void updateEmployee(Employee employee) throws EmployeeNotFoundException {
 
         if (employee != null && employee.getEmployeeId() != null) {

@@ -21,7 +21,7 @@ import util.exception.UnknownPersistenceException;
 @Local
 public interface EmployeeSessionBeanLocal {
 
-public Long createNewEmployee(Employee newEmployee) throws EmployeeUsernameExistException, UnknownPersistenceException, InputDataValidationException;
+    public Long createNewEmployee(Employee newEmployee) throws EmployeeUsernameExistException, UnknownPersistenceException, InputDataValidationException;
 
     public List<Employee> retrieveAllEmployees();
 
@@ -34,5 +34,7 @@ public Long createNewEmployee(Employee newEmployee) throws EmployeeUsernameExist
     public void updateEmployee(Employee employee) throws EmployeeNotFoundException;
 
     public void deleteEmployee(Employee employee) throws EmployeeNotFoundException;
-    
+
+    public void updateStickyNotes(List<String> newNote, Employee employee) throws EmployeeNotFoundException;
+
 }

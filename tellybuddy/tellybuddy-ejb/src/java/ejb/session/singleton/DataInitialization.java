@@ -8,6 +8,7 @@ package ejb.session.singleton;
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.FamilyGroupSessionBeanLocal;
 import ejb.session.stateless.SubscriptionSessonBeanLocal;
+import ejb.session.stateless.TransactionSessionBeanLocal;
 import entity.Customer;
 import entity.Announcement;
 
@@ -15,14 +16,15 @@ import entity.Category;
 
 import entity.Employee;
 import entity.FamilyGroup;
-import entity.LuxuryProduct;
+import entity.Payment;
 import entity.PhoneNumber;
 import entity.Plan;
 import entity.Subscription;
 import java.util.Date;
 import entity.Product;
-import entity.ProductItem;
 import entity.Tag;
+import entity.Transaction;
+import entity.TransactionLineItem;
 import java.math.BigDecimal;
 
 import java.text.ParseException;
@@ -44,9 +46,9 @@ import javax.persistence.PersistenceContext;
 import util.enumeration.AccessRightEnum;
 import util.enumeration.AnnouncementRecipientEnum;
 import util.enumeration.SubscriptionStatusEnum;
-import util.exception.CustomerAlreadyInFamilyGroupException;
-import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
-import util.exception.FamilyGroupReachedLimitOf5MembersException;
+import util.exception.CreateNewSaleTransactionException;
+import util.exception.CustomerNotFoundException;
+import util.exception.DiscountCodeNotFoundException;
 
 /**
  *
@@ -56,6 +58,9 @@ import util.exception.FamilyGroupReachedLimitOf5MembersException;
 @LocalBean
 @Startup
 public class DataInitialization {
+
+    @EJB(name = "TransactionSessionBeanLocal")
+    private TransactionSessionBeanLocal transactionSessionBeanLocal;
 
     @EJB
     private SubscriptionSessonBeanLocal subscriptionSessonBean;
@@ -175,7 +180,25 @@ public class DataInitialization {
             em.persist(fg2);
             em.flush();
             initialiseProducts();
+            
+            List<TransactionLineItem> listOfPurchases = new ArrayList<>();
+            Payment payment = new Payment("1234123412341234", "123", new Date(), new BigDecimal("12.12"));
+            em.persist(payment);
+            em.flush();
+            
+            Transaction testTransaction = new Transaction(new BigDecimal("12.12"), new Date(), listOfPurchases);
+            testTransaction.setCustomer(customer1);
+            testTransaction.setPayment(payment);
+            em.persist(testTransaction);
+            em.flush();
+            transactionSessionBeanLocal.createNewTransaction(1l, testTransaction, "Wow2343");
         } catch (ParseException ex) {
+            Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CustomerNotFoundException ex) {
+            Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CreateNewSaleTransactionException ex) {
+            Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DiscountCodeNotFoundException ex) {
             Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
         }
 

@@ -6,6 +6,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -62,6 +64,8 @@ public class Employee implements Serializable {
     @Size(max = 128)
     private String photoPath;
     
+    @Column(nullable = true)
+    private List<String> stickyNotes;
     
 
     public Employee() {
@@ -77,6 +81,7 @@ public class Employee implements Serializable {
         this.lastName = lastName;
         this.accessRightEnum = accessRightEnum;
         this.photoPath = photoPath;
+        this.stickyNotes = new ArrayList<>();
         setPassword(password);
     }
 
@@ -176,6 +181,14 @@ public class Employee implements Serializable {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public List<String> getStickyNotes() {
+        return stickyNotes;
+    }
+
+    public void setStickyNotes(List<String> stickyNotes) {
+        this.stickyNotes = stickyNotes;
     }
 
 }

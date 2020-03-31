@@ -10,18 +10,13 @@ import entity.Customer;
 import entity.PhoneNumber;
 import entity.Plan;
 import entity.Subscription;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import entity.UsageDetail;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -42,6 +37,7 @@ import javax.validation.ValidatorFactory;
 import util.enumeration.SubscriptionStatusEnum;
 import util.exception.CreateNewSubscriptionException;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerNotYetApproved;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
 import util.exception.PhoneNumberNotFoundException;
@@ -91,13 +87,17 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     }
 
     @Override
-    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException, CreateNewSubscriptionException {
+    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, CustomerNotYetApproved, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException, CreateNewSubscriptionException {
         Set<ConstraintViolation<Subscription>> constraintViolations = validator.validate(newSubscription);
 
         if (constraintViolations.isEmpty()) {
             try {
                 Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
 
+                if(!customer.getIsApproved()){
+                    throw new CustomerNotYetApproved("Please wait for approval before subscribing to a new plan!");
+                }
+                
                 Plan plan = planSessionBeanLocal.retrievePlanByPlanId(planId);
                 plan.setIsInUse(true);
 
@@ -133,7 +133,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                     throw new UnknownPersistenceException(ex.getMessage());
                 }
             } catch (PlanNotFoundException | PhoneNumberNotFoundException | CustomerNotFoundException ex) {
-                throw new CreateNewSubscriptionException("An error has occurred while creating the new subscription: " + ex.getMessage());
+                throw new CreateNewSubscriptionException("An unexpected error has occurred while creating the new subscription: " + ex.getMessage());
             }
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));

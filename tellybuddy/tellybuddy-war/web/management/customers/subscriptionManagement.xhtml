@@ -35,17 +35,17 @@
             }
         </style>
         <h3>Subscription Management</h3>
-        <h:form>
-            <h:panelGrid columns="4">
-                <p:selectOneMenu id="subscriptionsFilter" value="#{subscriptionManagementManagedBean.selectedFilter}">
-                    <p:ajax update="@form formAllSubscriptions:dataTableAllSubscriptions" process="@this formAllSubscriptions:dataTableAllSubscriptions" listener="#{subscriptionManagementManagedBean.doFilter}" />
-                    <f:selectItem  itemLabel="All" itemValue="All" />
-                    <f:selectItem itemLabel="Pending" itemValue="Pending" />
-                    <f:selectItem itemLabel="Active" itemValue="Active" />
-                    <f:selectItem itemLabel="Terminating" itemValue="Terminating" />
-                    <f:selectItem itemLabel="Disabled" itemValue="Disabled" />
-                </p:selectOneMenu>
-            </h:panelGrid>
+        <h:form style="float:left;">
+            <h:outputText style="text-align: center; font-weight: bold; padding: 5px; vertical-align: bottom" value="Filter By: " />
+
+            <p:selectOneMenu id="subscriptionsFilter" value="#{subscriptionManagementManagedBean.selectedFilter}" style="margin-top: 5px">
+                <p:ajax update="@form formAllSubscriptions:dataTableAllSubscriptions" process="@this formAllSubscriptions:dataTableAllSubscriptions" listener="#{subscriptionManagementManagedBean.doFilter}" />
+                <f:selectItem  itemLabel="All" itemValue="All" />
+                <f:selectItem itemLabel="Pending" itemValue="Pending" />
+                <f:selectItem itemLabel="Active" itemValue="Active" />
+                <f:selectItem itemLabel="Terminating" itemValue="Terminating" />
+                <f:selectItem itemLabel="Disabled" itemValue="Disabled" />
+            </p:selectOneMenu>
         </h:form>
 
         <h:form id="formAllSubscriptions">

@@ -7,6 +7,7 @@ package jsf.managedbean;
 
 import ejb.session.stateless.AnnouncementSessionBeanLocal;
 import ejb.session.stateless.CustomerSessionBeanLocal;
+import ejb.session.stateless.EmployeeSessionBeanLocal;
 import ejb.session.stateless.SubscriptionSessonBeanLocal;
 import ejb.session.stateless.TransactionSessionBeanLocal;
 import entity.Announcement;
@@ -37,6 +38,7 @@ import org.primefaces.model.charts.optionconfig.title.Title;
 import org.primefaces.model.charts.pie.PieChartDataSet;
 import org.primefaces.model.charts.pie.PieChartModel;
 import org.primefaces.model.charts.pie.PieChartOptions;
+import util.exception.EmployeeNotFoundException;
 
 /**
  *
@@ -44,7 +46,10 @@ import org.primefaces.model.charts.pie.PieChartOptions;
  */
 @Named(value = "dashboardManagedBean")
 @ViewScoped
-public class dashboardManagedBean implements Serializable {
+public class DashboardManagedBean implements Serializable {
+
+    @EJB
+    private EmployeeSessionBeanLocal employeeSessionBeanLocal;
 
     @EJB
     private SubscriptionSessonBeanLocal subscriptionSessonBeanLocal;
@@ -65,13 +70,15 @@ public class dashboardManagedBean implements Serializable {
     private PieChartModel subscriptionLinesModel;
 
     private BarChartModel salesGrowthModel;
-    
+
     private List<Announcement> employeeAnnouncements;
-    
+
     private List<String> stickyNotes;
-    
+
     private String newStickyNote = "";
+
     private String stickyNoteToDelete;
+
     
     @PostConstruct
     public void postConstruct() {
@@ -80,29 +87,44 @@ public class dashboardManagedBean implements Serializable {
         this.createPieModel();
         this.createBarModel();
         this.retrieveCurrentEmployeeAnnouncements();
-        this.stickyNotes = new ArrayList<>();
+        this.stickyNotes = currentEmployee.getStickyNotes();
     }
+
     public void addStickyNote() {
         if (stickyNotes.size() < 5) {
             stickyNotes.add(newStickyNote);
-        } else{
+        } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Maximum of 5 sticky notes reached!", null));
         }
+        try {
+            employeeSessionBeanLocal.updateStickyNotes(stickyNotes, currentEmployee);
+        } catch (EmployeeNotFoundException ex) {
+            
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unknown error occurred", null));
+        }
+
         this.newStickyNote = "";
     }
- 
+
     public void deleteStickyNote() {
         this.stickyNotes.remove(stickyNoteToDelete);
         
+        try {
+            employeeSessionBeanLocal.updateStickyNotes(stickyNotes, currentEmployee);
+        } catch (EmployeeNotFoundException ex) {
+            
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unknown error occurred", null));
+        }
         this.newStickyNote = "";
     }
-    public void retrieveCurrentEmployeeAnnouncements(){
+    public void retrieveCurrentEmployeeAnnouncements() {
         this.employeeAnnouncements = announcementSessionBeanLocal.retrieveAllActiveAnnoucementsForEmployees();
     }
 
     public int retrievePendingCustomers() {
         return customerSessionBeanLocal.retrieveAllPendingCustomers().size();
     }
+
     public int retrievePendingSubscriptions() {
         return subscriptionSessonBeanLocal.retrieveAllPendingSubscriptions().size();
     }
@@ -182,13 +204,14 @@ public class dashboardManagedBean implements Serializable {
         subscriptionLinesModel.setOptions(options);
         subscriptionLinesModel.setData(data);
     }
+
     public void createBarModel() {
         salesGrowthModel = new BarChartModel();
         ChartData data = new ChartData();
-         
+
         BarChartDataSet barDataSet = new BarChartDataSet();
         barDataSet.setLabel("$ (in Millions)");
-         
+
         List<Number> values = new ArrayList<>();
         values.add(65);
         values.add(59);
@@ -198,7 +221,7 @@ public class dashboardManagedBean implements Serializable {
         values.add(55);
         values.add(40);
         barDataSet.setData(values);
-         
+
         List<String> bgColor = new ArrayList<>();
         bgColor.add("rgba(255, 159, 64, 0.2)");
         bgColor.add("rgba(255, 159, 64, 0.2)");
@@ -208,7 +231,7 @@ public class dashboardManagedBean implements Serializable {
         bgColor.add("rgba(255, 159, 64, 0.2)");
         bgColor.add("rgba(255, 159, 64, 0.2)");
         barDataSet.setBackgroundColor(bgColor);
-         
+
         List<String> borderColor = new ArrayList<>();
         borderColor.add("rgb(255, 159, 64)");
         borderColor.add("rgb(255, 159, 64)");
@@ -219,9 +242,9 @@ public class dashboardManagedBean implements Serializable {
         borderColor.add("rgb(255, 159, 64)");
         barDataSet.setBorderColor(borderColor);
         barDataSet.setBorderWidth(1);
-         
+
         data.addChartDataSet(barDataSet);
-         
+
         List<String> labels = new ArrayList<>();
         labels.add("January");
         labels.add("February");
@@ -232,7 +255,7 @@ public class dashboardManagedBean implements Serializable {
         labels.add("July");
         data.setLabels(labels);
         salesGrowthModel.setData(data);
-         
+
         //Options
         BarChartOptions options = new BarChartOptions();
         CartesianScales cScales = new CartesianScales();
@@ -242,12 +265,12 @@ public class dashboardManagedBean implements Serializable {
         linearAxes.setTicks(ticks);
         cScales.addYAxesData(linearAxes);
         options.setScales(cScales);
-         
+
         Title title = new Title();
         title.setDisplay(true);
         title.setText("Monthly Sales Revenue");
         options.setTitle(title);
- 
+
         Legend legend = new Legend();
         legend.setDisplay(true);
         legend.setPosition("top");
@@ -257,10 +280,10 @@ public class dashboardManagedBean implements Serializable {
         legendLabels.setFontSize(12);
         legend.setLabels(legendLabels);
         options.setLegend(legend);
- 
+
         salesGrowthModel.setOptions(options);
     }
-     
+
     public Employee getCurrentEmployee() {
         return currentEmployee;
     }
@@ -357,5 +380,12 @@ public class dashboardManagedBean implements Serializable {
         this.stickyNoteToDelete = stickyNoteToDelete;
     }
 
+    public EmployeeSessionBeanLocal getEmployeeSessionBeanLocal() {
+        return employeeSessionBeanLocal;
+    }
+
+    public void setEmployeeSessionBeanLocal(EmployeeSessionBeanLocal employeeSessionBeanLocal) {
+        this.employeeSessionBeanLocal = employeeSessionBeanLocal;
+    }
 
 }
