@@ -11,15 +11,12 @@ import entity.PhoneNumber;
 import entity.Plan;
 import entity.Subscription;
 import entity.UsageDetail;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -179,9 +176,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 addOnPrice = subscriptionToUpdate.getPlan().getAddOnPrice().multiply(BigDecimal.valueOf(totalAddOnUnits));
             }
 
-            Integer subscriptionTotalAllowedData = (subscriptionToUpdate.getAllocatedData() + subscriptionToUpdate.getDataUnits().get("addOn") + subscriptionToUpdate.getDataUnits().get("familyGroup") - subscriptionToUpdate.getDataUnits().get("donated")) * subscriptionToUpdate.getPlan().getDataConversionRate();
-            Integer subscriptionTotalAllowedSms = (subscriptionToUpdate.getAllocatedSms() + subscriptionToUpdate.getSmsUnits().get("addOn") + subscriptionToUpdate.getSmsUnits().get("familyGroup") - subscriptionToUpdate.getSmsUnits().get("donated")) * subscriptionToUpdate.getPlan().getSmsConversionRate();
-            Integer subscriptionTotalAllowedTalktime = (subscriptionToUpdate.getAllocatedTalkTime() + subscriptionToUpdate.getTalkTimeUnits().get("addOn") + subscriptionToUpdate.getTalkTimeUnits().get("familyGroup") - subscriptionToUpdate.getTalkTimeUnits().get("donated")) * subscriptionToUpdate.getPlan().getTalktimeConversionRate();
+            Integer subscriptionTotalAllowedData = (subscriptionToUpdate.getAllocatedData() + subscriptionToUpdate.getDataUnits().get("addOn") + subscriptionToUpdate.getDataUnits().get("familyGroup") + subscriptionToUpdate.getDataUnits().get("quizExtraUnits") - subscriptionToUpdate.getDataUnits().get("donated")) * subscriptionToUpdate.getPlan().getDataConversionRate();
+            Integer subscriptionTotalAllowedSms = (subscriptionToUpdate.getAllocatedSms() + subscriptionToUpdate.getSmsUnits().get("addOn") + subscriptionToUpdate.getSmsUnits().get("familyGroup") + subscriptionToUpdate.getSmsUnits().get("quizExtraUnits") - subscriptionToUpdate.getSmsUnits().get("donated")) * subscriptionToUpdate.getPlan().getSmsConversionRate();
+            Integer subscriptionTotalAllowedTalktime = (subscriptionToUpdate.getAllocatedTalkTime() + subscriptionToUpdate.getTalkTimeUnits().get("addOn") + subscriptionToUpdate.getTalkTimeUnits().get("familyGroup") + subscriptionToUpdate.getTalkTimeUnits().get("quizExtraUnits") - subscriptionToUpdate.getTalkTimeUnits().get("donated")) * subscriptionToUpdate.getPlan().getTalktimeConversionRate();
 
             // latest usage detail for the month
             UsageDetail currentUsageDetail = subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() - 1);
@@ -203,7 +200,14 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getTalktimeUsage() - subscriptionTotalAllowedTalktime) * 0.10));
             }
 
-            Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice);
+            Integer familyGroupDiscountRate = 0;
+
+            if (subscriptionToUpdate.getCustomer().getFamilyGroup() != null) {
+                // family group discount rate applied
+                familyGroupDiscountRate = subscriptionToUpdate.getCustomer().getFamilyGroup().getDiscountRate();
+            }
+
+            Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice, familyGroupDiscountRate);
             bill = billSessionBeanLocal.createNewBill(bill, currentUsageDetail, subscriptionToUpdate.getCustomer());
 
             // send email asynchronously

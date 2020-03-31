@@ -56,9 +56,9 @@ public class SubscriptionManagementManagedBean implements Serializable {
         allocationModel.setShowDataLabels(true);
 //        allocationModel.setDiameter(150);
 
-        allocationModel.set("Data Units", subscriptionToView.getAllocatedData());
-        allocationModel.set("Talk Time Units", subscriptionToView.getAllocatedTalkTime());
-        allocationModel.set("Sms Units", subscriptionToView.getAllocatedSms());
+        allocationModel.set("Data Units", subscriptionToView.getAllocatedData() + subscriptionToView.getDataUnits().get("addOn") + subscriptionToView.getDataUnits().get("familyGroup") + subscriptionToView.getDataUnits().get("quizExtraUnits") - subscriptionToView.getDataUnits().get("donated"));
+        allocationModel.set("Talk Time Units", subscriptionToView.getAllocatedTalkTime() + subscriptionToView.getTalkTimeUnits().get("addOn") + subscriptionToView.getTalkTimeUnits().get("familyGroup") + subscriptionToView.getTalkTimeUnits().get("quizExtraUnits") - subscriptionToView.getTalkTimeUnits().get("donated"));
+        allocationModel.set("Sms Units", subscriptionToView.getAllocatedSms() + subscriptionToView.getSmsUnits().get("addOn") + subscriptionToView.getSmsUnits().get("familyGroup") + subscriptionToView.getSmsUnits().get("quizExtraUnits") - subscriptionToView.getSmsUnits().get("donated"));
 
 //        try {
 //            if (allocationModel.getData().get("Data Units") == null) {
@@ -94,6 +94,7 @@ public class SubscriptionManagementManagedBean implements Serializable {
             setSubscriptions(subscriptionSessonBeanLocal.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.DISABLED));
         }
     }
+
     public List<Subscription> getSubscriptions() {
         return subscriptions;
     }

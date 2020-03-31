@@ -239,7 +239,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
     @Override
     public Customer retrieveCustomerFromSubscription(Long subscriptionId) {
-        Query q = em.createQuery("SELECT s.customer FROM Subscription s WHERE s.subcscriptionId = :inSubscription");
+        Query q = em.createQuery("SELECT s.customer FROM Subscription s WHERE s.subscriptionId = :inSubscription");
         q.setParameter("inSubscription", subscriptionId);
         return (Customer) q.getSingleResult();
     }
