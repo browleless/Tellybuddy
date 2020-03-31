@@ -84,6 +84,13 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
         });
         return activeAnnouncements;
     }
+    public List<Announcement> retrieveAllActiveAnnouncementsForCustomers() {
+
+        Query query = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate > CURRENT_TIMESTAMP AND a.announcementRecipientEnum = :inAnnouncementRecipientEnum");
+        query.setParameter("inAnnouncementRecipientEnum", AnnouncementRecipientEnum.CUSTOMER);
+
+        return query.getResultList();
+    }
 
     @Override
     public List<Announcement> retrieveAllExpiredAnnouncements() {

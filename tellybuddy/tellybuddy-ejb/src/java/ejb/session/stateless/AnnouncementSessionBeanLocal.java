@@ -34,4 +34,6 @@ public interface AnnouncementSessionBeanLocal {
 
     public List<Announcement> retrieveAllActiveAnnoucementsForEmployees();
 
+    public List<Announcement> retrieveAllActiveAnnouncementsForCustomers();
+    
 }

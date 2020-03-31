@@ -16,6 +16,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.CustomerAlreadyInFamilyGroupException;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
+import util.exception.CustomerNotFoundException;
+import util.exception.CustomerNotVerifiedException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
 import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
 import util.exception.FamilyGroupNotFoundException;
@@ -24,6 +26,7 @@ import util.exception.InsufficientDataUnitsToDonateToFamilyGroupException;
 import util.exception.InsufficientDonatedUnitsInFamilyGroupException;
 import util.exception.InsufficientSmsUnitsToDonateToFamilyGroupException;
 import util.exception.InsufficientTalktimeUnitsToDonateToFamilyGroupException;
+import util.exception.SubscriptionNotFoundException;
 
 /**
  *
@@ -31,6 +34,9 @@ import util.exception.InsufficientTalktimeUnitsToDonateToFamilyGroupException;
  */
 @Stateless
 public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
+
+    @EJB
+    private SubscriptionSessonBeanLocal subscriptionSessonBeanLocal;
 
     @EJB
     private CustomerSessionBeanLocal customerSessionBeanLocal;
@@ -43,32 +49,30 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
     }
 
     @Override
-    public FamilyGroup createFamilyGroup(String desc, Customer customer) throws CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException {
-        try {
-            Customer customerToJoin = customerSessionBeanLocal.retrieveCustomerByCustomerId(customer.getCustomerId());
+    public Long createFamilyGroup(FamilyGroup newFamilyGroup, Customer customer) throws CustomerNotFoundException, CustomerNotVerifiedException, CustomerAlreadyInFamilyGroupException {
 
-            FamilyGroup newFamilyGroup = new FamilyGroup(desc);
-            newFamilyGroup.getCustomers().add(customerToJoin);
-            customerToJoin.setFamilyGroup(newFamilyGroup);
+        try {
+            Customer customerToAssociateWith = customerSessionBeanLocal.retrieveCustomerByCustomerId(customer.getCustomerId());
+
+            if (customerToAssociateWith.getFamilyGroup() != null) {
+                throw new CustomerAlreadyInFamilyGroupException("Customer already has a family group!");
+            }
+
+            if (customerToAssociateWith.getAddress() == null && customerToAssociateWith.getPostalCode() == null) {
+                throw new CustomerNotVerifiedException("Customer has not yet been verified, unable to create family group, please wait for the management to verify your account details.");
+            }
+
+            newFamilyGroup.getCustomers().add(customerToAssociateWith);
+
             em.persist(newFamilyGroup);
             em.flush();
-            return newFamilyGroup;
-        } catch (Exception ex) {
-        }
-//        if(customer.getFamilyGroup() != null){
-//            throw new CustomerAlreadyInFamilyGroupException();
-//        }
-//        
 
-//        for (Customer c : newFamilyGroup.getCustomers()) {
-//            if (!c.getAddress().equals(checkAddress) || !c.getPostalCode().equals(checkPostalCode)) {
-//                throw new CustomersDoNotHaveSameAddressOrPostalCodeException("Family Group cannot be created as "
-//                        + "the customers: " + newFamilyGroup.getCustomers().get(0).getFirstName()
-//                        + newFamilyGroup.getCustomers().get(0).getLastName() + " and "
-//                        + c.getFirstName() + c.getLastName() + " do not have the same address/postal code!");
-//            }
-//        }
-        return null;
+            customerToAssociateWith.setFamilyGroup(newFamilyGroup);
+
+            return newFamilyGroup.getFamilyGroupId();
+        } catch (CustomerNotFoundException ex) {
+            throw new CustomerNotFoundException("Customer Id not foundi in system");
+        }
     }
 
     @Override
@@ -90,6 +94,19 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
     }
 
     @Override
+    public FamilyGroup retrieveFamilyGroupByCustomer(Customer customer) throws FamilyGroupNotFoundException {
+
+        Query query = em.createQuery("SELECT fg FROM FamilyGroup fg WHERE :inCustomer MEMBER OF fg.customers");
+        query.setParameter("inCustomer", customer);
+
+        if (query.getResultList().size() == 0) {
+            throw new FamilyGroupNotFoundException("Customer does not have a family group yet!");
+        } else {
+            return (FamilyGroup) query.getSingleResult();
+        }
+    }
+
+    @Override
     public void updateFamilyPlan(FamilyGroup fg) throws FamilyGroupNotFoundException {
         if (fg.getFamilyGroupId() != null) {
             FamilyGroup fgToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
@@ -103,50 +120,82 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
 
     @Override
     public void addFamilyMember(Customer newMember, FamilyGroup fg) throws FamilyGroupReachedLimitOf5MembersException,
-            CustomersDoNotHaveSameAddressOrPostalCodeException {
-        String checkAddress = fg.getCustomers().get(0).getAddress();
-        String checkPostalCode = fg.getCustomers().get(0).getPostalCode();
+            CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException, CustomerNotVerifiedException {
 
-        //check for the same address and postal code
-        //Rmb change bck to get Address and postal code
-        if (newMember.getNewAddress().equals(checkAddress) && newMember.getNewPostalCode().equals(checkPostalCode)) {
-            //check if the family group has reached its limit of 5
-            if (fg.getNumberOfMembers() < 5) {
-                fg.getCustomers().add(newMember);
-                newMember.setFamilyGroup(fg);
-                fg.setNumberOfMembers(fg.getNumberOfMembers() + 1);
-            } else {
-                throw new FamilyGroupReachedLimitOf5MembersException("New family member cannot be added into family "
-                        + "group as family group has reached its limit of 5 members!");
+        try {
+            FamilyGroup familyGroupToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
+            Customer familyMemberToAdd = customerSessionBeanLocal.retrieveCustomerByCustomerId(newMember.getCustomerId());
+
+            if (familyMemberToAdd.getPostalCode() == null) {
+                throw new CustomerNotVerifiedException("Customer has not yet been verified, unable to add to family group, please wait for the management to verify his/her account details before attempting to add again.");
             }
-        } else {
-            throw new CustomersDoNotHaveSameAddressOrPostalCodeException("Customer " + newMember.getFirstName()
-                    + " " + newMember.getLastName() + "cannot join the family group as he/she does not have"
-                    + " the same address/postal code as the other member(s) in the family group!");
+
+            if (familyMemberToAdd.getFamilyGroup() != null) {
+                throw new CustomerAlreadyInFamilyGroupException("Customer already has a family group!");
+            }
+
+            String checkPostalCode = familyGroupToUpdate.getCustomers().get(0).getPostalCode();
+
+            //check for the same postal code
+            if (familyMemberToAdd.getPostalCode().equals(checkPostalCode)) {
+                //check if the family group has reached its limit of 5
+                if (familyGroupToUpdate.getNumberOfMembers() < 5) {
+                    familyGroupToUpdate.getCustomers().add(familyMemberToAdd);
+                    familyMemberToAdd.setFamilyGroup(familyGroupToUpdate);
+                    familyGroupToUpdate.setNumberOfMembers(familyGroupToUpdate.getNumberOfMembers() + 1);
+
+                    if (familyGroupToUpdate.getNumberOfMembers() == 2) {
+                        familyGroupToUpdate.setDiscountRate(10);
+                    } else {
+                        familyGroupToUpdate.setDiscountRate(familyGroupToUpdate.getDiscountRate() + 5);
+                    }
+                } else {
+                    throw new FamilyGroupReachedLimitOf5MembersException("New family member cannot be added into family "
+                            + "group as family group has reached its limit of 5 members!");
+                }
+            } else {
+                throw new CustomersDoNotHaveSameAddressOrPostalCodeException("Customer " + familyMemberToAdd.getFirstName()
+                        + " " + familyMemberToAdd.getLastName() + " cannot join the family group as he/she does not have"
+                        + " the same address/postal code as the other member(s) in the family group!");
+            }
+        } catch (FamilyGroupNotFoundException | CustomerNotFoundException ex) {
+            // won't happen
+            ex.printStackTrace();
         }
     }
 
     @Override
     public void removeFamilyMember(Customer familyMember, FamilyGroup fg) throws CustomerDoesNotBelongToFamilyGroupException,
             FamilyGroupNotFoundException {
-        //check if the customer belongs to the family group
-        if (fg.getCustomers().contains(familyMember)) {
-            fg.getCustomers().remove(familyMember);
-            familyMember.setFamilyGroup(null);
 
-            fg.setNumberOfMembers(fg.getNumberOfMembers() - 1);
+        try {
+            FamilyGroup familyGroupToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
+            Customer familyMemberToDelete = customerSessionBeanLocal.retrieveCustomerByCustomerId(familyMember.getCustomerId());
 
-            //check if family group only has 1 member, auto delete the family group
-            if (fg.getNumberOfMembers() == 1) {
-                deleteFamilyGroup(fg.getFamilyGroupId());
+            //check if the customer belongs to the family group
+            if (familyGroupToUpdate.getCustomers().contains(familyMemberToDelete)) {
+                familyGroupToUpdate.getCustomers().remove(familyMemberToDelete);
+                familyMemberToDelete.setFamilyGroup(null);
+
+                familyGroupToUpdate.setNumberOfMembers(familyGroupToUpdate.getNumberOfMembers() - 1);
+                familyGroupToUpdate.setDiscountRate(familyGroupToUpdate.getDiscountRate() - 5);
+
+                //check if family group only has 1 member, auto delete the family group
+                if (familyGroupToUpdate.getNumberOfMembers() == 1) {
+                    deleteFamilyGroup(familyGroupToUpdate.getFamilyGroupId());
+                }
+
+            } else {
+                throw new CustomerDoesNotBelongToFamilyGroupException("Customer: " + familyMemberToDelete.getFirstName()
+                        + " " + familyMemberToDelete.getLastName() + " does not belong to Family Group: FamilyGroupID" + familyGroupToUpdate.getFamilyGroupId());
             }
-
-        } else {
-            throw new CustomerDoesNotBelongToFamilyGroupException("Customer: " + familyMember.getFirstName()
-                    + " " + familyMember.getLastName() + " does not belong to Family Group: FamilyGroupID" + fg.getFamilyGroupId());
+        } catch (CustomerNotFoundException | FamilyGroupNotFoundException ex) {
+            // won't happen
+            ex.printStackTrace();
         }
     }
 
+    @Override
     public void deleteFamilyGroup(Long familyGroupId) throws FamilyGroupNotFoundException {
         FamilyGroup fgToDelete = retrieveFamilyGroupByFamilyGroupId(familyGroupId);
 
@@ -164,65 +213,74 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
             InsufficientSmsUnitsToDonateToFamilyGroupException, InsufficientDataUnitsToDonateToFamilyGroupException,
             InsufficientTalktimeUnitsToDonateToFamilyGroupException {
 
-        //check if the family member belongs to the family group
-        if (fg.getCustomers().contains(familyMember)) {
-            //check if selected subscription has enough units to donate to family group
-            if (smsUnits != 0) {
-                if (s.getSmsUnits().get("allocated") >= smsUnits) {
-                    //check if donatedUnits has already reached its upper limit of 1000 units 
-                    if (fg.getDonatedUnits() + smsUnits > 1000) {
-                        throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
-                                + "donated units, can no longer add donated units to the family group!");
-                    } else {
-                        //donated successfully
-                        fg.setDonatedUnits(fg.getDonatedUnits() + smsUnits);
-                        //add into the usage of the subscription 
-                        s.getSmsUnits().replace("usage", s.getSmsUnits().get("usage") + smsUnits);
-                    }
-                } else {
-                    throw new InsufficientSmsUnitsToDonateToFamilyGroupException("Family Member '" + familyMember.getFirstName()
-                            + " " + familyMember.getLastName() + "' has insufficient sms units to donate to family group!");
-                }
-            }
+        try {
 
-            if (dataUnits != 0) {
-                if (s.getDataUnits().get("allocated") >= dataUnits) {
-                    //check if donatedUnits has already reached its upper limit of 1000 limits
-                    if (fg.getDonatedUnits() + dataUnits > 1000) {
-                        throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
-                                + "donated units, can no longer add donated units to the family group!");
-                    } else {
-                        //donated successfully
-                        fg.setDonatedUnits(fg.getDonatedUnits() + dataUnits);
-                        //add into the usage of the subscription
-                        s.getDataUnits().replace("usage", s.getDataUnits().get("usage") + dataUnits);
-                    }
-                } else {
-                    throw new InsufficientDataUnitsToDonateToFamilyGroupException("Family Member '" + familyMember.getFirstName()
-                            + " " + familyMember.getLastName() + "' has insufficient data units to donate to family group!");
-                }
-            }
+            FamilyGroup familyGroupToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
+            Subscription subscriptionToUpdate = subscriptionSessonBeanLocal.retrieveSubscriptionBySubscriptionId(s.getSubscriptionId());
 
-            if (talktimeUnits != 0) {
-                if (s.getTalkTimeUnits().get("allocated") >= talktimeUnits) {
-                    //check if donatedUnits has already reached its upper limit of 1000 limits
-                    if (fg.getDonatedUnits() + talktimeUnits > 1000) {
-                        throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
-                                + "donated units, can no longer add donated units to the family group!");
+            //check if the family member belongs to the family group
+            if (familyGroupToUpdate.getCustomers().contains(familyMember)) {
+                //check if selected subscription has enough units to donate to family group
+                if (smsUnits != 0) {
+                    if (subscriptionToUpdate.getSmsUnits().get("allocated") >= smsUnits) {
+                        //check if donatedUnits has already reached its upper limit of 1000 units 
+                        if (familyGroupToUpdate.getDonatedUnits() + smsUnits > 1000) {
+                            throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
+                                    + "donated units, can no longer add donated units to the family group!");
+                        } else {
+                            //donated successfully
+                            familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() + smsUnits);
+                            //add into the donated of the subscription 
+                            subscriptionToUpdate.getSmsUnits().replace("donated", subscriptionToUpdate.getSmsUnits().get("donated") + smsUnits);
+                        }
                     } else {
-                        //donated successfully
-                        fg.setDonatedUnits(fg.getDonatedUnits() + talktimeUnits);
-                        //add into the usage of the subscription
-                        s.getTalkTimeUnits().replace("usage", s.getTalkTimeUnits().get("usage") + talktimeUnits);
+                        throw new InsufficientSmsUnitsToDonateToFamilyGroupException("Family Member '" + familyMember.getFirstName()
+                                + " " + familyMember.getLastName() + "' has insufficient sms units to donate to family group!");
                     }
-                } else {
-                    throw new InsufficientTalktimeUnitsToDonateToFamilyGroupException("Family Member '" + familyMember.getFirstName()
-                            + " " + familyMember.getLastName() + "' has insufficient talktime units to donate to family group!");
                 }
+
+                if (dataUnits != 0) {
+                    if (subscriptionToUpdate.getDataUnits().get("allocated") >= dataUnits) {
+                        //check if donatedUnits has already reached its upper limit of 1000 limits
+                        if (familyGroupToUpdate.getDonatedUnits() + dataUnits > 1000) {
+                            throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
+                                    + "donated units, can no longer add donated units to the family group!");
+                        } else {
+                            //donated successfully
+                            familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() + dataUnits);
+                            //add into the donated of the subscription
+                            subscriptionToUpdate.getDataUnits().replace("donated", subscriptionToUpdate.getDataUnits().get("donated") + dataUnits);
+                        }
+                    } else {
+                        throw new InsufficientDataUnitsToDonateToFamilyGroupException("Family Member '" + familyMember.getFirstName()
+                                + " " + familyMember.getLastName() + "' has insufficient data units to donate to family group!");
+                    }
+                }
+
+                if (talktimeUnits != 0) {
+                    if (subscriptionToUpdate.getTalkTimeUnits().get("allocated") >= talktimeUnits) {
+                        //check if donatedUnits has already reached its upper limit of 1000 limits
+                        if (familyGroupToUpdate.getDonatedUnits() + talktimeUnits > 1000) {
+                            throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
+                                    + "donated units, can no longer add donated units to the family group!");
+                        } else {
+                            //donated successfully
+                            familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() + talktimeUnits);
+                            //add into the donated of the subscription
+                            subscriptionToUpdate.getTalkTimeUnits().replace("donated", subscriptionToUpdate.getTalkTimeUnits().get("donated") + talktimeUnits);
+                        }
+                    } else {
+                        throw new InsufficientTalktimeUnitsToDonateToFamilyGroupException("Family Member '" + familyMember.getFirstName()
+                                + " " + familyMember.getLastName() + "' has insufficient talktime units to donate to family group!");
+                    }
+                }
+            } else {
+                throw new CustomerDoesNotBelongToFamilyGroupException("Customer: " + familyMember.getFirstName()
+                        + " " + familyMember.getLastName() + " does not belong to Family Group: FamilyGroupID" + familyGroupToUpdate.getFamilyGroupId());
             }
-        } else {
-            throw new CustomerDoesNotBelongToFamilyGroupException("Customer: " + familyMember.getFirstName()
-                    + " " + familyMember.getLastName() + " does not belong to Family Group: FamilyGroupID" + fg.getFamilyGroupId());
+        } catch (FamilyGroupNotFoundException | SubscriptionNotFoundException ex) {
+            // won't happen
+            ex.printStackTrace();
         }
     }
 
@@ -231,44 +289,53 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
             Integer smsUnits, Integer dataUnits, Integer talktimeUnits)
             throws CustomerDoesNotBelongToFamilyGroupException, InsufficientDonatedUnitsInFamilyGroupException {
 
-        //check if the family member belongs to the family group
-        if (fg.getCustomers().contains(familyMember)) {
-            //check if there is units for the fam member to use
-            if (smsUnits != 0) {
-                if (fg.getDonatedUnits() >= smsUnits) {
-                    // add the requested units to the subscription line of the family member
-                    s.getSmsUnits().replace("addOn", smsUnits);
-                    fg.setDonatedUnits(fg.getDonatedUnits() - smsUnits);
-                } else {
-                    throw new InsufficientDonatedUnitsInFamilyGroupException("Family Group has insufficient units for "
-                            + "family member '" + familyMember.getFirstName() + " " + familyMember.getLastName() + "' to use!");
-                }
-            }
+        try {
 
-            if (dataUnits != 0) {
-                if (fg.getDonatedUnits() >= dataUnits) {
-                    // add the requested units to the subscription line of the family member
-                    s.getDataUnits().replace("addOn", dataUnits);
-                    fg.setDonatedUnits(fg.getDonatedUnits() - dataUnits);
-                } else {
-                    throw new InsufficientDonatedUnitsInFamilyGroupException("Family Group has insufficient units for "
-                            + "family member '" + familyMember.getFirstName() + " " + familyMember.getLastName() + "' to use!");
-                }
-            }
+            FamilyGroup familyGroupToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
+            Subscription subscriptionToUpdate = subscriptionSessonBeanLocal.retrieveSubscriptionBySubscriptionId(s.getSubscriptionId());
 
-            if (talktimeUnits != 0) {
-                if (fg.getDonatedUnits() >= talktimeUnits) {
-                    // add the requested units to the subscription line of the family member
-                    s.getTalkTimeUnits().replace("addOn", talktimeUnits);
-                    fg.setDonatedUnits(fg.getDonatedUnits() - talktimeUnits);
-                } else {
-                    throw new InsufficientDonatedUnitsInFamilyGroupException("Family Group has insufficient units for "
-                            + "family member '" + familyMember.getFirstName() + " " + familyMember.getLastName() + "' to use!");
+            //check if the family member belongs to the family group
+            if (familyGroupToUpdate.getCustomers().contains(familyMember)) {
+                //check if there is units for the fam member to use
+                if (smsUnits != 0) {
+                    if (familyGroupToUpdate.getDonatedUnits() >= smsUnits) {
+                        // add the requested units to the subscription line of the family member
+                        subscriptionToUpdate.getSmsUnits().replace("familyGroup", subscriptionToUpdate.getSmsUnits().get("familyGroup") + smsUnits);
+                        familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() - smsUnits);
+                    } else {
+                        throw new InsufficientDonatedUnitsInFamilyGroupException("Family Group has insufficient units for "
+                                + "family member '" + familyMember.getFirstName() + " " + familyMember.getLastName() + "' to use!");
+                    }
                 }
+
+                if (dataUnits != 0) {
+                    if (familyGroupToUpdate.getDonatedUnits() >= dataUnits) {
+                        // add the requested units to the subscription line of the family member
+                        subscriptionToUpdate.getDataUnits().replace("familyGroup", subscriptionToUpdate.getDataUnits().get("familyGroup") + dataUnits);
+                        familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() - dataUnits);
+                    } else {
+                        throw new InsufficientDonatedUnitsInFamilyGroupException("Family Group has insufficient units for "
+                                + "family member '" + familyMember.getFirstName() + " " + familyMember.getLastName() + "' to use!");
+                    }
+                }
+
+                if (talktimeUnits != 0) {
+                    if (familyGroupToUpdate.getDonatedUnits() >= talktimeUnits) {
+                        // add the requested units to the subscription line of the family member
+                        subscriptionToUpdate.getTalkTimeUnits().replace("familyGroup", subscriptionToUpdate.getTalkTimeUnits().get("familyGroup") + talktimeUnits);
+                        familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() - talktimeUnits);
+                    } else {
+                        throw new InsufficientDonatedUnitsInFamilyGroupException("Family Group has insufficient units for "
+                                + "family member '" + familyMember.getFirstName() + " " + familyMember.getLastName() + "' to use!");
+                    }
+                }
+            } else {
+                throw new CustomerDoesNotBelongToFamilyGroupException("Customer: " + familyMember.getFirstName()
+                        + " " + familyMember.getLastName() + " does not belong to Family Group: FamilyGroupID" + familyGroupToUpdate.getFamilyGroupId());
             }
-        } else {
-            throw new CustomerDoesNotBelongToFamilyGroupException("Customer: " + familyMember.getFirstName()
-                    + " " + familyMember.getLastName() + " does not belong to Family Group: FamilyGroupID" + fg.getFamilyGroupId());
+        } catch (FamilyGroupNotFoundException | SubscriptionNotFoundException ex) {
+            // won't happen
+            ex.printStackTrace();
         }
     }
 }

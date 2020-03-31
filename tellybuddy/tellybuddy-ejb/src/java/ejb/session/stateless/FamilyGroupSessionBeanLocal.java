@@ -12,6 +12,8 @@ import java.util.List;
 import javax.ejb.Local;
 import util.exception.CustomerAlreadyInFamilyGroupException;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
+import util.exception.CustomerNotFoundException;
+import util.exception.CustomerNotVerifiedException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
 import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
 import util.exception.FamilyGroupNotFoundException;
@@ -28,7 +30,7 @@ import util.exception.InsufficientTalktimeUnitsToDonateToFamilyGroupException;
 @Local
 public interface FamilyGroupSessionBeanLocal {
 
-    public FamilyGroup createFamilyGroup(String desc, Customer customer) throws CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException;
+    public Long createFamilyGroup(FamilyGroup newFamilyGroup, Customer customer) throws CustomerNotFoundException, CustomerNotVerifiedException, CustomerAlreadyInFamilyGroupException;
 
     public FamilyGroup retrieveFamilyGroupByFamilyGroupId(Long familyGroupId) throws FamilyGroupNotFoundException;
 
@@ -36,7 +38,8 @@ public interface FamilyGroupSessionBeanLocal {
 
     public void updateFamilyPlan(FamilyGroup fg) throws FamilyGroupNotFoundException;
 
-    public void addFamilyMember(Customer newMember, FamilyGroup fg) throws FamilyGroupReachedLimitOf5MembersException, CustomersDoNotHaveSameAddressOrPostalCodeException;
+    public void addFamilyMember(Customer newMember, FamilyGroup fg) throws FamilyGroupReachedLimitOf5MembersException,
+            CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException, CustomerNotVerifiedException;
 
     public void removeFamilyMember(Customer familyMember, FamilyGroup fg) throws CustomerDoesNotBelongToFamilyGroupException, FamilyGroupNotFoundException;
 
@@ -47,5 +50,9 @@ public interface FamilyGroupSessionBeanLocal {
 
     public void useUnits(Customer familyMember, Subscription s, FamilyGroup fg, Integer smsUnits, Integer dataUnits, Integer talktimeUnits) throws CustomerDoesNotBelongToFamilyGroupException,
             InsufficientDonatedUnitsInFamilyGroupException;
+
+    public FamilyGroup retrieveFamilyGroupByCustomer(Customer customer) throws FamilyGroupNotFoundException;
+
+    public void deleteFamilyGroup(Long familyGroupId) throws FamilyGroupNotFoundException;
 
 }

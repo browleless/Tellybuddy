@@ -171,7 +171,7 @@ public class SessionBeanLookup {
     public QuestionSessionBeanLocal lookupQuestionSessionBeanLocal() {
         try {
             javax.naming.Context c = new InitialContext();
-            return (QuestionSessionBeanLocal) c.lookup(ejbModuleJndiPath + "QuestionSessionBeans!ejb.session.stateless.QuestionSessionBeanLocal");
+            return (QuestionSessionBeanLocal) c.lookup(ejbModuleJndiPath + "QuestionSessionBean!ejb.session.stateless.QuestionSessionBeanLocal");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);

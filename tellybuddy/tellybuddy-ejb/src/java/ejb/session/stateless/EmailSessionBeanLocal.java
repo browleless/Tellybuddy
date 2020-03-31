@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.Bill;
+import entity.Customer;
 import java.util.concurrent.Future;
 import javax.ejb.Local;
 
@@ -17,5 +18,7 @@ import javax.ejb.Local;
 public interface EmailSessionBeanLocal {
 
     public Future<Boolean> emailBillNotificationAsync(Bill bill, Integer subscriptionTotalAllowedData, Integer subscriptionTotalAllowedSms, Integer subscriptionTotalAllowedTalktime, String fromEmailAddress, String toEmailAddress) throws InterruptedException;
-    
+
+    public Future<Boolean> emailCustomerAccountCreationNotification(Customer customer, String fromEmailAddress, String toEmailAddress) throws InterruptedException;
+
 }

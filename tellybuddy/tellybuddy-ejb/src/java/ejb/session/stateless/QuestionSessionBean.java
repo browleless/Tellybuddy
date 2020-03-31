@@ -3,6 +3,7 @@ package ejb.session.stateless;
 import entity.Answer;
 import entity.Question;
 import entity.Quiz;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -55,6 +56,15 @@ public class QuestionSessionBean implements QuestionSessionBeanLocal {
         } else {
             throw new QuestionNotFoundException("Question ID " + questionId + " does not exist!");
         }
+    }
+
+    @Override
+    public List<Question> retrieveQuestionsByQuizId(Long quizId) {
+
+        Query query = entityManager.createQuery("SELECT q FROM Question q WHERE q.quiz.quizId = :inQuizId");
+        query.setParameter("inQuizId", quizId);
+
+        return query.getResultList();
     }
 
     @Override

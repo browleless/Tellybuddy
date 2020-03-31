@@ -5,13 +5,12 @@
  */
 package ejb.session.stateless;
 
-import entity.Bill;
 import entity.Customer;
-import entity.Subscription;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.CustomerExistException;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
 
 /**
@@ -21,7 +20,7 @@ import util.exception.InvalidLoginCredentialException;
 @Local
 public interface CustomerSessionBeanLocal {
 
-    public Long createCustomer(Customer newCustomer) throws CustomerExistException;
+    public Long createCustomer(Customer newCustomer) throws CustomerExistException, CustomerUsernameExistException;
 
     public void updateCustomerDetailsForCustomer(Customer customer) throws CustomerNotFoundException;
 

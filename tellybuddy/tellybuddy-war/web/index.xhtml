@@ -4,49 +4,74 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui">
 
+    <style>
+        body {
+            background-image: url(#{request.contextPath}/resources/images/background.jpg);
+            background-position: right;
+        }
+
+        .login-form {
+            width: 330px;
+            background: #fff;
+            margin-right: 130px;
+            margin-top: 220px;
+            position: relative;
+            float: right;
+            border-top: 4px solid #2399e5;
+            z-index: 9;
+            padding: 24px 24px 0px 24px;
+            border-left: 1px solid #666872;
+            -moz-box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.30), 0 6px 3px 0 rgba(0, 0, 0, 0.23);
+            box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.30), 0 6px 3px 0 rgba(0, 0, 0, 0.23);
+        }
+    </style>
+
     <h:head>
         <title>Landing Page</title>
     </h:head>
+    
     <h:body>
-        <h2 style="text-align: center">Temporary Landing Page</h2>
-
-        <p:panel header="Login">
+        
+        <div class="login-form">
             
-            <h:form id="formLogin">
+            <div style="text-align: center; font-size: 24; margin-bottom: 20px;">
+                <p:outputLabel value="Employee Login" />
+            </div>
+            
+            <div>
+                
+                <h:form>
 
-                <p:messages />
+                    <p:messages />
 
-                <p:panelGrid>
+                    <div style="font-size: 18; font-weight: bold; margin-bottom: 10px;">
+                        <p:outputLabel value="Username:" />
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <p:inputText size="39" placeholder="Username" value="#{loginManagedBean.username}" />
+                    </div>
+                    <div style="font-size: 18; font-weight: bold; margin-bottom: 10px;">
+                        <p:outputLabel value="Password:" />
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <p:password size="39" placeholder="Password" value="#{loginManagedBean.password}" />
+                    </div>
+                    <div style="text-align: center; padding-bottom: 10px;">
+                        <p:commandButton style="border-radius: 50px" type="submit" value="Login" process="@form" update="@form" actionListener="#{loginManagedBean.login}" /> 
+                    </div>
 
-                    <p:row>
-                        <p:column>
-                            <p:outputLabel for="username" value="Username:" />
-                        </p:column>
-                        <p:column>
-                            <p:inputText id="username" value="#{loginManagedBean.username}" />
-                        </p:column>
-                    </p:row>
+                    <p:separator />
 
-                    <p:row>
-                        <p:column>
-                            <p:outputLabel for="password" value="Password:" />
-                        </p:column>
-                        <p:column>
-                            <p:password id="password" value="#{loginManagedBean.password}" />
-                        </p:column>
-                    </p:row>
-
-                    <p:row>
-                        <p:column colspan="2">
-                            <p:commandButton type="reset" value="Clear" /> 
-                            <p:commandButton type="submit" value="Login" process="@form" update="@form" actionListener="#{loginManagedBean.login}" /> 
-                        </p:column>
-                    </p:row>
-
-                </p:panelGrid>
-
-            </h:form>
-
-        </p:panel>
+                    <div style="text-align: center; font-size: 13; padding-top: 5px;">
+                        <p:outputLabel value="© 2020 Tellybuddy. All rights reserved." />
+                    </div>
+                    
+                </h:form>
+                
+            </div>
+            
+        </div>
+        
     </h:body>
+    
 </html>
