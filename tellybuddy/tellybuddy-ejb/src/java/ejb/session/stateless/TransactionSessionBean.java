@@ -5,10 +5,12 @@
  */
 package ejb.session.stateless;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import entity.Customer;
 import entity.DiscountCode;
 import entity.Transaction;
 import entity.TransactionLineItem;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -34,31 +36,25 @@ import util.exception.TransactionNotFoundException;
 @Local(TransactionSessionBeanLocal.class)
 public class TransactionSessionBean implements TransactionSessionBeanLocal {
 
-
-
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
     @Resource
     private EJBContext eJBContext;
-    
+
     @EJB
     private CustomerSessionBeanLocal customerSessionBeanLocal;
     @EJB
     private ProductSessionBeanLocal productSessionBeanLocal;
     @EJB
     private DiscountCodeSessionBeanLocal discountCodeSessionBeanLocal;
-        
-    public TransactionSessionBean()
-    {
+
+    public TransactionSessionBean() {
     }
-       
+
     @Override
-    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException
-    {
-        if(newTransaction != null)
-        {
-            try
-            {
+    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException {
+        if (newTransaction != null) {
+            try {
                 Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
                 DiscountCode discountCode = discountCodeSessionBeanLocal.retrieveDiscountCodeByDiscountCodeName(discountCodeName);
                 newTransaction.setCustomer(customer);
@@ -67,8 +63,7 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
 
                 em.persist(newTransaction);
 
-                for(TransactionLineItem transactionLineItem:newTransaction.getTransactionLineItems())
-                {
+                for (TransactionLineItem transactionLineItem : newTransaction.getTransactionLineItems()) {
                     productSessionBeanLocal.debitQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
                     em.persist(transactionLineItem);
                 }
@@ -76,104 +71,76 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
                 em.flush();
 
                 return newTransaction;
-            }
-            catch(ProductNotFoundException | ProductInsufficientQuantityOnHandException ex)
-            {
+            } catch (ProductNotFoundException | ProductInsufficientQuantityOnHandException ex) {
                 // The line below rolls back all changes made to the database.
                 eJBContext.setRollbackOnly();
                 throw new CreateNewSaleTransactionException(ex.getMessage());
             }
-        }
-        else
-        {
+        } else {
             throw new CreateNewSaleTransactionException("Sale transaction information not provided");
         }
     }
-    
-    
-    
+
     @Override
-    public List<Transaction> retrieveAllTransactions()
-    {
+    public List<Transaction> retrieveAllTransactions() {
         Query query = em.createQuery("SELECT st FROM Transaction st");
-        
+
         return query.getResultList();
     }
-    
-    
-    
+
     // Added in v4.1
-    
     @Override
-    public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId)
-    {
-        Query query = em.createNamedQuery("selectAllTransactionLineItemsByProductId");
+    public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId) {
+        Query query = em.createQuery("SELECT tl FROM TransactionLineItem tl WHERE tl.product.productId = :inProductId");
         query.setParameter("inProductId", productId);
-        
-        return query.getResultList();
-    }
-    
-    
-    
-    @Override
-    public Transaction retrieveTransactionByTransactionId(Long transactionId) throws TransactionNotFoundException
-    {
-        Transaction transaction = em.find(Transaction.class, transactionId);
-        
-        if(transaction != null)
-        {
-            transaction.getTransactionLineItems().size();
-            
-            return transaction;
+
+        if (query.getResultList() == null) {
+            return new ArrayList<TransactionLineItem>();
+        } else {
+           return query.getResultList();
         }
-        else
-        {
-            throw new TransactionNotFoundException("Sale Transaction ID " + transactionId + " does not exist!");
-        }                
     }
-    
-    
-    
+
     @Override
-    public void updateTransaction(Transaction Transaction)
-    {
+    public Transaction retrieveTransactionByTransactionId(Long transactionId) throws TransactionNotFoundException {
+        Transaction transaction = em.find(Transaction.class, transactionId);
+
+        if (transaction != null) {
+            transaction.getTransactionLineItems().size();
+
+            return transaction;
+        } else {
+            throw new TransactionNotFoundException("Sale Transaction ID " + transactionId + " does not exist!");
+        }
+    }
+
+    @Override
+    public void updateTransaction(Transaction Transaction) {
         em.merge(Transaction);
     }
-    
-    
-    
+
     // Updated in v4.1
-    
     @Override
-    public void voidRefundTransaction(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException
-    {
+    public void voidRefundTransaction(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException {
         Transaction transaction = retrieveTransactionByTransactionId(transactionId);
-        
-        if(!transaction.getVoidRefund())
-        {
-            for(TransactionLineItem transactionLineItem:transaction.getTransactionLineItems())
-            {
-                try
-                {
+
+        if (!transaction.getVoidRefund()) {
+            for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
+                try {
                     productSessionBeanLocal.creditQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
-                }
-                catch(ProductNotFoundException ex)
-                {
+                } catch (ProductNotFoundException ex) {
                     ex.printStackTrace(); // Ignore exception since this should not happen
-                }                
+                }
             }
-            
+
             transaction.setVoidRefund(true);
-        }
-        else
-        {
+        } else {
             throw new TransactionAlreadyVoidedRefundedException("The sale transaction has aready been voided/refunded");
         }
     }
-    
+
     @Override
-    public void deleteTransaction(Transaction transaction)
-    {
+    public void deleteTransaction(Transaction transaction) {
         throw new UnsupportedOperationException();
     }
 
@@ -181,5 +148,4 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         em.persist(object);
     }
 
-    
 }
