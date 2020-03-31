@@ -17,6 +17,7 @@ import javax.persistence.Query;
 import util.exception.CustomerAlreadyInFamilyGroupException;
 import util.exception.CustomerDoesNotBelongToFamilyGroupException;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerNotVerifiedException;
 import util.exception.CustomersDoNotHaveSameAddressOrPostalCodeException;
 import util.exception.FamilyGroupDonatedUnitsExceededLimitException;
 import util.exception.FamilyGroupNotFoundException;
@@ -48,10 +49,19 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
     }
 
     @Override
-    public Long createFamilyGroup(FamilyGroup newFamilyGroup, Customer customer) throws CustomerNotFoundException {
+    public Long createFamilyGroup(FamilyGroup newFamilyGroup, Customer customer) throws CustomerNotFoundException, CustomerNotVerifiedException, CustomerAlreadyInFamilyGroupException {
 
         try {
             Customer customerToAssociateWith = customerSessionBeanLocal.retrieveCustomerByCustomerId(customer.getCustomerId());
+
+            if (customerToAssociateWith.getFamilyGroup() != null) {
+                throw new CustomerAlreadyInFamilyGroupException("Customer already has a family group!");
+            }
+
+            if (customerToAssociateWith.getAddress() == null && customerToAssociateWith.getPostalCode() == null) {
+                throw new CustomerNotVerifiedException("Customer has not yet been verified, unable to create family group, please wait for the management to verify your account details.");
+            }
+
             newFamilyGroup.getCustomers().add(customerToAssociateWith);
 
             em.persist(newFamilyGroup);
@@ -110,21 +120,24 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
 
     @Override
     public void addFamilyMember(Customer newMember, FamilyGroup fg) throws FamilyGroupReachedLimitOf5MembersException,
-            CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException {
+            CustomersDoNotHaveSameAddressOrPostalCodeException, CustomerAlreadyInFamilyGroupException, CustomerNotVerifiedException {
 
         try {
             FamilyGroup familyGroupToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
             Customer familyMemberToAdd = customerSessionBeanLocal.retrieveCustomerByCustomerId(newMember.getCustomerId());
 
+            if (familyMemberToAdd.getPostalCode() == null) {
+                throw new CustomerNotVerifiedException("Customer has not yet been verified, unable to add to family group, please wait for the management to verify his/her account details before attempting to add again.");
+            }
+
             if (familyMemberToAdd.getFamilyGroup() != null) {
                 throw new CustomerAlreadyInFamilyGroupException("Customer already has a family group!");
             }
 
-            String checkAddress = familyGroupToUpdate.getCustomers().get(0).getAddress();
             String checkPostalCode = familyGroupToUpdate.getCustomers().get(0).getPostalCode();
 
-            //check for the same address and postal code
-            if (familyMemberToAdd.getAddress().equals(checkAddress) && familyMemberToAdd.getPostalCode().equals(checkPostalCode)) {
+            //check for the same postal code
+            if (familyMemberToAdd.getPostalCode().equals(checkPostalCode)) {
                 //check if the family group has reached its limit of 5
                 if (familyGroupToUpdate.getNumberOfMembers() < 5) {
                     familyGroupToUpdate.getCustomers().add(familyMemberToAdd);
