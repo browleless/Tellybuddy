@@ -47,8 +47,15 @@ import util.enumeration.AccessRightEnum;
 import util.enumeration.AnnouncementRecipientEnum;
 import util.enumeration.SubscriptionStatusEnum;
 import util.exception.CreateNewSaleTransactionException;
+import util.exception.CreateNewSubscriptionException;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerNotYetApproved;
 import util.exception.DiscountCodeNotFoundException;
+import util.exception.InputDataValidationException;
+import util.exception.PhoneNumberInUseException;
+import util.exception.PlanAlreadyDisabledException;
+import util.exception.SubscriptionExistException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -125,10 +132,22 @@ public class DataInitialization {
                 cal.add(Calendar.MONTH, -1);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 3l, 4l);
-
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
+            } catch (InputDataValidationException ex) {
+                Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnknownPersistenceException ex) {
+                Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (CustomerNotYetApproved ex) {
+                Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SubscriptionExistException ex) {
+                Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (PhoneNumberInUseException ex) {
+                Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (PlanAlreadyDisabledException ex) {
+                Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (CreateNewSubscriptionException ex) {
+                Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
             }
+
 
             Announcement newAnnouncement = new Announcement("Flash deal", "content", formatter.parse("16-Mar-2020 23:37:50"), formatter.parse("23-Mar-2020 23:37:50"), AnnouncementRecipientEnum.CUSTOMER);
             em.persist(newAnnouncement);
