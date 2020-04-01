@@ -31,7 +31,7 @@
                 font-weight: normal;
             }
         </style>
-        
+
         <script type="text/javascript">
             window.formatTimer = function (value) {
                 var numDays = Math.floor(value / 86400);
@@ -54,6 +54,17 @@
             <h3>Flash Coupon Management</h3>
 
             <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Flash Coupon" oncomplete="PF('dialogCreateNewFlashCoupon').show()" />
+
+            <h:form>
+                <h:panelGrid columns="2">
+                    <p:outputLabel for="discountCodeFilter" value="Show: " />
+                    <p:selectOneMenu id="discountCodeFilter" value="#{flashCouponManagementManagedBean.selectedFilter}">
+                        <p:ajax update="formAllFlashCoupons:dataGridAllFlashCoupons" listener="#{flashCouponManagementManagedBean.doFilter}" />
+                        <f:selectItem itemLabel="Active" itemValue="Active" />
+                        <f:selectItem itemLabel="Past" itemValue="Past" />
+                    </p:selectOneMenu>
+                </h:panelGrid>
+            </h:form>
 
             <h:form id="formAllFlashCoupons">
 
@@ -88,29 +99,37 @@
 
                             <p:spacer />
                             <p:row>
-                                <p:column>
+                                <p:column rendered="#{flashCouponManagementManagedBean.selectedFilter.equals('Active')}">
                                     <p:outputLabel for="timerTillExpiry" value="Expires in:" />
                                 </p:column>
-                            </p:row>
-                            <p:spacer />
-
-                            <p:spacer />
-                            <p:row>
-                                <p:column>
-                                    <pe:timer id="timerTillExpiry" formatFunction="return formatTimer(value);" timeout="#{flashCouponManagementManagedBean.calculateTimerTime(discountCode)}" />
+                                <p:column rendered="#{flashCouponManagementManagedBean.selectedFilter.equals('Past')}">
+                                    <p:outputLabel for="expiredOn" value="Expired on:" />
                                 </p:column>
                             </p:row>
                             <p:spacer />
 
                             <p:spacer />
                             <p:row>
-                                <p:column>
+                                <p:column rendered="#{flashCouponManagementManagedBean.selectedFilter.equals('Active')}">
+                                    <pe:timer id="timerTillExpiry" formatFunction="return formatTimer(value);" timeout="#{flashCouponManagementManagedBean.calculateTimerTime(discountCode)}" />
+                                </p:column>
+                                <p:column rendered="#{flashCouponManagementManagedBean.selectedFilter.equals('Past')}">
+                                    <h:outputText id="expiredOn" value="#{discountCode.expiryDate}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT+8" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:row>
+                            <p:spacer />
+
+                            <p:spacer />
+                            <p:row>
+                                <p:column rendered="#{flashCouponManagementManagedBean.selectedFilter.equals('Active')}">
                                     <p:commandLink update="dialogViewFlashCoupon" oncomplete="PF('dialogViewFlashCoupon').show()" title="View Flash Coupon">
                                         <h:outputText styleClass="pi pi-search" style="margin:0 auto;"/>
                                         <f:setPropertyActionListener value="#{discountCode}" target="#{flashCouponManagementManagedBean.discountCodeToView}" />
                                     </p:commandLink>
                                 </p:column>
-                                <p:column>
+                                <p:column rendered="#{flashCouponManagementManagedBean.selectedFilter.equals('Active')}">
                                     <p:commandLink update="dialogUpdateFlashCoupon" oncomplete="PF('dialogUpdateFlashCoupon').show()" title="Update Flash Coupon">
                                         <h:outputText styleClass="pi pi-pencil" style="margin:0 auto;"/>
                                         <f:setPropertyActionListener value="#{discountCode}" target="#{flashCouponManagementManagedBean.discountCodeToUpdate}" />
