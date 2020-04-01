@@ -64,7 +64,7 @@ public class Transaction implements Serializable {
         this.transactionLineItems = new ArrayList<>();
     }
 
-    public Transaction(BigDecimal totalPrice, Date transactionDateTime, List<TransactionLineItem> transactionLineItems) {
+    public Transaction(BigDecimal totalPrice, Date transactionDateTime) {
         this();
         this.totalPrice = totalPrice;
         this.transactionDateTime = transactionDateTime;
