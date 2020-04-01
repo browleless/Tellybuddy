@@ -62,6 +62,10 @@ public interface ProductSessionBeanLocal {
 
     public void deactivatePromotion(Product productToDeactivate);
 
+    public void activatePromotion(Product productToActivate);
+
+    public void updateProduct(Product product);
+
  
     
     

@@ -14,6 +14,8 @@ import entity.LuxuryProduct;
 import entity.Product;
 import entity.ProductItem;
 import entity.Tag;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -90,6 +92,7 @@ public class ProductManagementManagedBean implements Serializable {
 
     public ProductManagementManagedBean() {
         this.newProduct = new Product();
+        this.newLuxuryProduct = new LuxuryProduct();
     }
 
     @PostConstruct
@@ -113,7 +116,8 @@ public class ProductManagementManagedBean implements Serializable {
             //query the database for unique serial number of luxury prod
             String serialNumLuxury = productSessionBeanLocal.retrieveLatestSerialNum();
             Integer uniqueLuxury = Integer.parseInt(serialNumLuxury) + 1;
-            this.newLuxuryProduct.setSerialNumber(serialNumLuxury);
+            String s = uniqueSerialNum(uniqueLuxury);
+            this.newLuxuryProduct.setSerialNumber(s);
 
             //transfer the user input into the properties of newLuxuryProduct
             this.newLuxuryProduct.setSkuCode(newProduct.getSkuCode());
@@ -135,7 +139,6 @@ public class ProductManagementManagedBean implements Serializable {
         } else {
             this.newProduct.setProductImagePath(filePath);
         }
-
         try {
 //            if (productImageFile == null) {
 //                System.out.println("Prodcut has REACHED HERE ______________________________________----------------------");
@@ -164,10 +167,11 @@ public class ProductManagementManagedBean implements Serializable {
                 Integer unique = Integer.parseInt(serialNum) + 1;
 
                 for (int i = 0; i < num; i++) {
-                    //luxury item has to have a list of product item
-                    //instantiate every product item 
-                    ProductItem pi = new ProductItem(Integer.toString(unique), this.newLuxuryProduct.getPrice());
+                    //instantiate every product item
+                    String s1 = uniqueSerialNum(unique);
+                    ProductItem pi = new ProductItem(s1, this.newLuxuryProduct.getPrice());
                     ProductItem createdPI = pi;
+                    pi.setLuxuryProduct(this.newLuxuryProduct);
                     try {
                         createdPI = productItemSessionBeanLocal.createNewProductItem(pi, p.getProductId());
                     } catch (ProductItemExistException ex) {
@@ -189,6 +193,57 @@ public class ProductManagementManagedBean implements Serializable {
         }
     }
 
+    private String uniqueSerialNum(int unique) {
+        String s = Integer.toString(unique);
+
+        while (s.length() < 10) {
+            s = "0" + s;
+        }
+
+        return s;
+    }
+
+//    public void handleFileUpload(FileUploadEvent event) {
+//        try {
+//            String newFilePath = FacesContext.getCurrentInstance().getExternalContext().getInitParameter("alternatedocroot_1") + System.getProperty("file.separator") + event.getFile().getFileName();
+//
+//            if (this.productType.equals("Luxury Product")) {
+//                this.newLuxuryProduct.setProductImagePath(newFilePath);
+//            } else {
+//                this.newProduct.setProductImagePath(newFilePath);
+//            }
+//
+//            System.err.println("********** Demo03ManagedBean.handleFileUpload(): File name: " + event.getFile().getFileName());
+//            System.err.println("********** Demo03ManagedBean.handleFileUpload(): newFilePath: " + newFilePath);
+//
+//            File file = new File(newFilePath);
+//            FileOutputStream fileOutputStream = new FileOutputStream(file);
+//
+//            int a;
+//            int BUFFER_SIZE = 8192;
+//            byte[] buffer = new byte[BUFFER_SIZE];
+//
+//            InputStream inputStream = event.getFile().getInputstream();
+//
+//            while (true) {
+//                a = inputStream.read(buffer);
+//
+//                if (a < 0) {
+//                    break;
+//                }
+//
+//                fileOutputStream.write(buffer, 0, a);
+//                fileOutputStream.flush();
+//            }
+//
+//            fileOutputStream.close();
+//            inputStream.close();
+//
+//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "File uploaded successfully", ""));
+//        } catch (IOException ex) {
+//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "File upload error: " + ex.getMessage(), ""));
+//        }
+//    }
     public void doUpdateProduct(ActionEvent ae) {
         selectedProductToUpdate = (Product) ae.getComponent().getAttributes().get("productToUpdate");
 
@@ -235,6 +290,7 @@ public class ProductManagementManagedBean implements Serializable {
     public void deleteProduct(ActionEvent ae) {
         try {
             Product productToDelete = (Product) ae.getComponent().getAttributes().get("productToDelete");
+            //System.out.println("READ IT: " + productToDelete.getName());
             productSessionBeanLocal.deleteProduct(productToDelete.getProductId());
 
             allProducts.remove(productToDelete);
@@ -274,11 +330,11 @@ public class ProductManagementManagedBean implements Serializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String absolutePathToProductImages = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/") + "management\\products\\productImages";
-            System.out.println(absolutePathToProductImages);
-            Path folder = Paths.get(absolutePathToProductImages);
+//            String absolutePathToProductImages = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/") + "management\\products\\productImages";
+//            System.out.println(absolutePathToProductImages);
+//            Path folder = Paths.get(absolutePathToProductImages);
 
-//            Path folder = Paths.get("C:\\Image");
+            Path folder = Paths.get("C:\\glassfish-5.1.0-uploadedfiles\\uploadedFiles");
             try {
                 String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
                 String extension = FilenameUtils.getExtension(productImageFile.getFileName());
@@ -289,7 +345,8 @@ public class ProductManagementManagedBean implements Serializable {
 
 //                return filename + "-" + "." + extension;
                 System.out.println(file.toString());
-                return file.getFileName().toString();
+                String fullPath = folder + "\\" + file.getFileName().toString();
+                return fullPath;
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }

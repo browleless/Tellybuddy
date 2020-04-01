@@ -77,7 +77,7 @@
 
                         <p:outputPanel   style="width:100%; border-left: 1px; border-left-color: #999999">
                             <p:panelGrid  columns="4" columnClasses="ui-grid-col-2, ui-grid-col-4,ui-grid-col-2, ui-grid-col-4">
-                               
+
                                 <h:outputText value="First Name:" />
                                 <h:outputText value="#{customer.firstName}" style="font-weight: bold"/>
 
@@ -145,7 +145,7 @@
             <h:form id="formViewSubscriptions">
                 <p:dataTable id="ataTableCustomerSubscriptions" widgetVar="dataTableCustomerSubscriptions" style="text-align: center" value="#{customerManagementManagedBean.subscriptionsToView}" var="subscription" rowKey="#{subscription.subscriptionId}" rowIndexVar="row">
                     <p:column headerText="Id" width="5%" style="text-align: center">
-                        <h:outputText value="#{subscription.subcscriptionId}" />
+                        <h:outputText value="#{subscription.subscriptionId}" />
                     </p:column>
 
                     <p:column headerText="Plan" width="10%" style="text-align: center">
@@ -181,7 +181,7 @@
                             <p:outputPanel>
                                 <h:panelGrid columns="2" cellpadding="5">
                                     <h:outputText value="Id:" />
-                                    <h:outputText value="#{subscription.subcscriptionId}" style="font-weight: bold"/>
+                                    <h:outputText value="#{subscription.subscriptionId}" style="font-weight: bold"/>
 
                                     <h:outputText value="Start Date" />
                                     <h:outputText value="#{subscription.subscriptionStartDate}" style="font-weight: bold"/>

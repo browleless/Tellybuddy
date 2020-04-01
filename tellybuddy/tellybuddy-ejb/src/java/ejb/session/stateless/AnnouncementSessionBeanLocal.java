@@ -31,5 +31,7 @@ public interface AnnouncementSessionBeanLocal {
     public void deleteAnnouncement(Long announcementId) throws AnnouncementNotFoundException;
 
     public List<Announcement> retrieveAllExpiredAnnouncements();
+
+    public List<Announcement> retrieveAllActiveAnnouncementsForCustomers();
     
 }

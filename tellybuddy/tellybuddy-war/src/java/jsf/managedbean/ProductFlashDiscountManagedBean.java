@@ -6,6 +6,7 @@
 package jsf.managedbean;
 
 import ejb.session.stateless.ProductSessionBeanLocal;
+import entity.Category;
 import entity.Product;
 import entity.Tag;
 import java.io.Serializable;
@@ -16,9 +17,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import util.exception.CategoryNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.ProductNotFoundException;
@@ -31,8 +35,20 @@ import util.exception.UpdateProductException;
  */
 @Named(value = "productFlashDiscountManagedBean")
 @ViewScoped
+
 public class ProductFlashDiscountManagedBean implements Serializable {
 
+    @Inject
+    private ViewProductManagedBean viewProductManagedBean;
+
+    public ViewProductManagedBean getViewProductManagedBean() {
+        return viewProductManagedBean;
+    }
+
+    public void setViewProductManagedBean(ViewProductManagedBean viewProductManagedBean) {
+        this.viewProductManagedBean = viewProductManagedBean;
+    }
+    
     @EJB(name = "ProductSessionBeanLocal")
     private ProductSessionBeanLocal productSessionBeanLocal;
     private List<Product> discountedProducts;
@@ -41,12 +57,8 @@ public class ProductFlashDiscountManagedBean implements Serializable {
     private Product discountedProductToUpdate;
     private Product discountedProduct;
 
-    
-    
     private Date dateTimeNow;
     private Date dateToday;
-
-    
 
     public ProductFlashDiscountManagedBean() {
         dateTimeNow = new Date();
@@ -54,51 +66,29 @@ public class ProductFlashDiscountManagedBean implements Serializable {
         dateToday.setHours(0);
         dateToday.setMinutes(0);
         dateToday.setSeconds(0);
-    
+
     }
 
- 
     @PostConstruct
     public void postConstruct() {
         setDiscountedProducts(productSessionBeanLocal.retrieveAllDiscountedProducts());
     }
-    
 
-    public void createNewProductFlashDeal(ActionEvent event){
-         discountedProducts.add(discountedProduct);
+    public void createNewProductFlashDeal(ActionEvent event) {
+        productSessionBeanLocal.activatePromotion(discountedProduct);
+        discountedProducts.add(discountedProduct);
     }
-    public void updateDiscountedProduct(ActionEvent event){
-        try {
-            //get list of tag ids
-            List<Tag> tags = getDiscountedProductToUpdate().getTags();
-            List<Long> tagId = new ArrayList<>();
-            for(Tag tag : tags){
-                tagId.add(tag.getTagId());
-            }
-            productSessionBeanLocal.updateProduct(getDiscountedProductToUpdate(),getDiscountedProductToUpdate().getCategory().getCategoryId(),tagId);
-     
-            if(discountedProductToUpdate.getDealEndTime().after(dateTimeNow)){
-                discountedProducts.remove(discountedProductToUpdate);
-            }
-        } catch (ProductNotFoundException ex) {
-            Logger.getLogger(ProductFlashDiscountManagedBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CategoryNotFoundException ex) {
-            Logger.getLogger(ProductFlashDiscountManagedBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TagNotFoundException ex) {
-            Logger.getLogger(ProductFlashDiscountManagedBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UpdateProductException ex) {
-            Logger.getLogger(ProductFlashDiscountManagedBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InputDataValidationException ex) {
-            Logger.getLogger(ProductFlashDiscountManagedBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+    public void updateDiscountedProduct(ActionEvent event) {
+            productSessionBeanLocal.updateProduct(discountedProductToUpdate);
     }
 
     public void deleteDiscountedProduct(ActionEvent event) {
-            Product discountedProductToDelete = (Product) event.getComponent().getAttributes().get("discountedProductToDelete");
-            productSessionBeanLocal.deactivatePromotion(discountedProductToDelete);
-            getDiscountedProducts().remove(discountedProductToDelete);
+        Product discountedProductToDelete = (Product) event.getComponent().getAttributes().get("discountedProductToDelete");
+        productSessionBeanLocal.deactivatePromotion(discountedProductToDelete);
+        getDiscountedProducts().remove(discountedProductToDelete);
     }
-       
+
     public Date getDateTimeNow() {
         return dateTimeNow;
     }
@@ -114,7 +104,7 @@ public class ProductFlashDiscountManagedBean implements Serializable {
     public void setDateToday(Date dateToday) {
         this.dateToday = dateToday;
     }
-    
+
     public long calculateTimerTime(Product discountedProduct) {
 
         if (discountedProduct.getDealStartTime().before(new Date())) {
@@ -123,7 +113,7 @@ public class ProductFlashDiscountManagedBean implements Serializable {
             return (discountedProduct.getDealStartTime().getTime() - dateTimeNow.getTime()) / 1000;
         }
     }
-    
+
     public List<Product> getDiscountedProducts() {
         return discountedProducts;
     }

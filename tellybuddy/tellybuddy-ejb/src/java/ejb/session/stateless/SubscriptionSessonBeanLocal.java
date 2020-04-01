@@ -45,4 +45,8 @@ public interface SubscriptionSessonBeanLocal {
     public List<Subscription> retrieveAllSubscriptions();
 
     public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException;
+
+    public Subscription allocateUnitsForNextMonth(Subscription subscription, Integer dataUnits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException;
+
+    public void requestToTerminateSubscription(Subscription subscription) throws SubscriptionNotFoundException;
 }

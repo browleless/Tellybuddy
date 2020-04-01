@@ -44,7 +44,7 @@
 
             function pad(num, size) {
                 var s = num + "";
-                while (s.length & lt; size)
+                while (s.length &lt; size)
                         s = "0" + s;
                 return s;
             }
@@ -128,12 +128,12 @@
                 </p:tab>
 
                 <p:tab title="Product Flash Discount">
-                    <!--product tag 开始做-->
+                    <!--product tab 开始做-->
                     <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Product Flash Discount" oncomplete="PF('dialogCreateNewProductDiscount').show()" />
 
                     <h:form id="formAllDiscountedProducts">
 
-                        <p:dataTable id="dataTableAllDiscountedProducts" widgetVar="dataTableAllDiscountedProducts" value="#{productFlashDiscountManagedBean.discountedProducts}" var="discountedProduct" rowKey="#{discountedProduct.productId}" rowIndexVar="row"
+                        <p:dataTable id="dataTableAllDiscountedProducts" widgetVar="dataTableAllDiscountedProducts" value="#{productFlashDiscountManagedBean.discountedProducts}" var="dp" rowKey="#{dp.productId}" rowIndexVar="row"
                                      filteredValue="#{productFlashDiscountManagedBean.filteredDiscountedProducts}"
                                      rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
 
@@ -144,36 +144,36 @@
                                 </p:outputPanel>
                             </f:facet>
 
-                            <p:column headerText="Plan ID" sortBy="#{discountedProduct.productId}" filterBy="#{discountedProduct.productId}" filterMatchMode="contains">
-                                <h:outputText value="#{discountedProduct.productId}" />
+                            <p:column headerText="Plan ID" sortBy="#{dp.productId}" filterBy="#{dp.productId}" filterMatchMode="contains">
+                                <h:outputText value="#{dp.productId}" />
                             </p:column>
 
-                            <p:column headerText="Name" sortBy="#{discountedProduct.name}" filterBy="#{discountedProduct.name}" filterMatchMode="contains">
-                                <h:outputText value="#{discountedProduct.name}" />
+                            <p:column headerText="Name" sortBy="#{dp.name}" filterBy="#{dp.name}" filterMatchMode="contains">
+                                <h:outputText value="#{dp.name}" />
                             </p:column>
 
-                            <p:column headerText="Discount Price" sortBy="#{discountedProduct.discountPrice}" filterBy="#{discountedProduct.discountPrice}" filterMatchMode="contains" style="text-align: right;">
-                                <h:outputText value="#{discountedProduct.discountPrice}">
+                            <p:column headerText="Discount Price" sortBy="#{dp.discountPrice}" filterBy="#{dp.discountPrice}" filterMatchMode="contains" style="text-align: right;">
+                                <h:outputText value="#{dp.discountPrice}">
                                     <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD" />
                                 </h:outputText>
                             </p:column>
 
-                            <p:column sortBy="#{productFlashDiscountManagedBean.calculateTimerTime(discountedProduct)}" width="300" headerText="Timer" style="text-align: center;">
-                                <p:outputLabel rendered="#{discountedProduct.dealStartTime.after(productFlashDiscountManagedBean.dateTimeNow)}" for="timerTillStartEnd"  value="Starting in " />
-                                <p:outputLabel rendered="#{discountedProduct.dealStartTime.before(productFlashDiscountManagedBean.dateTimeNow)}" for="timerTillStartEnd" value="Ending in " />
-                                <pe:timer id="timerTillStartEnd" formatFunction="return formatTimer(value);" timeout="#{productFlashDiscountManagedBean.calculateTimerTime(discountedProduct)}" />
+                            <p:column sortBy="#{productFlashDiscountManagedBean.calculateTimerTime(dp)}" width="300" headerText="Timer" style="text-align: center;">
+                                <p:outputLabel rendered="#{dp.dealStartTime.after(productFlashDiscountManagedBean.dateTimeNow)}" for="timerTillStartEnd"  value="Starting in " />
+                                <p:outputLabel rendered="#{dp.dealStartTime.before(productFlashDiscountManagedBean.dateTimeNow)}" for="timerTillStartEnd" value="Ending in " />
+                                <pe:timer id="timerTillStartEnd" formatFunction="return formatTimer(value);" timeout="#{productFlashDiscountManagedBean.calculateTimerTime(dp)}" />
                             </p:column>
 
                             <p:column headerText="Action" >
                                 <p:commandButton update="dialogViewDiscountedProduct" oncomplete="PF('dialogViewDiscountedProduct').show()" icon="ui-icon-document" title="View">
-                                    <f:setPropertyActionListener value="#{discountedProduct}" target="#{productFlashDiscountManagedBean.discountedProductToView}" />
+                                    <f:setPropertyActionListener value="#{dp}" target="#{productFlashDiscountManagedBean.discountedProductToView}" />
                                 </p:commandButton>
                                 <p:commandButton update="dialogUpdateDiscountedProduct" oncomplete="PF('dialogUpdateDiscountedProduct').show()" icon="ui-icon-pencil" title="Update">
-                                    <f:setPropertyActionListener value="#{discountedProduct}" target="#{productFlashDiscountManagedBean.discountedProductToUpdate}" />
+                                    <f:setPropertyActionListener value="#{dp}" target="#{productFlashDiscountManagedBean.discountedProductToUpdate}" />
                                 </p:commandButton>
                                 <p:commandButton update="@form tabView:formAllDiscountedProducts:dataTableAllDiscountedProducts" icon="ui-icon-trash" actionListener="#{productFlashDiscountManagedBean.deleteDiscountedProduct}">
-                                    <f:attribute name="discountedProductToDelete" value="#{discountedProduct}" />
-                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{discountedProduct.name}?" icon="ui-icon-alert" />
+                                    <f:attribute name="discountedProductToDelete" value="#{dp}" />
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{dp.name}?" icon="ui-icon-alert" />
                                 </p:commandButton>
                             </p:column>
 
@@ -189,18 +189,60 @@
                 </p:tab>
 
             </p:tabView>
-
+            <!--create new product flash deal-->
             <p:dialog id="dialogCreateNewProductDiscount" widgetVar="dialogCreateNewProductDiscount" header="Create Product flash deal" closable="true">
 
-                <h:form id="formCreateProductDiscount">
+                <h:form id="formViewAllProducts">
+
+                    <p:dataTable id="dataTableAllProducts" widgetVar="dataTableAllProducts" value="#{productManagementManagedBean.allProducts}" var="product" rowKey="#{product.productId}" rowIndexVar="row"
+                                 filteredValue="#{productManagementManagedBean.filteredProducts}"
+                                 rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                        <f:facet name="header">
+                            <p:outputPanel style="text-align: right;">
+                                <h:outputText value="Search all fields:" />
+                                <p:inputText id="globalFilter" onkeyup="PF('dataTableAllProducts').filter()" style="width:300px" placeholder="Enter keyword"/>
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column headerText="Product ID" sortBy="#{product.productId}" filterBy="#{product.productId}" filterMatchMode="contains">
+                            <h:outputText value="#{product.productId}" />
+                        </p:column>
+
+                        <p:column headerText="Name" sortBy="#{product.name}" filterBy="#{product.name}" filterMatchMode="contains">
+                            <h:outputText value="#{product.name}" />
+                        </p:column>
+
+                        <p:column headerText="Original price" sortBy="#{product.price}" filterBy="#{product.price}" filterMatchMode="contains" style="text-align: right;">
+                            <h:outputText value="#{product.price}">
+                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Action" >
+                            <p:commandButton update="dialogCreateForm" oncomplete="PF('dialogCreateForm').show(), PF('dialogCreateNewProductDiscount').hide()" icon="ui-icon-check" title="Create" >
+                                <f:setPropertyActionListener value="#{product}" target="#{productFlashDiscountManagedBean.discountedProduct}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </p:dialog>
+
+            <!--dialog create form-->
+            <p:dialog id="dialogCreateForm" widgetVar="dialogCreateForm" header="Create New product flash deal" closable="true">
+
+                <h:form id="formCreateForm">
 
                     <p:panelGrid>
                         <p:row>
-                            <h3 style="margin-top: 0">View all products</h3>
-                            <p:orderList value="#{productManagementManagedBean.allProducts}" var="product" controlsLocation="none" itemLabel="#{product}" itemValue="#{product}" />
-                          <!--use dialog data-->
-                            <p:commandButton value="Submit" update="displayCities" oncomplete="PF('cityDialog').show()" style="margin-top:5px" />
+                            <p:column>
+                                <p:outputLabel for="discountPrice" value="Discount price: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="discountPrice" value="#{productFlashDiscountManagedBean.discountedProduct.discountPrice}" required="true" requiredMessage="Discount price is required" />
+                            </p:column>
                         </p:row>
+
                         <p:row>
                             <p:column>
                                 <p:outputLabel for="dealStartDate" value="Start Date/Time" style="font-weight: bold;" />
@@ -209,30 +251,19 @@
                                 <p:calendar id="dealStartDate" mindate="#{productFlashDiscountManagedBean.dateToday}" value="#{productFlashDiscountManagedBean.discountedProduct.dealStartTime}" pattern="dd/MM/yyyy HH:mm"/>
                             </p:column>
                         </p:row>
-
                         <p:row>
                             <p:column>
                                 <p:outputLabel for="dealEndDate" value="End Date/Time" style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:calendar id="planEndDate" mindate="#{productFlashDiscountManagedBean.dateToday}" value="#{productFlashDiscountManagedBean.discountedProduct.dealEndTime}" pattern="dd/MM/yyyy HH:mm"/>
+                                <p:calendar id="dealEndDate" mindate="#{productFlashDiscountManagedBean.dateToday}" value="#{productFlashDiscountManagedBean.discountedProduct.dealEndTime}" pattern="dd/MM/yyyy HH:mm"/>
                             </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <p:outputLabel for="discountPrice" value="Discount Price " style="font-weight: bold;" />
-                            </p:column>
-                            <p:column>                            
-                                <p:spinner id="discountPrice" value="#{productFlashDiscountManagedBean.discountedProduct.discountPrice}" placeholder="20.00" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Discount Price is required" />
-                            </p:column>
-                        </p:row>
-
+                        </p:row>     
                     </p:panelGrid>
 
                     <div style="text-align: center; margin-top: 20px">
                         <p:commandButton type="reset" value="Clear" />&nbsp;
-                        <p:commandButton value="Create New Product Flash Deal" update="@form tabView:formAllDiscountedProducts:dataTableAllDiscountedProducts" actionListener="#{productFlashDiscountManagedBean.createNewProductFlashDeal}" oncomplete="PF('dialogCreateNewProductDiscount').show();" />
+                        <p:commandButton value="Create New Product flash deal" update="@form tabView:formAllDiscountedProducts:dataTableAllDiscountedProducts" actionListener="#{productFlashDiscountManagedBean.createNewProductFlashDeal}" oncomplete="PF('dialogCreateForm').hide();" />
                     </div>
 
                 </h:form>
@@ -286,7 +317,7 @@
                                     <h:outputLabel value="Category: " />
                                 </p:column>
                                 <p:column>
-                                    <h:outputText value="#{viewProductManagedBean.productToView.category.name}" />
+                                    <h:outputText value="#{productFlashDiscountManagedBean.discountedProductToView.category.name}" />
                                 </p:column>
                             </p:row>
 
@@ -295,7 +326,7 @@
                                     <h:outputLabel value="Tag(s): " />
                                 </p:column>
                                 <p:column>
-                                    <p:dataList value="#{viewProductManagedBean.productToView.tags}" var="tag" type="unordered">
+                                    <p:dataList value="#{productFlashDiscountManagedBean.discountedProductToView.tags}" var="tag" type="unordered">
                                         #{tag.name}
                                     </p:dataList>
                                 </p:column>
@@ -356,13 +387,12 @@
                 <h:form id="formUpdateDiscountedProduct">
                     <p:panelGrid>
                         <p:outputPanel>
-                            <p:graphicImage width="100%" value="#{productToView.productImagePath}"/>
                             <p:row>
                                 <p:column>
                                     <h:outputLabel value="Product ID: " />
                                 </p:column>
                                 <p:column>
-                                    <h:outputText value="#{productFlashDiscountManagedBean.discountedProductToView.productId}" />
+                                    <h:outputText value="#{productFlashDiscountManagedBean.discountedProductToUpdate.productId}" />
                                 </p:column>
                             </p:row>
 
@@ -371,7 +401,7 @@
                                     <h:outputLabel value="SKU Code: " />
                                 </p:column>
                                 <p:column>
-                                    <h:outputText value="#{productFlashDiscountManagedBean.discountedProductToView.skuCode}" />
+                                    <h:outputText value="#{productFlashDiscountManagedBean.discountedProductToUpdate.skuCode}" />
                                 </p:column>
                             </p:row>
 
@@ -380,7 +410,7 @@
                                     <h:outputLabel value="Name: " />
                                 </p:column>
                                 <p:column>
-                                    <h:outputText value="#{productFlashDiscountManagedBean.discountedProductToView.name}" />
+                                    <h:outputText value="#{productFlashDiscountManagedBean.discountedProductToUpdate.name}" />
                                 </p:column>
                             </p:row>
 
@@ -389,7 +419,7 @@
                                     <h:outputLabel value="Unit Price: " />
                                 </p:column>
                                 <p:column>
-                                    <h:outputText value="#{productFlashDiscountManagedBean.discountedProductToView.price}">
+                                    <h:outputText value="#{productFlashDiscountManagedBean.discountedProductToUpdate.price}">
                                         <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
                                     </h:outputText>
                                 </p:column>
@@ -422,7 +452,7 @@
                         </p:outputPanel>
                     </p:panelGrid>
                     <div style="text-align: center; margin-top: 20px">
-                        <p:commandButton value="Update discounted product" update="@form tabView:formAllDiscountedProducts:dataTableAllDiscountedProducts" actionListener="#{productFlashDiscountManagedBean.updateDiscountedProduct}" oncomplete="PF('dialogUpdateDiscountedProduct').show();" />
+                        <p:commandButton value="Update discounted product" update="@form tabView:formAllDiscountedProducts:dataTableAllDiscountedProducts" actionListener="#{productFlashDiscountManagedBean.updateDiscountedProduct}" oncomplete="PF('dialogUpdateDiscountedProduct').hide();" />
                     </div>
                 </h:form>
             </p:dialog>

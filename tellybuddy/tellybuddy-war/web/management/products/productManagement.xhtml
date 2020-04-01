@@ -76,7 +76,7 @@
                                     <f:attribute name="productToUpdate" value="#{product}" />
                                 </p:commandLink>&nbsp;
 
-                                <p:commandLink actionListener="#{productManagementManagedBean.deleteProduct}" update="@form formAllProducts:dataGridAllProducts">
+                                <p:commandLink actionListener="#{productManagementManagedBean.deleteProduct}" update="@form formAllProducts:dataGridAllProducts formAllProducts:messages">
                                     <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
                                     <f:attribute name="productToDelete" value="#{product}" />
                                     <p:confirm header="Confirmation" message="Are you sure you want to delete #{product.name} (SKU Code: #{product.skuCode})?" icon="ui-icon-alert" />
@@ -94,7 +94,12 @@
 
             <ez:ViewProduct id="ccViewProduct" />
 
-            <p:dialog id="dialogCreateNewProduct" widgetVar="dialogCreateNewProduct" header="Create New Product" closable="true" resizable="true">
+
+
+
+
+            <p:dialog id="dialogCreateNewProduct" widgetVar="dialogCreateNewProduct" header="Create New Product" closable="true" resizable="true" width="450" height="400">
+
                 <h:form id="formCreateNewProduct"  enctype="multipart/form-data">
 
                     <p:messages id="messagesCreateNewProduct" redisplay="false" />
@@ -117,7 +122,7 @@
                                 <p:outputLabel for="skuCode" value="SKU Code: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="skuCode" value="#{productManagementManagedBean.newProduct.skuCode}" placeholder="PROD999" required="true" requiredMessage="SKU Code is required" />
+                                <p:inputText id="skuCode" value="#{productManagementManagedBean.newProduct.skuCode}" placeholder="SKU999" required="true" requiredMessage="SKU Code is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="skuCode" />
@@ -141,7 +146,7 @@
                                 <p:outputLabel for="description" value="Description " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="description" value="#{productManagementManagedBean.newProduct.description}" placeholder="Product 1" required="true" requiredMessage="Description is required" />
+                                <p:inputTextarea id="description" value="#{productManagementManagedBean.newProduct.description}" placeholder="Product 1" required="true" requiredMessage="Description is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="description" />
@@ -216,14 +221,12 @@
                         <p:row>
                             <p:column colspan="3">
                                 <p:commandButton type="reset" value="Clear" />&nbsp;
-                                <p:commandButton  value="Create New Product" process="@form" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').hide();" />
+                                <p:commandButton  value="Create" process="@form" update="@form formAllProducts:dataGridAllProducts" actionListener="#{productManagementManagedBean.createNewProduct}" oncomplete="PF('dialogCreateNewProduct').hide();" />
                             </p:column>
                         </p:row>
 
-
-
-                        <p:row  >
-                            <p:fileUpload skinSimple="true" fileUploadListener="#{productManagementManagedBean.upload}" previewWidth="150" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg" required="true" requiredMessage="Product Image is required!"/>
+                        <p:row>
+                            <p:fileUpload multiple="false" skinSimple="true" fileUploadListener="#{productManagementManagedBean.upload}" previewWidth="100" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg" required="true" requiredMessage="Product Image is required!"/>
                         </p:row>
                     </p:panelGrid> 
 
@@ -233,7 +236,7 @@
 
             <h:form id="formUpdateProduct">
 
-                <p:dialog id="dialogUpdateProduct" widgetVar="dialogUpdateProduct" header="Update Product" closable="true" resizable="true">
+                <p:dialog id="dialogUpdateProduct" widgetVar="dialogUpdateProduct" header="Update Product" closable="true" resizable="true" width="450" height="400">
 
                     <p:messages id="messagesUpdateProduct" redisplay="false" />
 
@@ -280,7 +283,7 @@
                                 <p:outputLabel for="description" value="Description " />
                             </p:column>
                             <p:column>
-                                <p:inputText id="description" value="#{productManagementManagedBean.selectedProductToUpdate.description}" placeholder="Product 1" required="true" requiredMessage="Description is required" />
+                                <p:inputTextarea id="description" value="#{productManagementManagedBean.selectedProductToUpdate.description}" placeholder="Product 1" required="true" requiredMessage="Description is required" />
                             </p:column>
                             <p:column>
                                 <p:message for="description" />
@@ -353,10 +356,11 @@
                         </p:row>
 
                         <p:row style="text-align:center">
-                            <p:column colspan="3">
-                                <!-- INCOMPLETE -->
+                            <p:fileUpload multiple="false" skinSimple="true" fileUploadListener="#{productManagementManagedBean.handleFileUpload}" previewWidth="150" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg" required="true" requiredMessage="Product Image is required!"/>
+<!--                            <p:column colspan="3">
+                                 INCOMPLETE 
                                 <p:commandButton value="Replace Current Image" icon="fa fa-image" />
-                            </p:column>
+                            </p:column>-->
                         </p:row>
 
                         <p:row>

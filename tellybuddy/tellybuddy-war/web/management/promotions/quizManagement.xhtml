@@ -405,7 +405,7 @@
 
                     <p:tabView id="updateTabView" activeIndex="#{quizManagementManagedBean.currentTabIndex}">
 
-                        <p:ajax update="formUpdateQuiz" event="tabChange" listener="#{quizManagementManagedBean.onTabChange}"/>
+                        <p:ajax update="formUpdateQuiz:buttonActions" event="tabChange" listener="#{quizManagementManagedBean.onTabChange}"/>
 
                         <p:tab title="Details">
 
@@ -500,12 +500,12 @@
                         </p:tab>
 
                     </p:tabView>
-
-                    <div style="text-align: center; margin-bottom: 20px;">
+                    
+                    <h:panelGroup id="buttonActions" layout="block" style="text-align: center; margin-bottom: 20px;">
                         <p:commandButton rendered="#{quizManagementManagedBean.currentTabIndex == 1}" style="margin-bottom: 20px;" icon="fa fa-plus" value="Add New Question" process="@this" oncomplete="PF('dialogAddNewQuestion').show(); PF('dialogUpdateQuiz').hide()" />
                         <br />
                         <p:commandButton value="Update Quiz" update="formAllQuizzes:dataTableAllQuizzes" actionListener="#{quizManagementManagedBean.updateQuiz}" />
-                    </div>
+                    </h:panelGroup>
 
                 </h:form>
 

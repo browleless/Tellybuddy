@@ -1,5 +1,6 @@
 package entity;
 
+import com.sun.istack.Nullable;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class Product implements Serializable {
     @Future
     private Date dealEndTime;
 
-    @Column(nullable = false, precision = 6, scale = 2)
+    @Column(nullable = true, precision = 6, scale = 2)
     @Digits(integer = 4, fraction = 2)
     @DecimalMin("0.00")
     protected BigDecimal discountPrice;

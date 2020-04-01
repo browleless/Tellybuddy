@@ -15,6 +15,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -28,41 +30,47 @@ public class Bill implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long billId;
-    
+
     @Column(nullable = false, precision = 7, scale = 2)
     @NotNull
     @Digits(integer = 5, fraction = 2)
     @DecimalMin("0.00")
     private BigDecimal price;
-    
+
+    @Column(nullable = false, precision = 5, scale = 2)
+    @NotNull
+    @Min(0)
+    @Max(25)
+    private Integer familyDiscountRate;
+
     @Column(nullable = false, precision = 5, scale = 2)
     @NotNull
     @Digits(integer = 3, fraction = 2)
     @DecimalMin("0.00")
     private BigDecimal addOnPrice;
-    
+
     @Column(nullable = false, precision = 5, scale = 2)
     @NotNull
     @Digits(integer = 3, fraction = 2)
     @DecimalMin("0.00")
     private BigDecimal exceedPenaltyPrice;
-    
+
     @Column(nullable = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
-    
+
     @Column(nullable = false)
     @NotNull
     private Boolean paid;
-    
+
     @OneToOne
     private Payment payment;
-    
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Customer customer;
-    
+
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
     private UsageDetail usageDetail;
@@ -71,12 +79,13 @@ public class Bill implements Serializable {
         this.paid = false;
     }
 
-    public Bill(BigDecimal price, Date date, BigDecimal addOnPrice, BigDecimal exceedPenaltyPrice) {
+    public Bill(BigDecimal price, Date date, BigDecimal addOnPrice, BigDecimal exceedPenaltyPrice, Integer familyDiscountRate) {
         this();
         this.price = price;
         this.date = date;
         this.addOnPrice = addOnPrice;
         this.exceedPenaltyPrice = exceedPenaltyPrice;
+        this.familyDiscountRate = familyDiscountRate;
     }
 
     public Long getBillId() {
@@ -175,5 +184,12 @@ public class Bill implements Serializable {
     public void setExceedPenaltyPrice(BigDecimal exceedPenaltyPrice) {
         this.exceedPenaltyPrice = exceedPenaltyPrice;
     }
-    
+
+    public Integer getFamilyDiscountRate() {
+        return familyDiscountRate;
+    }
+
+    public void setFamilyDiscountRate(Integer familyDiscountRate) {
+        this.familyDiscountRate = familyDiscountRate;
+    }
 }

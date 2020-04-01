@@ -11,15 +11,12 @@ import entity.PhoneNumber;
 import entity.Plan;
 import entity.Subscription;
 import entity.UsageDetail;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -147,7 +144,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
     public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException {
 
-        Subscription subscriptionToApprove = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+        Subscription subscriptionToApprove = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
         subscriptionToApprove.setIsActive(Boolean.TRUE);
 
         subscriptionToApprove.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
@@ -170,7 +167,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         Subscription subscription = (Subscription) timer.getInfo();
 
         try {
-            Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+            Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
 
             BigDecimal addOnPrice = BigDecimal.ZERO;
             int totalAddOnUnits = subscriptionToUpdate.getDataUnits().get("addOn") + subscriptionToUpdate.getSmsUnits().get("addOn") + subscriptionToUpdate.getTalkTimeUnits().get("addOn");
@@ -179,9 +176,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 addOnPrice = subscriptionToUpdate.getPlan().getAddOnPrice().multiply(BigDecimal.valueOf(totalAddOnUnits));
             }
 
-            Integer subscriptionTotalAllowedData = (subscriptionToUpdate.getAllocatedData() + subscriptionToUpdate.getDataUnits().get("addOn") + subscriptionToUpdate.getDataUnits().get("familyGroup")) * subscriptionToUpdate.getPlan().getDataConversionRate();
-            Integer subscriptionTotalAllowedSms = (subscriptionToUpdate.getAllocatedSms() + subscriptionToUpdate.getSmsUnits().get("addOn") + subscriptionToUpdate.getSmsUnits().get("familyGroup")) * subscriptionToUpdate.getPlan().getSmsConversionRate();
-            Integer subscriptionTotalAllowedTalktime = (subscriptionToUpdate.getAllocatedTalkTime() + subscriptionToUpdate.getTalkTimeUnits().get("addOn") + subscriptionToUpdate.getTalkTimeUnits().get("familyGroup")) * subscriptionToUpdate.getPlan().getTalktimeConversionRate();
+            Integer subscriptionTotalAllowedData = (subscriptionToUpdate.getAllocatedData() + subscriptionToUpdate.getDataUnits().get("addOn") + subscriptionToUpdate.getDataUnits().get("familyGroup") + subscriptionToUpdate.getDataUnits().get("quizExtraUnits") - subscriptionToUpdate.getDataUnits().get("donated")) * subscriptionToUpdate.getPlan().getDataConversionRate();
+            Integer subscriptionTotalAllowedSms = (subscriptionToUpdate.getAllocatedSms() + subscriptionToUpdate.getSmsUnits().get("addOn") + subscriptionToUpdate.getSmsUnits().get("familyGroup") + subscriptionToUpdate.getSmsUnits().get("quizExtraUnits") - subscriptionToUpdate.getSmsUnits().get("donated")) * subscriptionToUpdate.getPlan().getSmsConversionRate();
+            Integer subscriptionTotalAllowedTalktime = (subscriptionToUpdate.getAllocatedTalkTime() + subscriptionToUpdate.getTalkTimeUnits().get("addOn") + subscriptionToUpdate.getTalkTimeUnits().get("familyGroup") + subscriptionToUpdate.getTalkTimeUnits().get("quizExtraUnits") - subscriptionToUpdate.getTalkTimeUnits().get("donated")) * subscriptionToUpdate.getPlan().getTalktimeConversionRate();
 
             // latest usage detail for the month
             UsageDetail currentUsageDetail = subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() - 1);
@@ -203,9 +200,16 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getTalktimeUsage() - subscriptionTotalAllowedTalktime) * 0.10));
             }
 
-            Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice);
+            Integer familyGroupDiscountRate = 0;
+
+            if (subscriptionToUpdate.getCustomer().getFamilyGroup() != null) {
+                // family group discount rate applied
+                familyGroupDiscountRate = subscriptionToUpdate.getCustomer().getFamilyGroup().getDiscountRate();
+            }
+
+            Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice, familyGroupDiscountRate);
             bill = billSessionBeanLocal.createNewBill(bill, currentUsageDetail, subscriptionToUpdate.getCustomer());
-            
+
             // send email asynchronously
             // currently send to ownself for debugging, ot replace with actual customer email
             emailSessionBeanLocal.emailBillNotificationAsync(bill, subscriptionTotalAllowedData, subscriptionTotalAllowedSms, subscriptionTotalAllowedTalktime, "Tellybuddy<tellybuddy3106@gmail.com>", "tellybuddy3106@gmail.com");
@@ -216,23 +220,10 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 amendAllocationOfUniis(subscriptionToUpdate);
             }
 
-            // reset donated to allocated
-            if (subscriptionToUpdate.getDataUnits().get("donated") != 0) {
-                subscriptionToUpdate.getDataUnits().put("allocated", subscriptionToUpdate.getDataUnits().get("allocated") + subscriptionToUpdate.getDataUnits().get("donated"));
-                subscriptionToUpdate.getDataUnits().put("donated", 0);
-            }
-
-            // reset donated to allocated
-            if (subscriptionToUpdate.getSmsUnits().get("donated") != 0) {
-                subscriptionToUpdate.getSmsUnits().put("allocated", subscriptionToUpdate.getSmsUnits().get("allocated") + subscriptionToUpdate.getSmsUnits().get("donated"));
-                subscriptionToUpdate.getSmsUnits().put("donated", 0);
-            }
-
-            // reset donated to allocated
-            if (subscriptionToUpdate.getTalkTimeUnits().get("donated") != 0) {
-                subscriptionToUpdate.getTalkTimeUnits().put("allocated", subscriptionToUpdate.getTalkTimeUnits().get("allocated") + subscriptionToUpdate.getTalkTimeUnits().get("donated"));
-                subscriptionToUpdate.getTalkTimeUnits().put("donated", 0);
-            }
+            // reset donated units
+            subscriptionToUpdate.getDataUnits().put("donated", 0);
+            subscriptionToUpdate.getSmsUnits().put("donated", 0);
+            subscriptionToUpdate.getTalkTimeUnits().put("donated", 0);
 
             //reset purchased add on units
             subscriptionToUpdate.getDataUnits().put("addOn", 0);
@@ -265,7 +256,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         Set<ConstraintViolation<Subscription>> constraintViolations = validator.validate(subscription);
 
         if (constraintViolations.isEmpty()) {
-            Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+            Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
             subscriptionToUpdate.setCustomer(subscription.getCustomer());
             subscriptionToUpdate.setPlan(subscription.getPlan());
             subscriptionToUpdate.setPhoneNumber(subscription.getPhoneNumber());
@@ -288,7 +279,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     //to be done at the start of every month; before this just updateSubscription only
     @Override
     public Subscription amendAllocationOfUniis(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException {
-        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubcscriptionId());
+        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
 
         HashMap<String, Integer> smsUnits = subscriptionToAmend.getSmsUnits();
         HashMap<String, Integer> talkTimeUnits = subscriptionToAmend.getTalkTimeUnits();
@@ -305,6 +296,26 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
         updateSubscription(subscriptionToAmend);
         return subscriptionToAmend;
+    }
+
+    @Override
+    public Subscription allocateUnitsForNextMonth(Subscription subscription, Integer dataUnits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException {
+
+        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
+
+        subscriptionToAmend.getDataUnits().put("nextMonth", dataUnits);
+        subscriptionToAmend.getSmsUnits().put("nextMonth", smsUnits);
+        subscriptionToAmend.getTalkTimeUnits().put("nextMonth", talktimeUnits);
+
+        return subscriptionToAmend;
+    }
+
+    @Override
+    public void requestToTerminateSubscription(Subscription subscription) throws SubscriptionNotFoundException {
+
+        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
+
+        subscriptionToAmend.setSubscriptionStatusEnum(SubscriptionStatusEnum.TERMINATING);
     }
 
     @Override

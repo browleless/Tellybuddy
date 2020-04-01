@@ -31,7 +31,7 @@ public class UsageDetailSessionBean implements UsageDetailSessionBeanLocal {
         futureDate.setMonth((new Date().getMonth() + 1) % 12);
         
         UsageDetail newUsageDetail = new UsageDetail(currentDate, futureDate);
-        Subscription subscriptionToAssociateWith = subscriptionSessonBeanLocal.retrieveSubscriptionBySubscriptionId(subcription.getSubcscriptionId());
+        Subscription subscriptionToAssociateWith = subscriptionSessonBeanLocal.retrieveSubscriptionBySubscriptionId(subcription.getSubscriptionId());
 
         newUsageDetail.setSubscription(subscriptionToAssociateWith);
         entityManager.persist(newUsageDetail);
