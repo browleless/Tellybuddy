@@ -7,7 +7,13 @@ package jsf.managedbean;
 
 import ejb.session.stateless.EmployeeSessionBeanLocal;
 import entity.Employee;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +25,9 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
+import org.primefaces.shaded.commons.io.FilenameUtils;
 import util.exception.EmployeeNotFoundException;
 
 /**
@@ -27,7 +36,7 @@ import util.exception.EmployeeNotFoundException;
  */
 @Named(value = "updateEmployeeManagedBean")
 @ViewScoped
-public class updateEmployeeManagedBean implements Serializable{
+public class updateEmployeeManagedBean implements Serializable {
 
     @EJB(name = "EmployeeSessionBeanLocal")
     private EmployeeSessionBeanLocal employeeSessionBeanLocal;
@@ -35,6 +44,7 @@ public class updateEmployeeManagedBean implements Serializable{
     private Employee currentEmployee;
     private Employee employeeToUpdate;
     private String updatedPassword;
+    private UploadedFile employeeProfileImageFile;
 
     public String getUpdatedPassword() {
         return updatedPassword;
@@ -59,13 +69,51 @@ public class updateEmployeeManagedBean implements Serializable{
 
         try {
             employeeToUpdate.setUpdatedPassword(updatedPassword);
-            employeeSessionBeanLocal.updateEmployee(getEmployeeToUpdate());
+            if (employeeProfileImageFile != null) {
+                String filePath = this.saveUploadedImage();
+                employeeToUpdate.setPhotoPath(filePath);
+                System.out.println("HI THEREEEEEE_------------------------------");
+            }
+            
             setCurrentEmployee(employeeToUpdate);
+            employeeSessionBeanLocal.updateEmployee(getEmployeeToUpdate());
             setEmployeeToUpdate(new Employee());
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Employee updated successfully", null));
         } catch (EmployeeNotFoundException ex) {
             Logger.getLogger(updateEmployeeManagedBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+    }
+
+    public void upload(FileUploadEvent event) {
+        this.employeeProfileImageFile = event.getFile();
+        if (employeeProfileImageFile != null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + employeeProfileImageFile.getFileName(), null));
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "File upload unsuccessful. Please try again!", null));
+        }
+    }
+
+    public String saveUploadedImage() {
+
+        String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\account\\employeeProfilePicture";
+        Path folder = Paths.get(absolutePathToProductImages);
+        System.out.println(absolutePathToProductImages);
+
+        try {
+            String filename = FilenameUtils.getBaseName(employeeProfileImageFile.getFileName());
+            String extension = FilenameUtils.getExtension(employeeProfileImageFile.getFileName());
+            Path file = Files.createTempFile(folder, filename + "-", "." + extension);
+            InputStream input = employeeProfileImageFile.getInputstream();
+
+            Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println(file.toString());
+            return file.getFileName().toString();
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
 
     }
 
@@ -84,22 +132,20 @@ public class updateEmployeeManagedBean implements Serializable{
     public void setEmployeeToUpdate(Employee employeeToUpdate) {
         this.employeeToUpdate = employeeToUpdate;
     }
-    
 
-//    public void upload() {
-//        if (file != null) {
-//            FacesMessage message = new FacesMessage("Successful", file.getFileName() + " is uploaded.");
-//            FacesContext.getCurrentInstance().addMessage(null, message);
-//        }
-//    }
-//
-//    public void handleFileUpload(FileUploadEvent event) {
-//        FacesMessage msg = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded.");
-//        try {
-//            event.getFile().getInputstream();
-//        } catch (IOException ex) {
-//            Logger.getLogger(updateEmployeeManagedBean.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        FacesContext.getCurrentInstance().addMessage(null, msg);
-//    }
+    public EmployeeSessionBeanLocal getEmployeeSessionBeanLocal() {
+        return employeeSessionBeanLocal;
+    }
+
+    public void setEmployeeSessionBeanLocal(EmployeeSessionBeanLocal employeeSessionBeanLocal) {
+        this.employeeSessionBeanLocal = employeeSessionBeanLocal;
+    }
+
+    public UploadedFile getEmployeeProfileImageFile() {
+        return employeeProfileImageFile;
+    }
+
+    public void setEmployeeProfileImageFile(UploadedFile employeeProfileImageFile) {
+        this.employeeProfileImageFile = employeeProfileImageFile;
+    }
 }

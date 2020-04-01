@@ -132,6 +132,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
                 employeeToUpdate.setAccessRightEnum(employee.getAccessRightEnum());
                 employeeToUpdate.setFirstName(employee.getFirstName());
                 employeeToUpdate.setLastName(employee.getLastName());
+                employeeToUpdate.setPhotoPath(employee.getPhotoPath());
                 employeeToUpdate.setUpdatedPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(employee.getPassword() + employeeToUpdate.getSalt())));
                 entityManager.flush();
 

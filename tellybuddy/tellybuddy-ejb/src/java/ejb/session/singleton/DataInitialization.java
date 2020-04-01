@@ -182,6 +182,8 @@ public class DataInitialization {
             Customer customer3 = em.find(Customer.class, 3l);
             Customer customer4 = em.find(Customer.class, 4l);
             Customer customer5 = em.find(Customer.class, 5l);
+            Customer customer6 = em.find(Customer.class, 6l);
+            
             FamilyGroup fg1 = new FamilyGroup("IS3106 Warriors");
             fg1.getCustomers().add(customer1);
             fg1.getCustomers().add(customer2);
@@ -193,6 +195,7 @@ public class DataInitialization {
             fg2.getCustomers().add(customer3);
             fg2.getCustomers().add(customer4);
             fg2.getCustomers().add(customer5);
+            fg2.getCustomers().add(customer6);
             customer3.setFamilyGroup(fg2);
             customer4.setFamilyGroup(fg2);
             customer5.setFamilyGroup(fg2);
@@ -242,8 +245,12 @@ public class DataInitialization {
         customer = new Customer("customer4", "password4", "Kai Xin", "Zhu", Integer.valueOf(20), "This is my address", "117417", "kathareverusa@gmail.com", "S9641179A", null, timeNow.getTime(), "kx.jpg");
         em.persist(customer);
         em.flush();
+        
         timeNow.add(Calendar.MONTH, 1);
         customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk@gmail.com", "S4041179A", null, timeNow.getTime(), "tanwk.jpg");
+        em.persist(customer);
+        em.flush();
+        customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "This is my address", "117417", "ethank@gmail.com", "S4041889A", null, timeNow.getTime(), "ethan.jpg");
         em.persist(customer);
         em.flush();
 

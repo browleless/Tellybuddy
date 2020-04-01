@@ -255,8 +255,7 @@ public class ProductManagementManagedBean implements Serializable {
     public void upload(FileUploadEvent event) {
         this.productImageFile = event.getFile();
         if (productImageFile != null) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + productImageFile.getFileName(), null);
-            FacesContext.getCurrentInstance().addMessage(null, message);
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + productImageFile.getFileName(), null));
 //            System.out.println(filePath);
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "File upload unsuccessful. Please try again!", null));
@@ -265,14 +264,7 @@ public class ProductManagementManagedBean implements Serializable {
     }
 
     public String saveUploadedProductImage() {
-        {
 
-            InputStream inputStr = null;
-            try {
-                inputStr = productImageFile.getInputstream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\products\\productImages";
             Path folder = Paths.get(absolutePathToProductImages);
             System.out.println(absolutePathToProductImages);
@@ -295,7 +287,6 @@ public class ProductManagementManagedBean implements Serializable {
             return null;
 
 //            System.out.println("Uploaded file successfully saved in " + file);
-        }
     }
 
     public List<Product> getAllProducts() {
