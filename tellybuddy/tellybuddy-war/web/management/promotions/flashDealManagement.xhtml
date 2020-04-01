@@ -270,12 +270,15 @@
 
             </p:dialog>
 
+            
             <p:dialog id="dialogViewDiscountedProduct" widgetVar="dialogViewDiscountedProduct" header="View products on flash deal" closable="true">
                 <h:form id="formViewDiscountedProduct">
 
                     <p:panelGrid>
                         <p:outputPanel>
-                            <p:graphicImage width="100%" value="#{productToView.productImagePath}"/>
+                            <div style="text-align:center;" width="200px" >
+                                <p:graphicImage style="text-align:centre;" width="200px" value="../products/productImages/#{productFlashDiscountManagedBean.discountedProductToView.productImagePath}"/> 
+                            </div>
                             <p:row>
                                 <p:column>
                                     <h:outputLabel value="Product ID: " />

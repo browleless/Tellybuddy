@@ -118,7 +118,9 @@
                             </p:column>
                         </p:row>
 
-
+                      <p:row  >
+                          <p:fileUpload skinSimple="true" fileUploadListener="#{employeeManagedBean.upload}" previewWidth="150" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg" required="true" requiredMessage="Employee Profile Image is required!"/>
+                        </p:row>
                     </p:panelGrid>
 
                     <div style="text-align: center; margin-top: 20px">

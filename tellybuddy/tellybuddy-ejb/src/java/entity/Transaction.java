@@ -35,7 +35,7 @@ public class Transaction implements Serializable {
     @Column(nullable = false, precision = 7, scale = 2)
     @NotNull
     @Digits(integer = 5, fraction = 2)
-    @DecimalMin("0.00")
+//    @DecimalMin("0.00")
     private BigDecimal totalPrice;
     
     @Column(nullable = false)
@@ -68,6 +68,7 @@ public class Transaction implements Serializable {
         this();
         this.totalPrice = totalPrice;
         this.transactionDateTime = transactionDateTime;
+        this.voidRefund = false;
     }
 
     public Long getTransactionId() {

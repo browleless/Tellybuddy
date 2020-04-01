@@ -88,8 +88,10 @@
                                 <p:password id="pwd2" value="#{updateEmployeeManagedBean.updatedPassword}" label="Password 2" required="true" />
                             </p:column>
                         </p:row>
-
                     </p:panelGrid>
+                        <p:row  >
+                            <p:fileUpload skinSimple="true" fileUploadListener="#{updateEmployeeManagedBean.upload}" previewWidth="150" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg"/>
+                        </p:row>
 
                     <div style="text-align: center; margin-top: 20px">
                         <p:commandButton value="Save" update="@form formViewAccountDetails "  actionListener="#{updateEmployeeManagedBean.updateEmployee}" oncomplete="PF('dialogUpdateEmployee').show();" />

@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -76,6 +77,12 @@ public class SubscriptionManagementManagedBean implements Serializable {
         } catch (SubscriptionNotFoundException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while approving subscription: " + ex.getMessage(), null));
         }
+        doFilter();
+    }
+
+    public void terminateSubscriptionRequest(ActionEvent ae) {
+        subscriptionSessonBeanLocal.terminateSubscription(subscriptionToView.getCustomer().getCustomerId(), subscriptionToView.getSubcscriptionId());
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Subscription termination successful", null));
         doFilter();
     }
 

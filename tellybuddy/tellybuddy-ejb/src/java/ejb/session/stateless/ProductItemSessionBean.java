@@ -79,6 +79,7 @@ public class ProductItemSessionBean implements ProductItemSessionBeanLocal {
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
+        return null;
     }
 
     @Override
@@ -108,7 +109,7 @@ public class ProductItemSessionBean implements ProductItemSessionBeanLocal {
     public String retrieveLatestSerialNum() {
         Query q = em.createQuery("SELECT p FROM ProductItem p ORDER BY p.serialNumber desc");
 
-        ProductItem pi = (ProductItem) q.getSingleResult();
+        ProductItem pi = (ProductItem) q.getResultList().get(0);
 
         if (pi == null) {
             return "0000000000";

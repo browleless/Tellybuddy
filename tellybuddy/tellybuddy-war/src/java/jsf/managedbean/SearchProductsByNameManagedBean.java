@@ -38,6 +38,10 @@ public class SearchProductsByNameManagedBean implements Serializable {
 
     @PostConstruct
     public void postConstruct() {
+        loadProducts();
+    }
+
+    public void loadProducts() {
         searchString = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("productSearchString");
 
         if (searchString == null || searchString.trim().length() == 0) {

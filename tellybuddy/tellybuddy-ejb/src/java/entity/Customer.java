@@ -6,6 +6,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +66,9 @@ public class Customer implements Serializable {
 
     @Column(nullable = false)
     @NotNull
+    private Date joinDate;
+    @Column(nullable = false)
+    @NotNull
     @Positive
     @Min(16)
     @Max(99)
@@ -98,10 +103,15 @@ public class Customer implements Serializable {
     private String newNric;
 
     @Column(nullable = true, unique = true)
+//    @Column(nullable = true)
     private String nricImagePath;
 
     @Column(nullable = true, unique = true)
+//    @Column(nullable = true)
     private String newNricImagePath;
+    
+    @Column(nullable = true, unique = true)
+    private String profilePhoto;
 
     @Column(nullable = false, unique = true, length = 64)
     @NotNull
@@ -185,7 +195,7 @@ public class Customer implements Serializable {
         this.isApproved = false;
     }
 
-    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String email, String newNric, String newNricImagePath) {
+    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String email, String newNric, String newNricImagePath, Date joinDate, String profilePhoto) {
         this();
         this.username = username;
         this.firstName = firstName;
@@ -197,6 +207,8 @@ public class Customer implements Serializable {
         this.newNric = newNric;
         this.newNricImagePath = newNricImagePath;
         this.customerStatusEnum = CustomerStatusEnum.PENDING;
+        this.joinDate = joinDate;
+        this.profilePhoto = profilePhoto;
         setPassword(password);
     }
 
@@ -469,4 +481,24 @@ public class Customer implements Serializable {
         this.customerStatusEnum = customerStatusEnum;
     }
 
+    public Date getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(Date joinDate) {
+        this.joinDate = joinDate;
+    }
+    public String getFormattedJoinDate(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd | hh:mm:ss");
+        return dateFormat.format(this.joinDate);
+        
+    }
+
+    public String getProfilePhoto() {
+        return profilePhoto;
+    }
+
+    public void setProfilePhoto(String profilePhoto) {
+        this.profilePhoto = profilePhoto;
+    }
 }

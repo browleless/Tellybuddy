@@ -46,6 +46,10 @@ public interface CustomerSessionBeanLocal {
 
     public void updateCustomerConsecutiveMonths();
 
+    public int retrieveNoActiveSubscriptions(Customer customer);
+
+    public List<Customer> retrieveAllPendingCustomers();
+
     //   public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription);
     public void terminateCustomerSubscriptionToAPlan(Long customerId) throws CustomerNotFoundException;
 

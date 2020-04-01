@@ -6,6 +6,8 @@
 package ejb.session.stateless;
 
 import entity.Announcement;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -67,6 +69,21 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
     }
 
     @Override
+    public List<Announcement> retrieveAllActiveAnnoucementsForEmployees() {
+        Date current = new Date();
+
+        Query q = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate >= :inCurrent AND a.announcementRecipientEnum = :inRecipient");
+        q.setParameter("inCurrent", current);
+        q.setParameter("inRecipient", AnnouncementRecipientEnum.EMPLOYEES);
+        List<Announcement> activeAnnouncements = q.getResultList();
+        Collections.sort(activeAnnouncements, new Comparator<Announcement>() {
+            //Sort to return latest first
+            public int compare(Announcement o1, Announcement o2) {
+                return o2.getPostedDate().compareTo(o1.getPostedDate());
+            }
+        });
+        return activeAnnouncements;
+    }
     public List<Announcement> retrieveAllActiveAnnouncementsForCustomers() {
 
         Query query = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate > CURRENT_TIMESTAMP AND a.announcementRecipientEnum = :inAnnouncementRecipientEnum");

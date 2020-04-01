@@ -23,6 +23,20 @@
             .ui-dialog .ui-dialog-title {
                 color: white;
             }
+            
+            .white-button.ui-button.ui-state-default {
+                background-color: #f1f2f5;
+                color: #222222;
+                border-color: #d6d6d6;
+            }
+
+            .white-button.ui-button.ui-state-default:enabled:hover, 
+            
+            .white-button.ui-button.ui-state-default:focus {
+                background-color: #d5d5d5;
+                border-color: #ccc;
+                color: #373a3c;
+            }
         </style>
 
         <div>
@@ -32,14 +46,14 @@
             <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Product" oncomplete="PF('dialogCreateNewProduct').show()" />
 
             <h:form id="searchForm">
-
-                <p:inputText id="txtSearchString" value="#{searchProductsByNameManagedBean.searchString}" placeholder="Search Product By Name">
-                    <p:ajax event="keyup" process="@this txtSearchString" update="formAllProducts:dataGridAllProducts" listener="#{searchProductsByNameManagedBean.searchProduct}" />
-                </p:inputText>
-                &nbsp;
-                <p:commandButton value="Search">
-                    <p:ajax event="click" process="@this searchForm:txtSearchString" update="formAllProducts:dataGridAllProducts" listener="#{searchProductsByNameManagedBean.searchProduct}" />
-                </p:commandButton>
+                <div class="ui-inputgroup">
+                    <p:inputText size="21" id="txtSearchString" value="#{searchProductsByNameManagedBean.searchString}" placeholder="Search Product By Name">
+                        <p:ajax event="keyup" process="@this txtSearchString" update="formAllProducts:dataGridAllProducts" listener="#{searchProductsByNameManagedBean.searchProduct}" />
+                    </p:inputText>
+                    <p:commandButton icon="pi pi-search"  styleClass="white-button">
+                        <p:ajax event="click" process="@this searchForm:txtSearchString" update="formAllProducts:dataGridAllProducts" listener="#{searchProductsByNameManagedBean.searchProduct}" />
+                    </p:commandButton>
+                </div>
             </h:form>
             <br />
 
@@ -48,7 +62,7 @@
 
                 <p:messages id="messages" redisplay="false" closable="true" />
 
-                <p:dataGrid id="dataGridAllProducts" var="product" value="#{searchProductsByNameManagedBean.products}" columns="3" layout="grid"
+                <p:dataGrid id="dataGridAllProducts" var="product" value="#{productManagementManagedBean.searchProductsByNameManagedBean.products}" columns="3" layout="grid"
                             rows="10" paginator="true"  
                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                             rowsPerPageTemplate="10,20,50">
@@ -61,7 +75,9 @@
 
                             <p:outputPanel>
 
-                                <p:graphicImage width="100%" value="#{product.productImagePath}"/> 
+
+
+                                <p:graphicImage width="100%" value="./productImages/#{product.productImagePath}"/> 
 
                                 <h:outputText value="#{product.name}" />
                                 <br></br> <br></br>
@@ -86,7 +102,7 @@
                     </p:panel>
                 </p:dataGrid>
 
-                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" >
                     <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
                     <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
                 </p:confirmDialog>
@@ -228,9 +244,11 @@
                         <p:row>
                             <p:fileUpload multiple="false" skinSimple="true" fileUploadListener="#{productManagementManagedBean.upload}" previewWidth="100" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg" required="true" requiredMessage="Product Image is required!"/>
                         </p:row>
+
                     </p:panelGrid> 
 
                 </h:form>
+
             </p:dialog>
 
 
@@ -357,10 +375,10 @@
 
                         <p:row style="text-align:center">
                             <p:fileUpload multiple="false" skinSimple="true" fileUploadListener="#{productManagementManagedBean.handleFileUpload}" previewWidth="150" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg" required="true" requiredMessage="Product Image is required!"/>
-<!--                            <p:column colspan="3">
-                                 INCOMPLETE 
-                                <p:commandButton value="Replace Current Image" icon="fa fa-image" />
-                            </p:column>-->
+                            <!--                            <p:column colspan="3">
+                                                             INCOMPLETE 
+                                                            <p:commandButton value="Replace Current Image" icon="fa fa-image" />
+                                                        </p:column>-->
                         </p:row>
 
                         <p:row>
