@@ -3,6 +3,7 @@ package entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,8 +16,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -78,6 +82,20 @@ public class Product implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Category category;
+    
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dealStartTime;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    @Future
+    private Date dealEndTime;
+
+    @Column(nullable = false, precision = 6, scale = 2)
+    @Digits(integer = 4, fraction = 2)
+    @DecimalMin("0.00")
+    protected BigDecimal discountPrice;
 
     public Product() {
         this.tags = new ArrayList<>();
@@ -95,6 +113,7 @@ public class Product implements Serializable {
         this.reorderQuantity = reorderQuantity;
         this.productImagePath = productImagePath;
     }
+    
 
     public Integer getReorderQuantity() {
         return reorderQuantity;
@@ -147,6 +166,30 @@ public class Product implements Serializable {
                 }
             }
         }
+    }
+
+    public Date getDealStartTime() {
+        return dealStartTime;
+    }
+
+    public void setDealStartTime(Date dealStartTime) {
+        this.dealStartTime = dealStartTime;
+    }
+
+    public Date getDealEndTime() {
+        return dealEndTime;
+    }
+
+    public void setDealEndTime(Date dealEndTime) {
+        this.dealEndTime = dealEndTime;
+    }
+
+    public BigDecimal getDiscountPrice() {
+        return discountPrice;
+    }
+
+    public void setDiscountPrice(BigDecimal discountPrice) {
+        this.discountPrice = discountPrice;
     }
 
     public void removeTag(Tag tag) {

@@ -133,6 +133,17 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
     }
     
     @Override
+    public List<Product> retrieveAllDiscountedProducts(){
+        Query query = em.createQuery("SELECT p FROM Product p WHERE p.discountPrice IS NOT NULL");
+        List<Product> discountedProducts = query.getResultList();
+        
+        for(Product discountedProduct: discountedProducts){
+            discountedProduct.getCategory();
+        }
+        return discountedProducts;
+    }
+    
+    @Override
     public String retrieveLatestSerialNum() {
         Query q = em.createQuery("SELECT p FROM LuxuryProduct p ORDER BY p.serialNumber desc");
 
@@ -254,6 +265,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
         }
     }
 
+    
     @Override
     public Product retrieveProductByProductId(Long productId) throws ProductNotFoundException {
         Product product = em.find(Product.class, productId);
@@ -428,6 +440,14 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
 //only delete the luxury product itself together with its list of productItem
 //do not have to check in the transactionlineItem because debitQuantityOnHand will remove those productItem that is sold
 
+    //timer and manual
+    @Override
+    public void deactivatePromotion(Product productToDeactivate){
+        productToDeactivate.setDiscountPrice(null);
+        productToDeactivate.setDealStartTime(null);
+        productToDeactivate.setDealEndTime(null);
+    }
+    
     @Override
     public void debitQuantityOnHand(Long productId, Integer quantityToDebit) throws ProductNotFoundException, ProductInsufficientQuantityOnHandException {
         Product product = retrieveProductByProductId(productId);
