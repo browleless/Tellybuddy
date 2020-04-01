@@ -29,55 +29,45 @@
 
             <h3>Filter Products By Category</h3>
 
-
-
             <h:form id="formMain">
-                <p:layout>
 
-                    <p:layoutUnit position="north" resizable="true">
-                        <p:tree value="#{filterProductsByCategoryManagedBean.treeNode}" var="node" selectionMode="single" selection="#{filterProductsByCategoryManagedBean.selectedTreeNode}">
-                            <p:treeNode>
-                                <h:outputText value="#{node.name}" />
-                            </p:treeNode>
-                            <p:ajax event="select" process="@form" update="formMain:dataGridAllProducts" listener="#{filterProductsByCategoryManagedBean.filterProduct}" />
-                        </p:tree>     
+                <p:tree style="margin-bottom: 20px;" value="#{filterProductsByCategoryManagedBean.treeNode}" var="node" selectionMode="single" selection="#{filterProductsByCategoryManagedBean.selectedTreeNode}">
+                    <p:treeNode>
+                        <h:outputText value="#{node.name}" />
+                    </p:treeNode>
+                    <p:ajax event="select" process="@form" update="formMain:dataGridAllProducts" listener="#{filterProductsByCategoryManagedBean.filterProduct}" />
+                </p:tree>     
 
-                    </p:layoutUnit>
+                <p:dataGrid id="dataGridAllProducts" var="product" value="#{filterProductsByCategoryManagedBean.products}" columns="3" layout="grid"
+                            rows="10" paginator="true"  
+                            paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                            rowsPerPageTemplate="10,20,50">
+                    <f:facet name="header">
+                        Filter Products By Category
+                    </f:facet>
 
-                    <p:layoutUnit position="center">
-                        <p:dataGrid id="dataGridAllProducts" var="product" value="#{filterProductsByCategoryManagedBean.products}" columns="3" layout="grid"
-                                    rows="10" paginator="true"  
-                                    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                    rowsPerPageTemplate="10,20,50">
-                            <f:facet name="header">
-                                Filter Products By Category
-                            </f:facet>
+                    <p:panel header="#{product.category.name}" style="text-align:center">
+                        <h:panelGrid columns="1" style="width:100%">
 
-                            <p:panel header="#{product.category.name}" style="text-align:center">
-                                <h:panelGrid columns="1" style="width:100%">
+                            <p:outputPanel>
 
-                                    <p:outputPanel>
+                                <p:graphicImage width="100%" value="#{product.productImagePath}"/> 
 
-                                        <p:graphicImage width="100%" value="#{product.productImagePath}"/> 
+                                <h:outputText value="#{product.name}" />
+                                <br></br> <br></br>
 
-                                        <h:outputText value="#{product.name}" />
-                                        <br></br> <br></br>
+                                <p:commandLink update="ccViewProduct:formViewProduct" oncomplete="PF('dialogViewProduct').show()" title="View Details">
+                                    <h:outputText styleClass="fa fa-search" style="margin:0 auto;"/>
+                                    <f:setPropertyActionListener value="#{product}" target="#{viewProductManagedBean.productToView}" />
+                                </p:commandLink>&nbsp;&nbsp;
+                            </p:outputPanel>
 
-                                        <p:commandLink update="ccViewProduct:formViewProduct" oncomplete="PF('dialogViewProduct').show()" title="View Details">
-                                            <h:outputText styleClass="fa fa-search" style="margin:0 auto;"/>
-                                            <f:setPropertyActionListener value="#{product}" target="#{viewProductManagedBean.productToView}" />
-                                        </p:commandLink>&nbsp;&nbsp;
-                                    </p:outputPanel>
+                        </h:panelGrid>
 
-                                </h:panelGrid>
+                    </p:panel>
 
-                            </p:panel>
+                </p:dataGrid>
 
-                        </p:dataGrid>
-
-                    </p:layoutUnit>
-
-                </p:layout>
             </h:form>
             <ez:ViewProduct id="ccViewProduct" />
 

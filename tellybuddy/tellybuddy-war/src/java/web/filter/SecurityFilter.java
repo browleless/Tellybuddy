@@ -92,7 +92,8 @@ public class SecurityFilter implements Filter {
         if (path.equals("/index.xhtml")
                 || path.equals("/accessRightError.xhtml")
                 || path.startsWith("/javax.faces.resource")
-                || path.equals("/resources/images/background.jpg")) {
+                || path.equals("/resources/images/background.jpg")
+                || path.startsWith("/uploadedFiles")) {
             return true;
         } else {
             return false;

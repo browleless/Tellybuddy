@@ -199,7 +199,7 @@ public class DataInitialization {
         em.flush();
 
         //product 1
-        LuxuryProduct iphoneXS = new LuxuryProduct("0000000001", "SKU001", "iPhone XS", "iphone xs", BigDecimal.valueOf(1000.0), 10, 50, "./productImages/iphoneXS.JPG");
+        LuxuryProduct iphoneXS = new LuxuryProduct("0000000001", "SKU001", "iPhone XS", "iphone xs", BigDecimal.valueOf(1000.0), 10, 50, "iphoneXS.JPG");
         iphoneXS.setCategory(apple);
         List<Tag> tags = new ArrayList<>();
         List<Product> products = apple.getProducts();
@@ -236,7 +236,7 @@ public class DataInitialization {
         }
         
         //product 2
-        LuxuryProduct googlePixel4 = new LuxuryProduct("0000000002", "SKU002", "Google Pixel 4", "Google Pixel 4", BigDecimal.valueOf(799.0), 20, 20, "./productImages/googlePixel4.jpg");
+        LuxuryProduct googlePixel4 = new LuxuryProduct("0000000002", "SKU002", "Google Pixel 4", "Google Pixel 4", BigDecimal.valueOf(799.0), 20, 20, "googlePixel4.jpg");
         googlePixel4.setCategory(android);
         tags = new ArrayList<>();
         products = android.getProducts();
@@ -268,7 +268,7 @@ public class DataInitialization {
         }
         
         //product 3
-        LuxuryProduct samsungFlipZ = new LuxuryProduct("0000000003", "SKU003", "Samsung Flip Z", "Samsung Flip Z", BigDecimal.valueOf(899.0), 20, 20, "./productImages/samsungFlipZ.jpg");
+        LuxuryProduct samsungFlipZ = new LuxuryProduct("0000000003", "SKU003", "Samsung Flip Z", "Samsung Flip Z", BigDecimal.valueOf(899.0), 20, 20, "samsungFlipZ.jpg");
         samsungFlipZ.setCategory(android);
         tags = new ArrayList<>();
         products = android.getProducts();
@@ -301,7 +301,7 @@ public class DataInitialization {
         
 
         //product 4
-        Product iphoneXScover = new Product("SKU004", "iPhone XS WeBareBear Case", "iphone xs hp case", BigDecimal.valueOf(15.0), 10, 50, "./productImages/iphoneXSwbbcase.jpg");
+        Product iphoneXScover = new Product("SKU004", "iPhone XS WeBareBear Case", "iphone xs hp case", BigDecimal.valueOf(15.0), 10, 50, "iphoneXSwbbcase.jpg");
         iphoneXScover.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(iphoneXScover);
@@ -324,7 +324,7 @@ public class DataInitialization {
         tagT.add(iphoneXScover);
         
         //product 5
-        Product appleWire = new Product("SKU005", "Apple Charger", "Apple Lighting to USB Cable (1 meter)", BigDecimal.valueOf(10.0), 40, 20, "./productImages/appleWire.JPG");
+        Product appleWire = new Product("SKU005", "Apple Charger", "Apple Lighting to USB Cable (1 meter)", BigDecimal.valueOf(10.0), 40, 20, "appleWire.JPG");
         appleWire.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(appleWire);

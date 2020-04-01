@@ -72,6 +72,9 @@ public class ProductManagementManagedBean implements Serializable {
     @Inject
     private ViewProductManagedBean viewProductManagedBean;
 
+    @Inject
+    private SearchProductsByNameManagedBean searchProductsByNameManagedBean;
+
     private List<Product> allProducts;
     private List<Product> filteredProducts;
 
@@ -187,6 +190,8 @@ public class ProductManagementManagedBean implements Serializable {
             tagIdsNew = null;
             productImageFile = null;
 
+            searchProductsByNameManagedBean.loadProducts();
+
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New product created successfully (Product ID: " + p.getProductId() + ")", null));
         } catch (InputDataValidationException | CreateNewProductException | ProductSkuCodeExistException | UnknownPersistenceException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating the new product: " + ex.getMessage(), null));
@@ -278,6 +283,8 @@ public class ProductManagementManagedBean implements Serializable {
                 }
             }
 
+            searchProductsByNameManagedBean.loadProducts();
+
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Product updated successfully", null));
 
         } catch (ProductNotFoundException ex) {
@@ -299,6 +306,8 @@ public class ProductManagementManagedBean implements Serializable {
                 filteredProducts.remove(productToDelete);
             }
 
+            searchProductsByNameManagedBean.loadProducts();
+
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Product deleted successfully", null));
 
         } catch (ProductNotFoundException | DeleteProductException ex) {
@@ -309,6 +318,9 @@ public class ProductManagementManagedBean implements Serializable {
     }
 
     public void upload(FileUploadEvent event) {
+
+        System.out.println("********** STEP 1");
+
         this.productImageFile = event.getFile();
         if (productImageFile != null) {
             String filePath = this.saveUploadedProductImage();
@@ -323,6 +335,7 @@ public class ProductManagementManagedBean implements Serializable {
 
     public String saveUploadedProductImage() {
         {
+            System.out.println("********** STEP 2");
 
             InputStream inputStr = null;
             try {
@@ -330,11 +343,11 @@ public class ProductManagementManagedBean implements Serializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            String absolutePathToProductImages = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/") + "management\\products\\productImages";
-//            System.out.println(absolutePathToProductImages);
-//            Path folder = Paths.get(absolutePathToProductImages);
+            String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\products\\productImages";
+            System.out.println(absolutePathToProductImages);
+            Path folder = Paths.get(absolutePathToProductImages);
 
-            Path folder = Paths.get("C:\\glassfish-5.1.0-uploadedfiles\\uploadedFiles");
+//            Path folder = Paths.get("C:\\glassfish-5.1.0-uploadedfiles\\uploadedFiles");
             try {
                 String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
                 String extension = FilenameUtils.getExtension(productImageFile.getFileName());
@@ -342,11 +355,10 @@ public class ProductManagementManagedBean implements Serializable {
                 InputStream input = productImageFile.getInputstream();
 
                 Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
-
-//                return filename + "-" + "." + extension;
-                System.out.println(file.toString());
-                String fullPath = folder + "\\" + file.getFileName().toString();
-                return fullPath;
+                return filename + "-" + "." + extension;
+//                System.out.println(file.toString());
+//                String fullPath = folder + "\\" + file.getFileName().toString();
+//                return fullPath;
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
@@ -484,4 +496,11 @@ public class ProductManagementManagedBean implements Serializable {
         this.newProduct = newProduct;
     }
 
+    public SearchProductsByNameManagedBean getSearchProductsByNameManagedBean() {
+        return searchProductsByNameManagedBean;
+    }
+
+    public void setSearchProductsByNameManagedBean(SearchProductsByNameManagedBean searchProductsByNameManagedBean) {
+        this.searchProductsByNameManagedBean = searchProductsByNameManagedBean;
+    }
 }

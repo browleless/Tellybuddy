@@ -136,7 +136,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
     public String retrieveLatestSerialNum() {
         Query q = em.createQuery("SELECT p FROM LuxuryProduct p ORDER BY p.serialNumber desc");
 
-        LuxuryProduct lp = (LuxuryProduct) q.getSingleResult();
+        LuxuryProduct lp = (LuxuryProduct) q.getResultList().get(0);
 
         if (lp == null) {
             return "0000000000";

@@ -25,6 +25,11 @@
             .ui-dialog .ui-dialog-title {
                 color: white;
             }
+            .detail{
+                vertical-align: top;
+                padding-top: 0px;
+                margin-top: 0px;
+            }
         </style>
 
         <div>
@@ -32,10 +37,20 @@
             <h3>Filter Product By Tags</h3>
 
             <h:form id="formMain">
-                <p:layout>
+                <p:panelGrid style="margin-bottom: 20px;" columnClasses="logo, detail">
 
-                    <p:layoutUnit position="north" resizable="true">
-                        <p:panel>
+                        <p:column style="padding: 15px;">
+
+                            <p:outputLabel for="selTags" value="Tags: " style="font-weight: bold;" />
+                            <p:selectManyMenu id="selTags" value="#{filterProductsByTagsManagedBean.selectedTagIds}" showCheckbox="true" scrollHeight="80">
+                                <f:selectItems value="#{filterProductsByTagsManagedBean.selectItems}" />
+
+                                <p:ajax process="@form" update="formMain:dataGridAllProducts" listener="#{filterProductsByTagsManagedBean.filterProduct}" />
+
+                            </p:selectManyMenu> 
+                        </p:column>
+                        <p:column style="padding: 15px;">
+
                             <p:outputLabel for="selCondition" value="Condition: " style="font-weight: bold;" />
                             <br />
                             <p:selectOneMenu id="selCondition" value="#{filterProductsByTagsManagedBean.condition}">
@@ -46,58 +61,39 @@
                                 <p:ajax process="@form" update="formMain:dataGridAllProducts" listener="#{filterProductsByTagsManagedBean.filterProduct}" />
 
                             </p:selectOneMenu>
+                        </p:column>
+                </p:panelGrid>
 
-                        </p:panel>
+                <p:dataGrid id="dataGridAllProducts" var="product" value="#{filterProductsByTagsManagedBean.products}" columns="3" layout="grid"
+                            rows="10" paginator="true"  
+                            paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                            rowsPerPageTemplate="10,20,50">
+                    <f:facet name="header">
+                        Filter Products By Tags
+                    </f:facet>
 
-                        <p:panel>
-                            <p:outputLabel for="selTags" value="Tags: " style="font-weight: bold;" />
-                            <p:selectManyMenu id="selTags" value="#{filterProductsByTagsManagedBean.selectedTagIds}" showCheckbox="true" scrollHeight="80">
-                                <f:selectItems value="#{filterProductsByTagsManagedBean.selectItems}" />
+                    <p:panel header="#{product.category.name}" style="text-align:center">
+                        <h:panelGrid columns="1" style="width:100%">
 
-                                <p:ajax process="@form" update="formMain:dataGridAllProducts" listener="#{filterProductsByTagsManagedBean.filterProduct}" />
+                            <p:outputPanel>
 
-                            </p:selectManyMenu> 
+                                <p:graphicImage width="100%" value="#{product.productImagePath}"/> 
 
-                        </p:panel>
-                    </p:layoutUnit>    
+                                <h:outputText value="#{product.name}" />
+                                <br></br> <br></br>
 
+                                <p:commandLink update="ccViewProduct:formViewProduct" oncomplete="PF('dialogViewProduct').show()" title="View Details">
+                                    <h:outputText styleClass="fa fa-search" style="margin:0 auto;"/>
+                                    <f:setPropertyActionListener value="#{product}" target="#{viewProductManagedBean.productToView}" />
+                                </p:commandLink>&nbsp;&nbsp;
+                            </p:outputPanel>
 
+                        </h:panelGrid>
 
-                    <p:layoutUnit position="center">
+                    </p:panel>
 
-                        <p:dataGrid id="dataGridAllProducts" var="product" value="#{filterProductsByTagsManagedBean.products}" columns="3" layout="grid"
-                                    rows="10" paginator="true"  
-                                    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                    rowsPerPageTemplate="10,20,50">
-                            <f:facet name="header">
-                                Filter Products By Tags
-                            </f:facet>
+                </p:dataGrid>
 
-                            <p:panel header="#{product.category.name}" style="text-align:center">
-                                <h:panelGrid columns="1" style="width:100%">
-
-                                    <p:outputPanel>
-
-                                        <p:graphicImage width="100%" value="#{product.productImagePath}"/> 
-
-                                        <h:outputText value="#{product.name}" />
-                                        <br></br> <br></br>
-
-                                        <p:commandLink update="ccViewProduct:formViewProduct" oncomplete="PF('dialogViewProduct').show()" title="View Details">
-                                            <h:outputText styleClass="fa fa-search" style="margin:0 auto;"/>
-                                            <f:setPropertyActionListener value="#{product}" target="#{viewProductManagedBean.productToView}" />
-                                        </p:commandLink>&nbsp;&nbsp;
-                                    </p:outputPanel>
-
-                                </h:panelGrid>
-
-                            </p:panel>
-
-                        </p:dataGrid>
-
-                    </p:layoutUnit>
-
-                </p:layout>
             </h:form>
             <ez:ViewProduct id="ccViewProduct" />
         </div>
