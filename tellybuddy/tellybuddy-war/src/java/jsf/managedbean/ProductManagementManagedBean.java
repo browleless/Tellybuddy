@@ -255,10 +255,9 @@ public class ProductManagementManagedBean implements Serializable {
     public void upload(FileUploadEvent event) {
         this.productImageFile = event.getFile();
         if (productImageFile != null) {
-            String filePath = this.saveUploadedProductImage();
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + productImageFile.getFileName(), null);
             FacesContext.getCurrentInstance().addMessage(null, message);
-            System.out.println(filePath);
+//            System.out.println(filePath);
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "File upload unsuccessful. Please try again!", null));
 //            System.out.println("Uploaded file stilll null!!");
@@ -274,11 +273,11 @@ public class ProductManagementManagedBean implements Serializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String absolutePathToProductImages = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/") + "management\\products\\productImages";
-            System.out.println(absolutePathToProductImages);
+            String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\products\\productImages";
             Path folder = Paths.get(absolutePathToProductImages);
+            System.out.println(absolutePathToProductImages);
 
-//            Path folder = Paths.get("C:\\Image");
+//            Path folder = Paths.get("C:\\Users\\markt\\Documents\\GitHub\\Tellybuddy\\tellybuddy\\tellybuddy-war\\web\\management\\products\\productImages");
             try {
                 String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
                 String extension = FilenameUtils.getExtension(productImageFile.getFileName());

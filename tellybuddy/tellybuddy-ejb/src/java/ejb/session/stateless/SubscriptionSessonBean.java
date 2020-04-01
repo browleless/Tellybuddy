@@ -94,9 +94,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             try {
                 Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
 
-                if(!customer.getIsApproved()){
-                    throw new CustomerNotYetApproved("Please wait for approval before subscribing to a new plan!");
-                }
+//                if(!customer.getIsApproved()){
+//                    throw new CustomerNotYetApproved("Please wait for approval before subscribing to a new plan!");
+//                }
                 
                 Plan plan = planSessionBeanLocal.retrievePlanByPlanId(planId);
                 plan.setIsInUse(true);

@@ -34,11 +34,14 @@
                 border-left: 1px solid #A8A8A8;
             }
             .logo {
-                width: 25%;
+                width: 40%;
+                background-color: #ebedf0;
             }
             .detail {
-                width: 75%;
+                width: 60%;
                 padding-left: 3%;
+                text-align: center;
+                font-weight: bold;
             }
         </style>
         <h3>Transaction Management</h3>
@@ -78,23 +81,27 @@
 
 
                 <p:rowExpansion >
-                        <p:panelGrid  style="padding: 5px 5px 5px 5px; width: 50%; text-align: center " columns="2" columnClasses="logo, detail">
+                    <div class="ui-g-4">
+                        <p:panelGrid  style="padding: 5px 5px 5px 5px; " columns="2" columnClasses="logo, detail">
 
 
                             <h:outputText value="First Name:" />
-                            <h:outputText value="#{transaction.customer.firstName}" style="font-weight: bold"/>
+                            <h:outputText value="#{transaction.customer.firstName}" />
 
-                            <h:outputText value="Last Name:" />
-                            <h:outputText value="#{transaction.customer.lastName}" style="font-weight: bold"/>
+                            <h:outputText value="Last Name:"  />
+                            <h:outputText value="#{transaction.customer.lastName}" />
 
-                            <h:outputText value="Transaction Status (void/refund)" />
-                            <h:outputText value="#{transaction.voidRefund}" style="font-weight: bold"/>
+                            <h:outputText value="Transaction Status (void/refund):"  />
+                            <h:outputText value="#{transaction.voidRefund}" />
 
                             <h:outputText value="Discount Code (if any):" />
-                            <h:outputText value="#{transaction.discountCode}" style="font-weight: bold"/>
+                            <h:outputText value="#{transaction.discountCode}" />
 
                         </p:panelGrid>
-                        <h:form id="formViewTransactionLineItems" styleClass="ui-grid-col-6" style="margin: 0 auto;">
+                    </div>
+                    <div class="ui-g-8">
+                        
+                        <h:form id="formViewTransactionLineItems" style="margin: 0 auto; ui-g-6">
                             <p:dataTable id="dataTableTransactionLineItems" widgetVar="dataTableTransactionLineItems" style="text-align: center" value="#{transaction.transactionLineItems}" var="trLineItem" rowKey="#{trLineItem.transactionLineItemId}" rowIndexVar="row">
                                 <p:column headerText="Id" width="5%" style="text-align: center">
                                     <h:outputText value="#{trLineItem.transactionLineItemId}" />
@@ -123,7 +130,7 @@
                             </p:dataTable>
 
                         </h:form>
-
+                    </div>
 
                 </p:rowExpansion>
             </p:dataTable>
