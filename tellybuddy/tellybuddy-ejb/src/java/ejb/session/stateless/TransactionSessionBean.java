@@ -12,6 +12,7 @@ import entity.TransactionLineItem;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -105,10 +106,14 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
 
     @Override
     public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId) {
-        Query query = em.createNamedQuery("selectAllTransactionLineItemsByProductId");
+        Query query = em.createQuery("SELECT tl FROM TransactionLineItem tl WHERE tl.product.productId = :inProductId");
         query.setParameter("inProductId", productId);
 
-        return query.getResultList();
+        if (query.getResultList() == null) {
+            return new ArrayList<TransactionLineItem>();
+        } else {
+           return query.getResultList();
+        }
     }
 
     @Override

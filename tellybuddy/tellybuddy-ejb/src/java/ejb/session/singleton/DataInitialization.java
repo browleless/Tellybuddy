@@ -16,12 +16,14 @@ import entity.Category;
 
 import entity.Employee;
 import entity.FamilyGroup;
+import entity.LuxuryProduct;
 import entity.Payment;
 import entity.PhoneNumber;
 import entity.Plan;
 import entity.Subscription;
 import java.util.Date;
 import entity.Product;
+import entity.ProductItem;
 import entity.Tag;
 import entity.Transaction;
 import entity.TransactionLineItem;
@@ -320,6 +322,14 @@ public class DataInitialization {
         Tag appleTag = new Tag("Apple");
         em.persist(appleTag);
         em.flush();
+        
+        Tag samsung = new Tag("Samsung");
+        em.persist(samsung);
+        em.flush();
+        
+        Tag google = new Tag("Google");
+        em.persist(google);
+        em.flush();
 
         Tag discount = new Tag("Discount");
         em.persist(discount);
@@ -337,38 +347,157 @@ public class DataInitialization {
         em.persist(cartoon);
         em.flush();
 
-//        LuxuryProduct iphoneXS = new LuxuryProduct("0000000001", "SKU001", "iPhone XS", "iphone xs", BigDecimal.valueOf(1000.0), 10, 50, "./iphoneXS.jpg");
-//        em.persist(iphoneXS);
-//        em.flush();
-//        iphoneXS.setCategory(apple);
-//        List<Tag> tags = new ArrayList<>();
-//        tags.add(popular);
-//        tags.add(appleTag);
-//        tags.add(tagNew);
-//        tags.add(mobile);
-//        iphoneXS.setTags(tags);
-//
-//        List<ProductItem> productItems = iphoneXS.getProductItems();
-//
-//        Integer unique = 1;
-//
-//        for (int i = 0; i < 10; i++) {
-//            ProductItem pi = new ProductItem(Integer.toString(unique), iphoneXS.getPrice());
-//            em.persist(pi);
-//            unique++;
-//            productItems.add(pi);
-//        }
+        //product 1
+        LuxuryProduct iphoneXS = new LuxuryProduct("0000000001", "SKU001", "iPhone XS", "iphone xs", BigDecimal.valueOf(1000.0), 10, 50, "./productImages/iphoneXS.JPG");
+        iphoneXS.setCategory(apple);
+        List<Tag> tags = new ArrayList<>();
+        List<Product> products = apple.getProducts();
+        products.add(iphoneXS);
+        apple.setProducts(products);
+        tags.add(popular);
+        tags.add(appleTag);
+        tags.add(tagNew);
+        tags.add(mobile);
+        iphoneXS.setTags(tags);
+        em.persist(iphoneXS);
+        em.flush();
+        List<Product> tagT = popular.getProducts();
+        tagT.add(iphoneXS);
+        tagT = appleTag.getProducts();
+        tagT.add(iphoneXS);
+        tagT = tagNew.getProducts();
+        tagT.add(iphoneXS);
+        tagT = mobile.getProducts();
+        tagT.add(iphoneXS);
 
-//        Product iphoneXScover = new Product("SKU002", "iPhone XS WeBareBear Case", "iphone xs hp case", BigDecimal.valueOf(15.0), 10, 50, "./iphoneXSwbbcase.jpg");
-//        iphoneXScover.setCategory(phoneAccessories);
-//        tags = new ArrayList<>();
-//        tags.add(popular);
-//        tags.add(appleTag);
-//        tags.add(mobile);
-//        tags.add(cartoon);
-//        em.persist(iphoneXScover);
-//        em.flush();
-//        iphoneXScover.setTags(tags);
+        List<ProductItem> productItems = iphoneXS.getProductItems();
+
+        Integer unique = 1;
+
+        for (int i = 0; i < 10; i++) {
+            String s = uniqueSerialNum(unique);
+
+            ProductItem pi = new ProductItem(s, iphoneXS.getPrice());
+            pi.setLuxuryProduct(iphoneXS);
+            em.persist(pi);
+            unique++;
+            productItems.add(pi);
+        }
+        
+        //product 2
+        LuxuryProduct googlePixel4 = new LuxuryProduct("0000000002", "SKU002", "Google Pixel 4", "Google Pixel 4", BigDecimal.valueOf(799.0), 20, 20, "./productImages/googlePixel4.jpg");
+        googlePixel4.setCategory(android);
+        tags = new ArrayList<>();
+        products = android.getProducts();
+        products.add(googlePixel4);
+        android.setProducts(products);
+        tags.add(popular);
+        tags.add(mobile);
+        tags.add(google);
+        googlePixel4.setTags(tags);
+        em.persist(googlePixel4);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(googlePixel4);
+        tagT = mobile.getProducts();
+        tagT.add(googlePixel4);
+        tagT = google.getProducts();
+        tagT.add(googlePixel4);
+        
+        productItems = iphoneXS.getProductItems();
+
+        for (int i = 0; i < googlePixel4.getQuantityOnHand(); i++) {
+            String s = uniqueSerialNum(unique);
+
+            ProductItem pi = new ProductItem(s, googlePixel4.getPrice());
+            pi.setLuxuryProduct(googlePixel4);
+            em.persist(pi);
+            unique++;
+            productItems.add(pi);
+        }
+        
+        //product 3
+        LuxuryProduct samsungFlipZ = new LuxuryProduct("0000000003", "SKU003", "Samsung Flip Z", "Samsung Flip Z", BigDecimal.valueOf(899.0), 20, 20, "./productImages/samsungFlipZ.jpg");
+        samsungFlipZ.setCategory(android);
+        tags = new ArrayList<>();
+        products = android.getProducts();
+        products.add(samsungFlipZ);
+        android.setProducts(products);
+        tags.add(popular);
+        tags.add(mobile);
+        tags.add(samsung);
+        samsungFlipZ.setTags(tags);
+        em.persist(samsungFlipZ);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(samsungFlipZ);
+        tagT = mobile.getProducts();
+        tagT.add(samsungFlipZ);
+        tagT = samsung.getProducts();
+        tagT.add(samsungFlipZ);
+        
+        productItems = iphoneXS.getProductItems();
+
+        for (int i = 0; i < googlePixel4.getQuantityOnHand(); i++) {
+            String s = uniqueSerialNum(unique);
+
+            ProductItem pi = new ProductItem(s, googlePixel4.getPrice());
+            pi.setLuxuryProduct(googlePixel4);
+            em.persist(pi);
+            unique++;
+            productItems.add(pi);
+        }
+        
+
+        //product 4
+        Product iphoneXScover = new Product("SKU004", "iPhone XS WeBareBear Case", "iphone xs hp case", BigDecimal.valueOf(15.0), 10, 50, "./productImages/iphoneXSwbbcase.jpg");
+        iphoneXScover.setCategory(phoneAccessories);
+        products = phoneAccessories.getProducts();
+        products.add(iphoneXScover);
+        phoneAccessories.setProducts(products);
+        tags = new ArrayList<>();
+        tags.add(popular);
+        tags.add(appleTag);
+        tags.add(mobile);
+        tags.add(cartoon);
+        iphoneXScover.setTags(tags);
+        em.persist(iphoneXScover);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(iphoneXScover);
+        tagT = appleTag.getProducts();
+        tagT.add(iphoneXScover);
+        tagT = mobile.getProducts();
+        tagT.add(iphoneXScover);
+        tagT = cartoon.getProducts();
+        tagT.add(iphoneXScover);
+        
+        //product 5
+        Product appleWire = new Product("SKU005", "Apple Charger", "Apple Lighting to USB Cable (1 meter)", BigDecimal.valueOf(10.0), 40, 20, "./productImages/appleWire.JPG");
+        appleWire.setCategory(phoneAccessories);
+        products = phoneAccessories.getProducts();
+        products.add(appleWire);
+        phoneAccessories.setProducts(products);
+        tags = new ArrayList<>();
+        tags.add(appleTag);
+        tags.add(popular);
+        appleWire.setTags(tags);
+        em.persist(appleWire);
+        em.flush();
+        tagT = appleTag.getProducts();
+        tagT.add(appleWire);
+        tagT = popular.getProducts();
+        tagT.add(appleWire);
+    }
+
+    private String uniqueSerialNum(int unique) {
+        String s = Integer.toString(unique);
+
+        while (s.length() < 10) {
+            s = "0" + s;
+        }
+
+        return s;
     }
 
 }
