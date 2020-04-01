@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/template/defaultTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+
+    <ui:define name="content">
+        <style type="text/css"> 
+            .ui-dataview-list .ui-dataview-row {
+                border-bottom: 1px solid #A8A8A8;
+                padding: 25px 10px;
+            }
+            .ui-dialog {
+                border-radius: 15px;
+                width: 80%;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+                text-align: center;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+                text-align: center;
+            } 
+            .info {
+                border-left: 1px solid #A8A8A8;
+            }
+            .logo {
+                width: 40%;
+                background-color: #ebedf0;
+            }
+            .detail {
+                width: 60%;
+                padding-left: 3%;
+                text-align: center;
+                font-weight: bold;
+            }
+        </style>
+        <h3>Transaction Management</h3>
+
+        <h:form id="formAllTransactions">
+
+            <p:dataTable id="dataTableAllTransactions" widgetVar="dataTableAllTransactions" value="#{transactionManagementManagedBean.transactions}" var="transaction" rowKey="#{transaction.transactionId}" rowIndexVar="row"
+
+                         rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right;">
+                        <h:outputText value="Search all fields: " />
+                        <p:inputText id="globalFilter" onkeyup="PF('dataTableAllTransactions').filter()" style="width:200px; text-align: center" placeholder="Enter keyword"/>
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="ID" sortBy="#{transaction.transactionId}" filterBy="#{transaction.transactionId}" filterMatchMode="contains" width="10%" style="text-align: center;" >
+                    <h:outputText value="#{transaction.transactionId}" />
+                </p:column>
+
+                <p:column headerText="DateTime" sortBy="#{transaction.transactionDateTime}" filterBy="#{transaction.transactionDateTime}" filterMatchMode="contains" style="text-align: center;">
+                    <h:outputText value="#{transaction.transactionDateTime} " />
+                </p:column>
+
+                <p:column headerText="Full Name" sortBy="#{transaction.customer.firstName}" filterBy="#{transaction.customer.firstName}" filterMatchMode="contains" style="text-align: center;">
+                    <h:outputText value="#{transaction.customer.firstName} #{transaction.customer.lastName}"  style="text-align: right;"/>
+                </p:column>
+
+                <p:column headerText="Total Charge" sortBy="#{transaction.totalPrice}" filterBy="#{transaction.totalPrice}" filterMatchMode="contains" style="text-align: right;">
+                    <h:outputText value="#{transaction.totalPrice}"  style="text-align: right;"/>
+                </p:column>
+
+                <p:column style="width:16px">
+                    <p:rowToggler/>
+                </p:column>
+
+
+                <p:rowExpansion >
+                    <div class="ui-g-4">
+                        <p:panelGrid  style="padding: 5px 5px 5px 5px; " columns="2" columnClasses="logo, detail">
+
+
+                            <h:outputText value="First Name:" />
+                            <h:outputText value="#{transaction.customer.firstName}" />
+
+                            <h:outputText value="Last Name:"  />
+                            <h:outputText value="#{transaction.customer.lastName}" />
+
+                            <h:outputText value="Transaction Status (void/refund):"  />
+                            <h:outputText value="#{transaction.voidRefund}" />
+
+                            <h:outputText value="Discount Code (if any):" />
+                            <h:outputText value="#{transaction.discountCode}" />
+
+                        </p:panelGrid>
+                    </div>
+                    <div class="ui-g-8">
+                        
+                        <h:form id="formViewTransactionLineItems" style="margin: 0 auto; ui-g-6">
+                            <p:dataTable id="dataTableTransactionLineItems" widgetVar="dataTableTransactionLineItems" style="text-align: center" value="#{transaction.transactionLineItems}" var="trLineItem" rowKey="#{trLineItem.transactionLineItemId}" rowIndexVar="row">
+                                <p:column headerText="Id" width="5%" style="text-align: center">
+                                    <h:outputText value="#{trLineItem.transactionLineItemId}" />
+                                </p:column>
+
+                                <p:column headerText="Product" width="20%" style="text-align: center">
+                                    <h:outputText value="#{trLineItem.product}" />
+                                </p:column>
+
+                                <p:column headerText="Product Item" width="20%" style="text-align: center">
+                                    <h:outputText value="#{trLineItem.productItem}" />
+                                </p:column>
+
+                                <p:column headerText="Subscription" width="20%" style="text-align: center">
+                                    <h:outputText value="#{trLineItem.subscription}" />
+                                </p:column>
+
+                                <p:column headerText="Quantity" width="10%" style="text-align: center">
+                                    <h:outputText value="#{trLineItem.quantity}" />
+                                </p:column>
+
+                                <p:column headerText="Subtotal" width="10%" style="text-align: center">
+                                    <h:outputText value="#{trLineItem.subtotal}" />
+                                </p:column>
+
+                            </p:dataTable>
+
+                        </h:form>
+                    </div>
+
+                </p:rowExpansion>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

@@ -32,13 +32,13 @@
     
     <h:body>
         
-        <div class="login-form">
+        <div class="login-form" >
             
             <div style="text-align: center; font-size: 24; margin-bottom: 20px;">
                 <p:outputLabel value="Employee Login" />
             </div>
             
-            <div>
+            <div style="margin: 0 auto;;">
                 
                 <h:form>
 
@@ -48,13 +48,13 @@
                         <p:outputLabel value="Username:" />
                     </div>
                     <div style="margin-bottom: 20px;">
-                        <p:inputText size="39" placeholder="Username" value="#{loginManagedBean.username}" />
+                        <p:inputText style="width: 100%" placeholder="Username" value="#{loginManagedBean.username}" />
                     </div>
                     <div style="font-size: 18; font-weight: bold; margin-bottom: 10px;">
                         <p:outputLabel value="Password:" />
                     </div>
                     <div style="margin-bottom: 20px;">
-                        <p:password size="39" placeholder="Password" value="#{loginManagedBean.password}" />
+                        <p:password style="width: 100%" placeholder="Password" value="#{loginManagedBean.password}" />
                     </div>
                     <div style="text-align: center; padding-bottom: 10px;">
                         <p:commandButton style="border-radius: 50px" type="submit" value="Login" process="@form" update="@form" actionListener="#{loginManagedBean.login}" /> 

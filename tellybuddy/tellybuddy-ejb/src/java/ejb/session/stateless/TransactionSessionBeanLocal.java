@@ -35,4 +35,5 @@ public interface TransactionSessionBeanLocal {
 
     public void deleteTransaction(Transaction transaction);
 
+    public List<Transaction> retrieveAllMonthlyTransactions();
 }

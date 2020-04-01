@@ -5,11 +5,13 @@
  */
 package ejb.session.stateless;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import entity.Customer;
 import entity.DiscountCode;
 import entity.Transaction;
 import entity.TransactionLineItem;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
@@ -88,7 +90,20 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         return query.getResultList();
     }
 
-    // Added in v4.1
+    @Override
+    public List<Transaction> retrieveAllMonthlyTransactions() {
+
+        Query query = em.createQuery("SELECT st FROM Transaction st WHERE st.transactionDateTime BETWEEN :inputMonthStart AND :inputMonthEnd");
+
+        LocalDateTime monthBegin = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime monthEnd = LocalDateTime.now().withDayOfMonth(1).plusMonths(1).minusDays(-1).withHour(23).withMinute(59).withSecond(59);
+        Date inputMonthStart = Date.from(monthBegin.atZone(ZoneId.systemDefault()).toInstant());
+        Date inputMonthEnd = Date.from(monthEnd.atZone(ZoneId.systemDefault()).toInstant());
+        query.setParameter("inputMonthStart", inputMonthStart);
+        query.setParameter("inputMonthEnd", inputMonthEnd);
+        return query.getResultList();
+    }
+
     @Override
     public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId) {
         Query query = em.createQuery("SELECT tl FROM TransactionLineItem tl WHERE tl.product.productId = :inProductId");
@@ -149,3 +164,4 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     }
 
 }
+r

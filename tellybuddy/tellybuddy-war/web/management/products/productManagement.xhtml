@@ -75,10 +75,9 @@
 
                             <p:outputPanel>
 
-                                <!--<p:graphicImage width="100%" value="#{product.productImagePath}"/>--> 
 
-                                <p:graphicImage width="100%" value="./uploadedFiles/#{product.productImagePath}"/> 
 
+                                <p:graphicImage width="100%" value="./productImages/#{product.productImagePath}"/> 
 
                                 <h:outputText value="#{product.name}" />
                                 <br></br> <br></br>
@@ -103,7 +102,7 @@
                     </p:panel>
                 </p:dataGrid>
 
-                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" >
                     <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
                     <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
                 </p:confirmDialog>

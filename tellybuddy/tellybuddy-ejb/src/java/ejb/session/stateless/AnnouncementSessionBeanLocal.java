@@ -32,6 +32,8 @@ public interface AnnouncementSessionBeanLocal {
 
     public List<Announcement> retrieveAllExpiredAnnouncements();
 
+    public List<Announcement> retrieveAllActiveAnnoucementsForEmployees();
+
     public List<Announcement> retrieveAllActiveAnnouncementsForCustomers();
     
 }

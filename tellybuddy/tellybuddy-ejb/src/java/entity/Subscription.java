@@ -63,7 +63,6 @@ public class Subscription implements Serializable {
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    @Future
     private Date subscriptionEndDate;
 
     @ManyToOne(optional = false)
@@ -250,8 +249,12 @@ public class Subscription implements Serializable {
     }
 
     public String getFormattedStartDate() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         return dateFormat.format(this.subscriptionStartDate);
+    }
+    public String getFormattedEndDate() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return dateFormat.format(this.subscriptionEndDate);
     }
 
     public SubscriptionStatusEnum getSubscriptionStatusEnum() {

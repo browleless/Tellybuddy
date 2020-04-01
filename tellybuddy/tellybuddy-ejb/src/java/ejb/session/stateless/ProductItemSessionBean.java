@@ -79,6 +79,7 @@ public class ProductItemSessionBean implements ProductItemSessionBeanLocal {
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
+        return null;
     }
 
     @Override

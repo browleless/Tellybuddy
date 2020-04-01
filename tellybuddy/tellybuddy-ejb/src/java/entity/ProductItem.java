@@ -34,7 +34,7 @@ public class ProductItem implements Serializable {
     
     @Column(nullable = false, length = 10)
     @NotNull
-    @Size(min = 10, max = 10)
+    @Size(min = 1, max = 10)
     private String serialNumber;
     
     @Column(nullable = false, precision = 6, scale = 2)

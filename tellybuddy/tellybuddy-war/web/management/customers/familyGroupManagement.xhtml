@@ -8,8 +8,34 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="content">
+        <style type="text/css"> 
+            .ui-dataview-list .ui-dataview-row {
+                border-bottom: 1px solid #A8A8A8;
+                padding: 25px 10px;
+            }
+            .ui-dialog {
+                border-radius: 15px;
+                width: 50%;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+                text-align: center;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+                text-align: center;
+            } 
+            .info {
+                border-left: 1px solid #A8A8A8;
+            }
+        </style>
+        <h3>Family Group Management</h3>
         <h:form id="form">
-            <p:dataGrid var="group" value="#{familyGroupManagedBean.familyGroups}" columns="3" layout="grid"
+            <p:dataGrid var="familyGroup" value="#{familyGroupManagedBean.familyGroups}" columns="3" layout="grid"
                         rows="12" paginator="true" id="groups"
                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                         rowsPerPageTemplate="6,12,16">
@@ -18,20 +44,49 @@
                     Family Groups
                 </f:facet>
 
-                <p:panel header="#{group.familyGroupId}" style="text-align:center">
-                    <h:panelGrid columns="1" style="width:100%; text-align: center">
+                <p:panel header="#{familyGroup.familyGroupId}" style="text-align:center" >
+                    <h:panelGrid columns="1" style="width:100%; text-align: center" >
 
-                        <h:outputText value="#{group.description}" />
+                        <h:outputText value="#{familyGroup.description}" />
 
-                        <p:commandLink oncomplete="PF('dialogGroupView').show()" title="View Family Group Details">
+                        <p:commandLink update="dialogViewFamilyGroup" oncomplete="PF('dialogViewFamilyGroup').show()" title="View Family Group Details" >
                             <h:outputText styleClass="fa fa-expand" style="margin:0 auto;"/>
-                            <f:setPropertyActionListener value="#{group}" target="#{familyGroupManagedBean.selectedGroup}" />
+                            <f:setPropertyActionListener value="#{familyGroup}" target="#{familyGroupManagedBean.familyGroupToView}" />
                         </p:commandLink>
                     </h:panelGrid>
                 </p:panel>
 
             </p:dataGrid>
         </h:form>
+
+        <p:dialog id="dialogViewFamilyGroup" width="600px" widgetVar="dialogViewFamilyGroup" header="View Family Group" closable="true">
+
+            <h:form id="formViewFamilyGroupMembers"> 
+                <p:carousel id="carouselFamilyGroupMembers"  style="width: 100%" itemStyle="width:200px; text-align:left; " value="#{familyGroupManagedBean.familyGroupToView.customers}" headerText="#{familyGroupManagedBean.familyGroupToView.description}" var="member" numVisible="2" responsive="true">
+                    <p:panelGrid columns="2" style="width:100%;margin:0 auto;" layout="grid" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-6, ui-grid-col-6">
+                        <f:facet name="header">
+                            <p:graphicImage value="./profilePhotos/#{member.profilePhoto}" style="width: 50%; border: 5px solid #eee; margin-bottom: 5px"/> 
+                        </f:facet>
+                        <h:outputText value="Full Name: " />
+                        <h:outputText value="#{member.firstName} #{memberlastName}" />
+
+                        <h:outputText value="Customer Id: " /> 
+                        <h:outputText value="#{member.customerId}" />
+
+                        <h:outputText value="No. Subscriptions: " />
+                        <h:outputText value="#{member.subscriptions.size()}" />
+                    </p:panelGrid>
+                </p:carousel>
+                <div class=" knob-container ui-corner-all" style="text-align: center; margin: 20px 20px;">
+                    <p:knob disabled="true" id="knobDonatedUnites" foregroundColor="#009999;" step="500" max="50" thickness="0.3" height="100" width="100" cursor="true"  value="#{familyGroupManagedBean.familyGroupToView.donatedUnits}"/>
+                    <br/>
+                    <p:outputLabel for="knobDonatedUnites" value="Donated Units Available" />
+                </div>
+
+            </h:form>
+
+        </p:dialog>
+
     </ui:define>
 
 </ui:composition>

@@ -13,6 +13,7 @@ import javax.ejb.Local;
 import javax.validation.ConstraintViolation;
 import util.enumeration.SubscriptionStatusEnum;
 import util.exception.CreateNewSubscriptionException;
+import util.exception.CustomerNotYetApproved;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
 import util.exception.PlanAlreadyDisabledException;
@@ -26,7 +27,7 @@ import util.exception.UnknownPersistenceException;
  */
 public interface SubscriptionSessonBeanLocal {
 
-    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException, CreateNewSubscriptionException;
+    public Subscription createNewSubscription(Subscription newSubscription, Long planId, Long customerId, Long phoneNumberId) throws InputDataValidationException, UnknownPersistenceException, CustomerNotYetApproved, SubscriptionExistException, PhoneNumberInUseException, PlanAlreadyDisabledException, CreateNewSubscriptionException;
 
     public void updateSubscription(Subscription subscription) throws util.exception.SubscriptionNotFoundException, InputDataValidationException;
 
@@ -39,8 +40,10 @@ public interface SubscriptionSessonBeanLocal {
     public void terminateSubscription(Long customerId, Long subscriptionId);
 
     public List<Subscription> retrieveAllSubscriptionUnderCustomer(Customer customer);
-    
+
     public List<Subscription> retrieveSubscriptionsByFilter(SubscriptionStatusEnum filterString);
+
+    public List<Subscription> retrieveAllPendingSubscriptions();
 
     public List<Subscription> retrieveAllSubscriptions();
 

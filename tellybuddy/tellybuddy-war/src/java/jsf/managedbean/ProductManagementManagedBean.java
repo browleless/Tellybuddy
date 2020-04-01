@@ -208,47 +208,6 @@ public class ProductManagementManagedBean implements Serializable {
         return s;
     }
 
-//    public void handleFileUpload(FileUploadEvent event) {
-//        try {
-//            String newFilePath = FacesContext.getCurrentInstance().getExternalContext().getInitParameter("alternatedocroot_1") + System.getProperty("file.separator") + event.getFile().getFileName();
-//
-//            if (this.productType.equals("Luxury Product")) {
-//                this.newLuxuryProduct.setProductImagePath(newFilePath);
-//            } else {
-//                this.newProduct.setProductImagePath(newFilePath);
-//            }
-//
-//            System.err.println("********** Demo03ManagedBean.handleFileUpload(): File name: " + event.getFile().getFileName());
-//            System.err.println("********** Demo03ManagedBean.handleFileUpload(): newFilePath: " + newFilePath);
-//
-//            File file = new File(newFilePath);
-//            FileOutputStream fileOutputStream = new FileOutputStream(file);
-//
-//            int a;
-//            int BUFFER_SIZE = 8192;
-//            byte[] buffer = new byte[BUFFER_SIZE];
-//
-//            InputStream inputStream = event.getFile().getInputstream();
-//
-//            while (true) {
-//                a = inputStream.read(buffer);
-//
-//                if (a < 0) {
-//                    break;
-//                }
-//
-//                fileOutputStream.write(buffer, 0, a);
-//                fileOutputStream.flush();
-//            }
-//
-//            fileOutputStream.close();
-//            inputStream.close();
-//
-//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "File uploaded successfully", ""));
-//        } catch (IOException ex) {
-//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "File upload error: " + ex.getMessage(), ""));
-//        }
-//    }
     public void doUpdateProduct(ActionEvent ae) {
         selectedProductToUpdate = (Product) ae.getComponent().getAttributes().get("productToUpdate");
 
@@ -323,10 +282,8 @@ public class ProductManagementManagedBean implements Serializable {
 
         this.productImageFile = event.getFile();
         if (productImageFile != null) {
-            String filePath = this.saveUploadedProductImage();
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + productImageFile.getFileName(), null);
-            FacesContext.getCurrentInstance().addMessage(null, message);
-            System.out.println(filePath);
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + productImageFile.getFileName(), null));
+//            System.out.println(filePath);
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "File upload unsuccessful. Please try again!", null));
 //            System.out.println("Uploaded file stilll null!!");
@@ -334,20 +291,11 @@ public class ProductManagementManagedBean implements Serializable {
     }
 
     public String saveUploadedProductImage() {
-        {
-            System.out.println("********** STEP 2");
 
-            InputStream inputStr = null;
-            try {
-                inputStr = productImageFile.getInputstream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\products\\productImages";
-            System.out.println(absolutePathToProductImages);
             Path folder = Paths.get(absolutePathToProductImages);
+            System.out.println(absolutePathToProductImages);
 
-//            Path folder = Paths.get("C:\\glassfish-5.1.0-uploadedfiles\\uploadedFiles");
             try {
                 String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
                 String extension = FilenameUtils.getExtension(productImageFile.getFileName());
@@ -365,7 +313,6 @@ public class ProductManagementManagedBean implements Serializable {
             return null;
 
 //            System.out.println("Uploaded file successfully saved in " + file);
-        }
     }
 
     public List<Product> getAllProducts() {
