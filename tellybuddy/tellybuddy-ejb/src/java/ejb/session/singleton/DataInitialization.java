@@ -170,14 +170,14 @@ public class DataInitialization {
             em.flush();
             em.persist(newTag1);
             em.flush();
-
-            Product newProd = new Product("SKU001", "testing", "testing", BigDecimal.ONE, 20, 50, "path");
-            newProd.setCategory(newCat1);
-            List<Tag> tags = new ArrayList<>();
-            tags.add(newTag1);
-            newProd.setTags(tags);
-            em.persist(newProd);
-            em.flush();
+//
+//            Product newProd = new Product("SKU001", "testing", "testing", BigDecimal.ONE, 20, 50, "path");
+//            newProd.setCategory(newCat1);
+//            List<Tag> tags = new ArrayList<>();
+//            tags.add(newTag1);
+//            newProd.setTags(tags);
+//            em.persist(newProd);
+//            em.flush();
 
             Customer customer1 = em.find(Customer.class, 1l);
             Customer customer2 = em.find(Customer.class, 2l);
