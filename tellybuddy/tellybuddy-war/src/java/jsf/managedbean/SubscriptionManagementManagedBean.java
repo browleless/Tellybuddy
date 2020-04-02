@@ -81,7 +81,7 @@ public class SubscriptionManagementManagedBean implements Serializable {
     }
 
     public void terminateSubscriptionRequest(ActionEvent ae) {
-        subscriptionSessonBeanLocal.terminateSubscription(subscriptionToView.getCustomer().getCustomerId(), subscriptionToView.getSubcscriptionId());
+        subscriptionSessonBeanLocal.terminateSubscription(subscriptionToView.getCustomer().getCustomerId(), subscriptionToView.getSubscriptionId());
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Subscription termination successful", null));
         doFilter();
     }

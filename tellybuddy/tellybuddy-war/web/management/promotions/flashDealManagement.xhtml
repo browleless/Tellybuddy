@@ -57,9 +57,11 @@
 
                 <p:tab title="Flash Plans">
 
-                    <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Flash Plan" oncomplete="PF('dialogCreateNewFlashPlan').show()" />
+                    <div>
+                        <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Flash Plan" oncomplete="PF('dialogCreateNewFlashPlan').show()" />
+                    </div>
 
-                    <h:form>
+                    <h:form style="float: left; padding-top: 2px;">
                         <h:panelGrid columns="2">
                             <p:outputLabel for="flashDealsFilter" value="Show: " />
                             <p:selectOneMenu id="flashDealsFilter" value="#{flashDealManagementManagedBean.selectedFilter}">
@@ -270,7 +272,7 @@
 
             </p:dialog>
 
-            
+
             <p:dialog id="dialogViewDiscountedProduct" widgetVar="dialogViewDiscountedProduct" header="View products on flash deal" closable="true">
                 <h:form id="formViewDiscountedProduct">
 

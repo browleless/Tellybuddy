@@ -29,7 +29,7 @@ public class Tag implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagId;
     
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 32, unique = true)
     @NotNull
     @Size(min = 2, max = 32)
     private String name;
