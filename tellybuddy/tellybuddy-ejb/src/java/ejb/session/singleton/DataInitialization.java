@@ -201,6 +201,7 @@ public class DataInitialization {
             customer3.setFamilyGroup(fg2);
             customer4.setFamilyGroup(fg2);
             customer5.setFamilyGroup(fg2);
+            customer6.setFamilyGroup(fg2);
             em.persist(fg2);
             em.flush();
             initialiseProducts();

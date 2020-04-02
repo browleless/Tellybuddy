@@ -102,7 +102,7 @@
                     <div class="ui-g-8">
                         
                         <h:form id="formViewTransactionLineItems" style="margin: 0 auto; ui-g-6">
-                            <p:dataTable id="dataTableTransactionLineItems" widgetVar="dataTableTransactionLineItems" style="text-align: center" value="#{transaction.transactionLineItems}" var="trLineItem" rowKey="#{trLineItem.transactionLineItemId}" rowIndexVar="row">
+                            <p:dataTable id="dataTableTransactionLineItems" widgetVar="dataTableTransactionLineItems" style="text-align: center" value="#{transaction.transactionLineItems}" var="trLineItem" rowKey="#{trLineItem.transactionLineItemId}" rowIndexVar="row" scrollable="true" liveScroll="true" >
                                 <p:column headerText="Id" width="5%" style="text-align: center">
                                     <h:outputText value="#{trLineItem.transactionLineItemId}" />
                                 </p:column>
