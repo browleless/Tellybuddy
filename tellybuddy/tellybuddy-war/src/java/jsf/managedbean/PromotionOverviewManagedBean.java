@@ -5,8 +5,10 @@
  */
 package jsf.managedbean;
 
-import ejb.session.stateless.AnnouncementSessionBeanLocal;
-import entity.Announcement;
+import ejb.session.stateless.PlanSessionBeanLocal;
+import ejb.session.stateless.ProductSessionBeanLocal;
+import entity.Plan;
+import entity.Product;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,26 +32,33 @@ import org.primefaces.model.ScheduleModel;
  *
  * @author kaikai
  */
-@Named(value = "announcementOverviewManagedBean")
+@Named(value = "promotionOverviewManagedBean")
 @ViewScoped
-public class AnnouncementOverviewManagedBean implements Serializable {
+public class PromotionOverviewManagedBean implements Serializable {
 
-    @EJB(name = "AnnouncementSessionBeanLocal")
-    private AnnouncementSessionBeanLocal announcementSessionBeanLocal;
+    @EJB(name = "PlanSessionBeanLocal")
+    private PlanSessionBeanLocal planSessionBeanLocal;
+
+    @EJB(name = "ProductSessionBeanLocal")
+    private ProductSessionBeanLocal productSessionBeanLocal;
+
     private ScheduleModel scheduleModel;
     private ScheduleEvent scheduleEvent;
 
-    public AnnouncementOverviewManagedBean() {
+    public PromotionOverviewManagedBean() {
         scheduleModel = new DefaultScheduleModel();
         scheduleEvent = new DefaultScheduleEvent();
     }
 
     @PostConstruct
     public void postConstruct() {
-        List<Announcement> activeAnnouncements = announcementSessionBeanLocal.retrieveAllActiveAnnoucements();
-        for (Announcement a : activeAnnouncements) {
-
-            scheduleModel.addEvent(new DefaultScheduleEvent(a.getTitle(), a.getPostedDate(), a.getExpiryDate()));
+        List<Plan> promotionPlans = planSessionBeanLocal.retrieveAllActiveFlashPlans();
+        for (Plan p : promotionPlans) {
+            scheduleModel.addEvent(new DefaultScheduleEvent(p.getName(), p.getStartTime(), p.getEndTime()));
+        }
+        List<Product> promotionProducts = productSessionBeanLocal.retrieveAllDiscountedProducts();
+        for (Product p : promotionProducts) {
+            scheduleModel.addEvent(new DefaultScheduleEvent(p.getName(), p.getDealStartTime(), p.getDealEndTime()));
         }
     }
 
@@ -109,5 +118,4 @@ public class AnnouncementOverviewManagedBean implements Serializable {
 
         return calendar;
     }
-
 }

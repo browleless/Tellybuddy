@@ -7,6 +7,7 @@ package ejb.session.singleton;
 
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.FamilyGroupSessionBeanLocal;
+import ejb.session.stateless.ProductSessionBeanLocal;
 import ejb.session.stateless.SubscriptionSessonBeanLocal;
 import ejb.session.stateless.TransactionSessionBeanLocal;
 import entity.Customer;
@@ -48,14 +49,12 @@ import javax.persistence.PersistenceContext;
 import util.enumeration.AccessRightEnum;
 import util.enumeration.AnnouncementRecipientEnum;
 import util.enumeration.SubscriptionStatusEnum;
-import util.exception.CreateNewSaleTransactionException;
 import util.exception.CreateNewSubscriptionException;
-import util.exception.CustomerNotFoundException;
 import util.exception.CustomerNotYetApproved;
-import util.exception.DiscountCodeNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
 import util.exception.PlanAlreadyDisabledException;
+import util.exception.ProductNotFoundException;
 import util.exception.SubscriptionExistException;
 import util.exception.UnknownPersistenceException;
 
@@ -67,6 +66,9 @@ import util.exception.UnknownPersistenceException;
 @LocalBean
 @Startup
 public class DataInitialization {
+
+    @EJB(name = "ProductSessionBeanLocal")
+    private ProductSessionBeanLocal productSessionBeanLocal;
 
     @EJB(name = "TransactionSessionBeanLocal")
     private TransactionSessionBeanLocal transactionSessionBeanLocal;
@@ -206,24 +208,26 @@ public class DataInitialization {
             em.flush();
             initialiseProducts();
             
-            List<TransactionLineItem> listOfPurchases = new ArrayList<>();
             Payment payment = new Payment("1234123412341234", "123", new Date(), new BigDecimal("12.12"));
             em.persist(payment);
             em.flush();
             
-            Transaction testTransaction = new Transaction(new BigDecimal("12.12"), new Date(), listOfPurchases);
+            Transaction testTransaction = new Transaction(new BigDecimal("12.12"), new Date());
             testTransaction.setCustomer(customer1);
             testTransaction.setPayment(payment);
             em.persist(testTransaction);
             em.flush();
-            transactionSessionBeanLocal.createNewTransaction(1l, testTransaction, "Wow2343");
+            
+            TransactionLineItem item = new TransactionLineItem(BigDecimal.ONE, 1, BigDecimal.ZERO);
+            item.setProduct(productSessionBeanLocal.retrieveProductByProductId(4l));
+            item.setTransaction(testTransaction);
+            em.persist(item);
+            em.flush();
+            testTransaction.getTransactionLineItems().add(item);
+            
         } catch (ParseException ex) {
             Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CustomerNotFoundException ex) {
-            Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CreateNewSaleTransactionException ex) {
-            Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DiscountCodeNotFoundException ex) {
+        } catch (ProductNotFoundException ex) {
             Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -273,24 +277,6 @@ public class DataInitialization {
         em.persist(phoneno);
         em.flush();
         phoneno = new PhoneNumber("43121234");
-        em.persist(phoneno);
-        em.flush();
-        phoneno = new PhoneNumber("21314234");
-        em.persist(phoneno);
-        em.flush();
-        phoneno = new PhoneNumber("65433456");
-        em.persist(phoneno);
-        em.flush();
-        phoneno = new PhoneNumber("34567543");
-        em.persist(phoneno);
-        em.flush();
-        phoneno = new PhoneNumber("85467654");
-        em.persist(phoneno);
-        em.flush();
-        phoneno = new PhoneNumber("74568656");
-        em.persist(phoneno);
-        em.flush();
-        phoneno = new PhoneNumber("98766543");
         em.persist(phoneno);
         em.flush();
     }
