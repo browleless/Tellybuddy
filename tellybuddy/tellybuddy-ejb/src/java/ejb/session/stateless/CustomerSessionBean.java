@@ -277,6 +277,17 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     }
     
     @Override
+    public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException {
+        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.email = :inEmail");
+        query.setParameter("inEmail", email);
+        try {
+            return (Customer) query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw new CustomerNotFoundException("Customer Email " + email + " does not exist!");
+        }
+    }
+    
+    @Override
     public int retrieveNoActiveSubscriptions(Customer customer){
         int count = 0;
         for(Subscription s:customer.getSubscriptions()){

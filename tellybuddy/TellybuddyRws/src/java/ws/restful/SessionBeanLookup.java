@@ -7,6 +7,7 @@ import ejb.session.stateless.CategorySessionBeanLocal;
 import ejb.session.stateless.CheckoutSessionBeanLocal;
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.DiscountCodeSessionBeanLocal;
+import ejb.session.stateless.EmailSessionBeanLocal;
 import ejb.session.stateless.FamilyGroupSessionBeanLocal;
 import ejb.session.stateless.PaymentSessionBeanLocal;
 import ejb.session.stateless.PhoneNumberSessionBeanLocal;
@@ -242,6 +243,16 @@ public class SessionBeanLookup {
         try {
             javax.naming.Context c = new InitialContext();
             return (UsageDetailSessionBeanLocal) c.lookup(ejbModuleJndiPath + "UsageDetailSessionBean!ejb.session.stateless.UsageDetailSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
+    
+    public EmailSessionBeanLocal lookupEmailSessionBeanLocal() {
+        try {
+            javax.naming.Context c = new InitialContext();
+            return (EmailSessionBeanLocal) c.lookup(ejbModuleJndiPath + "EmailSessionBean!ejb.session.stateless.EmailSessionBeanLocal");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);

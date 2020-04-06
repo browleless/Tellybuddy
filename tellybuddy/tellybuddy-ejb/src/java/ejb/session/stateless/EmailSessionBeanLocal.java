@@ -9,6 +9,7 @@ import entity.Bill;
 import entity.Customer;
 import java.util.concurrent.Future;
 import javax.ejb.Local;
+import util.exception.CustomerNotFoundException;
 
 /**
  *
@@ -20,5 +21,7 @@ public interface EmailSessionBeanLocal {
     public Future<Boolean> emailBillNotificationAsync(Bill bill, Integer subscriptionTotalAllowedData, Integer subscriptionTotalAllowedSms, Integer subscriptionTotalAllowedTalktime, String fromEmailAddress, String toEmailAddress) throws InterruptedException;
 
     public Future<Boolean> emailCustomerAccountCreationNotification(Customer customer, String fromEmailAddress, String toEmailAddress) throws InterruptedException;
+
+    public Future<Boolean> emailCustomerResetPasswordLink(String fromEmailAddress, String toEmailAddress) throws InterruptedException, CustomerNotFoundException;
 
 }
