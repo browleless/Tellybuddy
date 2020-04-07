@@ -110,6 +110,17 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         customerToUpdate.setNewNric(customer.getNewNric());
         customerToUpdate.setNewNricImagePath(customer.getNewNricImagePath());
     }
+    
+    @Override
+    public void updateCustomerPassword(Customer customer) throws CustomerNotFoundException {
+        
+        Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
+        
+        String newSalt = CryptographicHelper.getInstance().generateRandomString(32);
+
+        customerToUpdate.setSalt(newSalt);
+        customerToUpdate.setPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(customer.getPassword() + newSalt)));
+    }
 
 //    @RolesAllowed({"employee"})
     @Override
@@ -284,6 +295,17 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             return (Customer) query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new CustomerNotFoundException("Customer Email " + email + " does not exist!");
+        }
+    }
+    
+    @Override
+    public Customer retrieveCustomerBySalt(String salt) throws CustomerNotFoundException {
+        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.salt = :inSalt");
+        query.setParameter("inSalt", salt);
+        try {
+            return (Customer) query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw new CustomerNotFoundException("Customer salt " + salt + " does not exist!");
         }
     }
     

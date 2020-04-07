@@ -152,7 +152,7 @@ public class EmailManager {
         emailBody += "Dear " + customer.getFirstName() + " " + customer.getLastName() + ",\n\n";
         emailBody += "Your have requested for a password reset for Tellybuddy.\n\n";
 
-        emailBody += "Visit the following link to reset your password: http://localhost:4200/resetPassword/" + customer.getCustomerId() + "\n\n";
+        emailBody += "Visit the following link to reset your password: http://localhost:4200/resetPassword/" + customer.getSalt() + "\n\n";
 
         emailBody += "If this was not requested by you, please ignore this email.\n";
         emailBody += "Thank you for your support for Tellybuddy!\n";
