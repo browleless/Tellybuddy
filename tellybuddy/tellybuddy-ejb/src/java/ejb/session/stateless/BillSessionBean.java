@@ -3,10 +3,12 @@ package ejb.session.stateless;
 import entity.Bill;
 import entity.Customer;
 import entity.UsageDetail;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import util.exception.BillNotFoundException;
 import util.exception.CustomerNotFoundException;
 import util.exception.UsageDetailNotFoundException;
@@ -55,5 +57,14 @@ public class BillSessionBean implements BillSessionBeanLocal {
         } else {
             throw new BillNotFoundException("Bill ID " + billId + " does not exist!");
         }
+    }
+    
+    @Override
+    public List<Bill> retrieveBillByCustomer(Customer customer) {
+        
+        Query query = entityManager.createQuery("SELECT b FROM Bill b WHERE b.customer = :inCustomer");
+        query.setParameter("inCustomer", customer);
+        
+        return query.getResultList();
     }
 }

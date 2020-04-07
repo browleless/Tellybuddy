@@ -31,6 +31,7 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(ws.restful.AnnouncementResource.class);
         resources.add(ws.restful.AnswerResource.class);
+        resources.add(ws.restful.BillResource.class);
         resources.add(ws.restful.CategoryResource.class);
         resources.add(ws.restful.CustomerResource.class);
         resources.add(ws.restful.DiscountCodeResource.class);
