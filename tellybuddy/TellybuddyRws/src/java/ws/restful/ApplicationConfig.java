@@ -43,6 +43,7 @@ public class ApplicationConfig extends Application {
         resources.add(ws.restful.QuizResource.class);
         resources.add(ws.restful.SubscriptionResource.class);
         resources.add(ws.restful.TagResource.class);
+        resources.add(ws.restful.UsageDetailResource.class);
     }
     
 }
