@@ -36,6 +36,7 @@ public class ApplicationConfig extends Application {
         resources.add(ws.restful.CustomerResource.class);
         resources.add(ws.restful.DiscountCodeResource.class);
         resources.add(ws.restful.FamilyGroupResource.class);
+        resources.add(ws.restful.PaymentResource.class);
         resources.add(ws.restful.PhoneNumberResource.class);
         resources.add(ws.restful.PlanResource.class);
         resources.add(ws.restful.ProductResource.class);

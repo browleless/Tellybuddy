@@ -1,6 +1,7 @@
 package ejb.session.stateless;
 
 import entity.Bill;
+import entity.Customer;
 import entity.Payment;
 import java.util.Date;
 import java.util.List;
@@ -18,9 +19,9 @@ import util.exception.PaymentNotFoundException;
 @Local
 public interface PaymentSessionBeanLocal {
 
-    public Long createNewPayment(Payment newPayment);
+    public Long createNewBillPayment(Payment payment, Bill bill) throws BillAlreadyPaidException, BillNotFoundException;
 
-    public Long createNewBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException;
+    public Long automateBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException;
 
     public Payment retrievePaymentByPaymentId(Long paymentId) throws PaymentNotFoundException;
 
@@ -29,5 +30,7 @@ public interface PaymentSessionBeanLocal {
     public List<Payment> retrievePaymentsBetweenDates(Date startDate, Date endDate);
 
     public void deletePayment(Payment payment) throws PaymentNotFoundException, DeletePaymentException;
+
+    public List<Payment> retrieveCustomerPayments(Customer customer);
 
 }
