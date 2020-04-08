@@ -109,9 +109,11 @@
 
                                 <h:outputText value="Approval Status:" />
                                 <h:outputText value="#{customer.isApproved}" style="font-weight: bold"/>
-                                
+
                                 <h:outputText value="Join Date:" />
-                                <h:outputText value="#{customer.formattedJoinDate}" style="font-weight: bold"/>
+                                <h:outputText value="#{customer.joinDate}" style="font-weight: bold">
+                                    <f:convertDateTime pattern="dd/MM/yyyy | HH:mm:ss" timeZone="GMT+8" /> 
+                                </h:outputText>
                             </p:panelGrid>
                         </p:outputPanel>
                     </p:panelGrid>
@@ -153,7 +155,9 @@
                     </p:column>
 
                     <p:column headerText="Contract Start Date" width="20%" style="text-align: center">
-                        <h:outputText value="#{subscription.formattedStartDate}" />
+                        <h:outputText value="#{subscription.subscriptionStartDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT+8" /> 
+                        </h:outputText>
                     </p:column>
 
                     <p:column headerText="Phone Number" width="10%" style="text-align: center">

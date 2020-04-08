@@ -492,11 +492,6 @@ public class Customer implements Serializable {
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
     }
-    public String getFormattedJoinDate(){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd | hh:mm:ss");
-        return dateFormat.format(this.joinDate);
-        
-    }
 
     public String getProfilePhoto() {
         return profilePhoto;

@@ -112,7 +112,9 @@
                         <h:outputLabel value="Start Date: " />
                     </p:column>
                     <p:column>
-                        <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.formattedStartDate}" />
+                        <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.subscriptionStartDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT+8" /> 
+                        </h:outputText>
                     </p:column>
                 </p:row>
                 <p:row rendered="#{subscriptionManagementManagedBean.subscriptionToView.subscriptionStatusEnum == 'DISABLED'}">
@@ -120,7 +122,9 @@
                         <h:outputLabel value="End Date: " />
                     </p:column>
                     <p:column>
-                        <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.formattedEndDate}" />
+                        <h:outputText value="#{subscriptionManagementManagedBean.subscriptionToView.subscriptionEndDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT+8" /> 
+                        </h:outputText>
                     </p:column>
                 </p:row>
                 <p:row>

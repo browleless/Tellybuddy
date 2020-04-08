@@ -91,9 +91,15 @@ public class BillResource {
 
             Bill bill = billSessionBeanLocal.retrieveBillByBillId(billId);
 
-            bill.setCustomer(null);
-            bill.setUsageDetail(null);
-
+            bill.getCustomer().getQuizAttempts().clear();
+            bill.getCustomer().getTransactions().clear();
+            bill.getCustomer().getSubscriptions().clear();
+            bill.getCustomer().getBills().clear();
+            bill.getCustomer().setFamilyGroup(null);
+            
+            bill.getUsageDetail().setBill(null);
+            bill.getUsageDetail().setSubscription(null);
+            
             return Response.status(Status.OK).entity(new RetrieveBillRsp(bill)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());

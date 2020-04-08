@@ -4,6 +4,7 @@ import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.SubscriptionSessonBeanLocal;
 import entity.Customer;
 import entity.Subscription;
+import entity.UsageDetail;
 import java.util.List;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -100,8 +101,17 @@ public class SubscriptionResource {
 
             Subscription subscription = subscriptionSessonBeanLocal.retrieveSubscriptionBySubscriptionId(subscriptionId);
 
-            subscription.setCustomer(null);
-            subscription.getUsageDetails().clear();
+            subscription.getCustomer().getQuizAttempts().clear();
+            subscription.getCustomer().getSubscriptions().clear();
+            subscription.getCustomer().getBills().clear();
+            subscription.getCustomer().getTransactions().clear();
+            subscription.getCustomer().setFamilyGroup(null);
+            
+            for (UsageDetail usageDetail : subscription.getUsageDetails()) {
+                usageDetail.setSubscription(null);
+                usageDetail.setBill(null);
+            }
+            
             subscription.getPhoneNumber().setSubscription(null);
 
             return Response.status(Response.Status.OK).entity(new RetrieveSubscriptionRsp(subscription)).build();
