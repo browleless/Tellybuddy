@@ -15,56 +15,52 @@ import javax.validation.constraints.NotNull;
  * @author tjle2
  */
 @Entity
-public class Response implements Serializable {
+public class QuizResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long responseId;
-    
+    private Long quizResponseId;
+
     @Column(nullable = false)
     @NotNull
     private Boolean isCorrect;
-    
+
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
     private Question question;
-    
+
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
     private Answer answer;
 
-    public Response() {
+    public QuizResponse() {
+        this.isCorrect = Boolean.FALSE;
     }
 
-    public Response(Boolean isCorrect) {
-        this();
-        this.isCorrect = isCorrect;
+    public Long getQuizResponseId() {
+        return quizResponseId;
     }
 
-    public Long getResponseId() {
-        return responseId;
-    }
-
-    public void setResponseId(Long responseId) {
-        this.responseId = responseId;
+    public void setQuizResponseId(Long quizResponseId) {
+        this.quizResponseId = quizResponseId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (responseId != null ? responseId.hashCode() : 0);
+        hash += (quizResponseId != null ? quizResponseId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the responseId fields are not set
-        if (!(object instanceof Response)) {
+        // TODO: Warning - this method won't work in the case the quizResponseId fields are not set
+        if (!(object instanceof QuizResponse)) {
             return false;
         }
-        Response other = (Response) object;
-        if ((this.responseId == null && other.responseId != null) || (this.responseId != null && !this.responseId.equals(other.responseId)) || (this.responseId == null && other.responseId == null && !this.question.equals(other.question))) {
+        QuizResponse other = (QuizResponse) object;
+        if ((this.quizResponseId == null && other.quizResponseId != null) || (this.quizResponseId != null && !this.quizResponseId.equals(other.quizResponseId)) || (this.quizResponseId == null && other.quizResponseId == null && !this.question.equals(other.question))) {
             return false;
         }
         return true;
@@ -72,7 +68,7 @@ public class Response implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Response[ id=" + responseId + " ]";
+        return "entity.Response[ id=" + quizResponseId + " ]";
     }
 
     public Boolean getIsCorrect() {
@@ -98,5 +94,5 @@ public class Response implements Serializable {
     public void setAnswer(Answer answer) {
         this.answer = answer;
     }
-    
+
 }

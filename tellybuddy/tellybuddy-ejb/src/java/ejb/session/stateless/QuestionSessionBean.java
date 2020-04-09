@@ -87,7 +87,7 @@ public class QuestionSessionBean implements QuestionSessionBeanLocal {
 
             Question questionToDelete = retrieveQuestionByQuestionId(question.getQuestionId());
 
-            Query query = entityManager.createQuery("SELECT r FROM Response r WHERE r.question = :inQuestion");
+            Query query = entityManager.createQuery("SELECT qr FROM QuizResponse qr WHERE qr.question = :inQuestion");
             query.setParameter("inQuestion", questionToDelete);
 
             if (!query.getResultList().isEmpty()) {

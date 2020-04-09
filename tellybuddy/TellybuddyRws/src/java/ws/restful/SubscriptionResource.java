@@ -107,6 +107,9 @@ public class SubscriptionResource {
             subscription.getCustomer().getTransactions().clear();
             subscription.getCustomer().setFamilyGroup(null);
             
+            subscription.getCustomer().setPassword(null);
+            subscription.getCustomer().setSalt(null);
+            
             for (UsageDetail usageDetail : subscription.getUsageDetails()) {
                 usageDetail.setSubscription(null);
                 usageDetail.setBill(null);

@@ -50,10 +50,10 @@ public class QuizAttempt implements Serializable {
     private Quiz quiz;
     
     @OneToMany
-    private List<Response> responses;
+    private List<QuizResponse> quizResponses;
 
     public QuizAttempt() {
-        this.responses = new ArrayList<>();
+        this.quizResponses = new ArrayList<>();
     }
 
     public QuizAttempt(Integer score, Date completedDate) {
@@ -127,12 +127,12 @@ public class QuizAttempt implements Serializable {
         this.quiz = quiz;
     }
 
-    public List<Response> getResponses() {
-        return responses;
+    public List<QuizResponse> getQuizResponses() {
+        return quizResponses;
     }
 
-    public void setResponses(List<Response> responses) {
-        this.responses = responses;
+    public void setQuizResponses(List<QuizResponse> quizResponses) {
+        this.quizResponses = quizResponses;
     }
     
 }

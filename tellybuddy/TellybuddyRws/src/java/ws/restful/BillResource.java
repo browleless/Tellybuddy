@@ -97,6 +97,9 @@ public class BillResource {
             bill.getCustomer().getBills().clear();
             bill.getCustomer().setFamilyGroup(null);
             
+            bill.getCustomer().setPassword(null);
+            bill.getCustomer().setSalt(null);
+            
             bill.getUsageDetail().setBill(null);
             bill.getUsageDetail().setSubscription(null);
             

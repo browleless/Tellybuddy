@@ -17,7 +17,6 @@ import ejb.session.stateless.ProductSessionBeanLocal;
 import ejb.session.stateless.QuestionSessionBeanLocal;
 import ejb.session.stateless.QuizAttemptSessionBeanLocal;
 import ejb.session.stateless.QuizSessionBeanLocal;
-import ejb.session.stateless.ResponseSessionBeanLocal;
 import ejb.session.stateless.SubscriptionSessonBeanLocal;
 import ejb.session.stateless.TagSessionBeanLocal;
 import ejb.session.stateless.TransactionSessionBeanLocal;
@@ -26,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import ejb.session.stateless.QuizResponseSessionBeanLocal;
 
 /**
  *
@@ -199,10 +199,10 @@ public class SessionBeanLookup {
         }
     }
 
-    public ResponseSessionBeanLocal lookupResponseSessionBeanLocal() {
+    public QuizResponseSessionBeanLocal lookupQuizResponseSessionBeanLocal() {
         try {
             javax.naming.Context c = new InitialContext();
-            return (ResponseSessionBeanLocal) c.lookup(ejbModuleJndiPath + "ResponseSessionBean!ejb.session.stateless.ResponseSessionBeanLocal");
+            return (QuizResponseSessionBeanLocal) c.lookup(ejbModuleJndiPath + "QuizResponseSessionBean!ejb.session.stateless.QuizResponseSessionBeanLocal");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);
