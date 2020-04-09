@@ -48,7 +48,7 @@ public class AnswerSessionBean implements AnswerSessionBeanLocal {
         if (answer != null) {
             return answer;
         } else {
-            throw new AnswerNotFoundException("Question ID " + answerId + " does not exist!");
+            throw new AnswerNotFoundException("Answer ID " + answerId + " does not exist!");
         }
     }
 
@@ -84,7 +84,7 @@ public class AnswerSessionBean implements AnswerSessionBeanLocal {
 
             Answer answerToDelete = retrieveAnswerByAnswerId(answer.getAnswerId());
 
-            Query query = entityManager.createQuery("SELECT r FROM Response r WHERE r.answer = :inAnswer");
+            Query query = entityManager.createQuery("SELECT qr FROM QuizResponse qr WHERE qr.answer = :inAnswer");
             query.setParameter("inAnswer", answerToDelete);
 
             if (!query.getResultList().isEmpty()) {

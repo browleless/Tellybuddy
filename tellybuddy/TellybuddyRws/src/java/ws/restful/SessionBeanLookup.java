@@ -7,6 +7,7 @@ import ejb.session.stateless.CategorySessionBeanLocal;
 import ejb.session.stateless.CheckoutSessionBeanLocal;
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.DiscountCodeSessionBeanLocal;
+import ejb.session.stateless.EmailSessionBeanLocal;
 import ejb.session.stateless.FamilyGroupSessionBeanLocal;
 import ejb.session.stateless.PaymentSessionBeanLocal;
 import ejb.session.stateless.PhoneNumberSessionBeanLocal;
@@ -16,7 +17,6 @@ import ejb.session.stateless.ProductSessionBeanLocal;
 import ejb.session.stateless.QuestionSessionBeanLocal;
 import ejb.session.stateless.QuizAttemptSessionBeanLocal;
 import ejb.session.stateless.QuizSessionBeanLocal;
-import ejb.session.stateless.ResponseSessionBeanLocal;
 import ejb.session.stateless.SubscriptionSessonBeanLocal;
 import ejb.session.stateless.TagSessionBeanLocal;
 import ejb.session.stateless.TransactionSessionBeanLocal;
@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import ejb.session.stateless.QuizResponseSessionBeanLocal;
 
 /**
  *
@@ -198,10 +199,10 @@ public class SessionBeanLookup {
         }
     }
 
-    public ResponseSessionBeanLocal lookupResponseSessionBeanLocal() {
+    public QuizResponseSessionBeanLocal lookupQuizResponseSessionBeanLocal() {
         try {
             javax.naming.Context c = new InitialContext();
-            return (ResponseSessionBeanLocal) c.lookup(ejbModuleJndiPath + "ResponseSessionBean!ejb.session.stateless.ResponseSessionBeanLocal");
+            return (QuizResponseSessionBeanLocal) c.lookup(ejbModuleJndiPath + "QuizResponseSessionBean!ejb.session.stateless.QuizResponseSessionBeanLocal");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);
@@ -242,6 +243,16 @@ public class SessionBeanLookup {
         try {
             javax.naming.Context c = new InitialContext();
             return (UsageDetailSessionBeanLocal) c.lookup(ejbModuleJndiPath + "UsageDetailSessionBean!ejb.session.stateless.UsageDetailSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
+    
+    public EmailSessionBeanLocal lookupEmailSessionBeanLocal() {
+        try {
+            javax.naming.Context c = new InitialContext();
+            return (EmailSessionBeanLocal) c.lookup(ejbModuleJndiPath + "EmailSessionBean!ejb.session.stateless.EmailSessionBeanLocal");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);

@@ -58,6 +58,14 @@ public interface ProductSessionBeanLocal {
 
     public String retrieveLatestSerialNum();
 
+    public List<Product> retrieveAllDiscountedProducts();
+
+    public void deactivatePromotion(Product productToDeactivate);
+
+    public void activatePromotion(Product productToActivate);
+
+    public void updateProduct(Product product);
+
  
     
     

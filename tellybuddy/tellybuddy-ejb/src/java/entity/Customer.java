@@ -209,7 +209,7 @@ public class Customer implements Serializable {
         this.customerStatusEnum = CustomerStatusEnum.PENDING;
         this.joinDate = joinDate;
         this.profilePhoto = profilePhoto;
-        setPassword(password);
+        hashPassword(password);
     }
 
     public Long getCustomerId() {
@@ -264,13 +264,17 @@ public class Customer implements Serializable {
     public String getNewNricImagePath() {
         return newNricImagePath;
     }
-
-    public void setPassword(String password) {
+    
+    public void hashPassword(String password) {
         if (password != null) {
             this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
         } else {
             this.password = null;
         }
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {
@@ -487,11 +491,6 @@ public class Customer implements Serializable {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
-    }
-    public String getFormattedJoinDate(){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd | hh:mm:ss");
-        return dateFormat.format(this.joinDate);
-        
     }
 
     public String getProfilePhoto() {

@@ -60,9 +60,11 @@
         <div>
             <h3>Quiz Management</h3>
 
-            <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Quiz" oncomplete="PF('dialogCreateNewQuiz').show()" />
+            <div>
+                <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Quiz" oncomplete="PF('dialogCreateNewQuiz').show()" />
+            </div>
 
-            <h:form>
+            <h:form style="float: left; padding-top: 2px;">
                 <h:panelGrid columns="2">
                     <p:outputLabel for="quizFilter" value="Show: " />
                     <p:selectOneMenu id="quizFilter" value="#{quizManagementManagedBean.selectedFilter}">
@@ -500,7 +502,7 @@
                         </p:tab>
 
                     </p:tabView>
-                    
+
                     <h:panelGroup id="buttonActions" layout="block" style="text-align: center; margin-bottom: 20px;">
                         <p:commandButton rendered="#{quizManagementManagedBean.currentTabIndex == 1}" style="margin-bottom: 20px;" icon="fa fa-plus" value="Add New Question" process="@this" oncomplete="PF('dialogAddNewQuestion').show(); PF('dialogUpdateQuiz').hide()" />
                         <br />

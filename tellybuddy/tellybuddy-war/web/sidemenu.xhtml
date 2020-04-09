@@ -20,8 +20,6 @@
 
                     <p:submenu label="Actions">
 
-                        
-                        
                         <p:menuitem styleClass="#{view.viewId.contains('updateParticulars') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/home.xhtml')}" value="My Particulars" oncomplete="PF('dialogMyParticulars').show();" icon="fa fa-edit" />
                         
                         <p:menuitem styleClass="#{view.viewId.contains('employeeAccountManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/account')}" value="Employee Management" outcome="/management/account/employeeAccountManagement.xhtml" icon="fa fa-users" />
@@ -37,10 +35,9 @@
                         <p:menuitem styleClass="#{view.viewId.contains('familyGroupManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/customers')}" value="Family Group Management" outcome="/management/customers/familyGroupManagement.xhtml" icon="fa fa-users" />
                         <p:menuitem styleClass="#{view.viewId.contains('transactionManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/customers')}" value="Transaction Management" outcome="/management/customers/transactionManagement.xhtml" icon="fa fa-money" />
                         
-                        <p:menuitem styleClass="#{view.viewId.contains('overview') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/announcements')}" value="Overview" outcome="/management/announcements/announcementOverview.xhtml" icon="fa fa-bullhorn" />
-                        <p:menuitem styleClass="#{view.viewId.contains('announcementManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/announcements')}" value="Announcement Management" outcome="/management/announcements/main.xhtml" icon="fa fa-bullhorn" />
+                        <p:menuitem styleClass="#{view.viewId.contains('announcementManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/announcements')}" value="Announcement Management" outcome="/management/announcements/announcementManagement.xhtml" icon="fa fa-bullhorn" />
                         
-
+                        <p:menuitem styleClass="#{view.viewId.contains('main') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/promotions')}" value="Overview" outcome="/management/promotions/main.xhtml" icon="fa fa-calendar" />
                         <p:menuitem styleClass="#{view.viewId.contains('flashDealManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/promotions')}" value="Flash Deals" outcome="/management/promotions/flashDealManagement.xhtml" icon="fa fa-hourglass-half" />
                         <p:menuitem styleClass="#{view.viewId.contains('flashCouponManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/promotions')}" value="Flash Coupons" outcome="/management/promotions/flashCouponManagement.xhtml" icon="fa fa-tag" />
                         <p:menuitem styleClass="#{view.viewId.contains('quizManagement') ? 'active' : ''}" rendered="#{request.servletPath.contains('/management/promotions')}" value="Quiz Management" outcome="/management/promotions/quizManagement.xhtml" icon="fa fa-list-ul" />

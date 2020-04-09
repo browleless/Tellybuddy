@@ -31,17 +31,21 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(ws.restful.AnnouncementResource.class);
         resources.add(ws.restful.AnswerResource.class);
+        resources.add(ws.restful.BillResource.class);
         resources.add(ws.restful.CategoryResource.class);
         resources.add(ws.restful.CustomerResource.class);
         resources.add(ws.restful.DiscountCodeResource.class);
         resources.add(ws.restful.FamilyGroupResource.class);
+        resources.add(ws.restful.PaymentResource.class);
         resources.add(ws.restful.PhoneNumberResource.class);
         resources.add(ws.restful.PlanResource.class);
         resources.add(ws.restful.ProductResource.class);
         resources.add(ws.restful.QuestionResource.class);
+        resources.add(ws.restful.QuizAttemptResource.class);
         resources.add(ws.restful.QuizResource.class);
         resources.add(ws.restful.SubscriptionResource.class);
         resources.add(ws.restful.TagResource.class);
+        resources.add(ws.restful.UsageDetailResource.class);
     }
     
 }

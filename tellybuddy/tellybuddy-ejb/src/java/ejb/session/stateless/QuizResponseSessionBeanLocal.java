@@ -7,21 +7,21 @@ package ejb.session.stateless;
 
 import entity.Answer;
 import entity.Question;
-import entity.Response;
+import entity.QuizResponse;
 import javax.ejb.Local;
 import util.exception.AnswerNotFoundException;
 import util.exception.QuestionNotFoundException;
-import util.exception.ResponseNotFoundException;
+import util.exception.QuizResponseNotFoundException;
 
 /**
  *
  * @author tjle2
  */
 @Local
-public interface ResponseSessionBeanLocal {
+public interface QuizResponseSessionBeanLocal {
 
-    public Long createNewResponse(Response newResponse, Question question, Answer answer) throws QuestionNotFoundException, AnswerNotFoundException;
+    public QuizResponse createNewQuizResponse(QuizResponse newResponse, Question question, Answer answer) throws QuestionNotFoundException, AnswerNotFoundException;
 
-    public Response retrieveResponseByResponseId(Long responseId) throws ResponseNotFoundException;
+    public QuizResponse retrieveQuizResponseByQuizResponseId(Long quizResponseId) throws QuizResponseNotFoundException;
     
 }

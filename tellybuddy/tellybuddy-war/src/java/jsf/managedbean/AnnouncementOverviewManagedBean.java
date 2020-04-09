@@ -38,12 +38,13 @@ public class AnnouncementOverviewManagedBean implements Serializable {
     private AnnouncementSessionBeanLocal announcementSessionBeanLocal;
     private ScheduleModel scheduleModel;
     private ScheduleEvent scheduleEvent;
-    
+
     public AnnouncementOverviewManagedBean() {
         scheduleModel = new DefaultScheduleModel();
         scheduleEvent = new DefaultScheduleEvent();
     }
-     @PostConstruct
+
+    @PostConstruct
     public void postConstruct() {
         List<Announcement> activeAnnouncements = announcementSessionBeanLocal.retrieveAllActiveAnnoucements();
         for (Announcement a : activeAnnouncements) {
@@ -52,14 +53,14 @@ public class AnnouncementOverviewManagedBean implements Serializable {
         }
     }
 
-       public ScheduleModel getScheduleModel() {
+    public ScheduleModel getScheduleModel() {
         return scheduleModel;
     }
 
     public void setScheduleModel(ScheduleModel scheduleModel) {
         this.scheduleModel = scheduleModel;
     }
-    
+
     public ScheduleEvent getScheduleEvent() {
         return scheduleEvent;
     }
@@ -67,66 +68,46 @@ public class AnnouncementOverviewManagedBean implements Serializable {
     public void setScheduleEvent(ScheduleEvent scheduleEvent) {
         this.scheduleEvent = scheduleEvent;
     }
-    
-    
-    
-    public void addEvent(ActionEvent actionEvent) 
-    {
-        if(scheduleEvent.getId() == null)
+
+    public void addEvent(ActionEvent actionEvent) {
+        if (scheduleEvent.getId() == null) {
             scheduleModel.addEvent(scheduleEvent);
-        else
+        } else {
             scheduleModel.updateEvent(scheduleEvent);
-         
+        }
+
         scheduleEvent = new DefaultScheduleEvent();
     }
-    
-    
-    
-    public void onEventSelect(SelectEvent selectEvent) 
-    {
+
+    public void onEventSelect(SelectEvent selectEvent) {
         scheduleEvent = (ScheduleEvent) selectEvent.getObject();
     }
-    
-    
-    
-    public void onDateSelect(SelectEvent selectEvent) 
-    {
+
+    public void onDateSelect(SelectEvent selectEvent) {
         scheduleEvent = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
     }
-    
-    
-    
-    public void onEventMove(ScheduleEntryMoveEvent scheduleEvent) 
-    {
+
+    public void onEventMove(ScheduleEntryMoveEvent scheduleEvent) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Event moved", "Day delta:" + scheduleEvent.getDayDelta() + ", Minute delta:" + scheduleEvent.getMinuteDelta());
-         
+
         addMessage(message);
     }
-    
-    
-    
-    public void onEventResize(ScheduleEntryResizeEvent scheduleEvent) 
-    {
+
+    public void onEventResize(ScheduleEntryResizeEvent scheduleEvent) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Event resized", "Day delta:" + scheduleEvent.getDayDelta() + ", Minute delta:" + scheduleEvent.getMinuteDelta());
-         
+
         addMessage(message);
     }
-     
-    
-    
-    private void addMessage(FacesMessage message) 
-    {
+
+    private void addMessage(FacesMessage message) {
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
 
-    
-    
-    private Calendar today() 
-    {
+    private Calendar today() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 0, 0, 0);
- 
+
         return calendar;
     }
-    
+
 }

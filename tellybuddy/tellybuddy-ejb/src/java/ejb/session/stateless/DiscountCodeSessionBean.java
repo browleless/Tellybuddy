@@ -115,6 +115,14 @@ public class DiscountCodeSessionBean implements DiscountCodeSessionBeanLocal {
     }
 
     @Override
+    public List<DiscountCode> retrieveAllPastDiscountCodes() {
+
+        Query q = em.createQuery("SELECT dc FROM DiscountCode dc WHERE dc.expiryDate < CURRENT_TIMESTAMP ORDER BY dc.expiryDate");
+
+        return q.getResultList();
+    }
+
+    @Override
     public void updateDiscountCode(DiscountCode dc) throws DiscountCodeAlreadyExpiredException, DiscountCodeNotFoundException {
         if (dc.getDiscountCodeId() != null) {
             DiscountCode discountCodeToUpdate = retrieveDiscountCodeByDiscountCodeId(dc.getDiscountCodeId());

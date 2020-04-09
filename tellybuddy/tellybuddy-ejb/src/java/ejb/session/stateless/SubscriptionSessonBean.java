@@ -185,17 +185,17 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
             if (currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() > subscriptionTotalAllowedData) {
                 // hardcoded $3.50 per exceeded gb, int division on purpose
-                totalExceedPenaltyPrice.add(BigDecimal.valueOf(Math.ceil((double) (currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() - subscriptionTotalAllowedData) / 1000) * 3.50));
+                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf(Math.ceil((double) (currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() - subscriptionTotalAllowedData) / 1000) * 3.50));
             }
 
             if (currentUsageDetail.getSmsUsage() > subscriptionTotalAllowedSms) {
                 // hardcoded $0.05 per exceeded SMS
-                totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getSmsUsage() - subscriptionTotalAllowedSms) * 0.05));
+                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getSmsUsage() - subscriptionTotalAllowedSms) * 0.05));
             }
 
             if (currentUsageDetail.getTalktimeUsage() > subscriptionTotalAllowedTalktime) {
                 // hardcoded $0.10 per exceeded min
-                totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getTalktimeUsage() - subscriptionTotalAllowedTalktime) * 0.10));
+                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getTalktimeUsage() - subscriptionTotalAllowedTalktime) * 0.10));
             }
 
             Integer familyGroupDiscountRate = 0;

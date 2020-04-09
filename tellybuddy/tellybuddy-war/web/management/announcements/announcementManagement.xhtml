@@ -10,8 +10,24 @@
 
     <ui:define name="content">
 
+        <style>
+            .ui-dialog {
+                border-radius: 15px;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+            }
+        </style>
+
         <div>
-            <h3>Announcements Main Page</h3>
+            <h3>Announcement Management</h3>
 
             <p:tabView id="tabView">
 
@@ -29,7 +45,7 @@
                             <f:facet name="header">
                                 <p:outputPanel style="text-align: right;">
                                     <h:outputText value="Search all fields:" />
-                                    <p:inputText id="globalFilter" onkeyup="PF('dataTableAllAnnouncements').filter()" style="width:300px" placeholder="Enter keyword"/>
+                                    <p:inputText id="globalFilter" onkeyup="PF('dataTableAllOngoingAnnouncements').filter()" style="width:300px" placeholder="Enter keyword"/>
                                 </p:outputPanel>
                             </f:facet>
                             <p:column headerText=" ID" sortBy="#{announcement.announcementId}" filterBy="#{announcement.announcementId}" filterMatchMode="contains">
@@ -72,7 +88,7 @@
                             <f:facet name="header">
                                 <p:outputPanel style="text-align: right;">
                                     <h:outputText value="Search all fields:" />
-                                    <p:inputText id="globalFilter" onkeyup="PF('dataTableAllAnnouncements').filter()" style="width:300px" placeholder="Enter keyword"/>
+                                    <p:inputText id="globalFilter" onkeyup="PF('dataTableAllExpiredAnnouncements').filter()" style="width:300px" placeholder="Enter keyword"/>
                                 </p:outputPanel>
                             </f:facet>
 
@@ -173,7 +189,7 @@
                                 <p:inputText id="title" value="#{announcementManagedBean.newAnnouncement.title}" required="true" requiredMessage="Title is required" />
                             </p:column>
                         </p:row>
-                        
+
                         <p:row>
                             <p:textEditor widgetVar="editor" value="#{announcementManagedBean.newAnnouncement.content}" height="300" style="margin-bottom:10px" placeholder="Enter your content" required="true" requiredMessage="Content is required">
                                 <f:facet name="toolbar">
@@ -190,7 +206,7 @@
                                 </f:facet>
                             </p:textEditor>
                         </p:row>
-                        
+
                         <p:row>
                             <p:column>
                                 <p:outputLabel for="postDate" value="Posting date: " style="font-weight: bold;" />

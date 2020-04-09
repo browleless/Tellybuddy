@@ -14,12 +14,19 @@ import entity.TransactionLineItem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
+import javax.ejb.TimerService;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
@@ -64,6 +71,9 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
 
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
+    
+    @Resource
+    private SessionContext sessionContext;
 
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
@@ -131,7 +141,18 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
 
         return products;
     }
-    
+
+    @Override
+    public List<Product> retrieveAllDiscountedProducts() {
+        Query query = em.createQuery("SELECT p FROM Product p WHERE p.discountPrice IS NOT NULL");
+        List<Product> discountedProducts = query.getResultList();
+
+        for (Product discountedProduct : discountedProducts) {
+            discountedProduct.getCategory();
+        }
+        return discountedProducts;
+    }
+
     @Override
     public String retrieveLatestSerialNum() {
         Query q = em.createQuery("SELECT p FROM LuxuryProduct p ORDER BY p.serialNumber desc");
@@ -331,6 +352,18 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
             throw new ProductNotFoundException("Product ID not provided for product to be updated");
         }
     }
+    @Override
+    public void updateProduct(Product product){
+        try {
+            Product productToUpdate = retrieveProductByProductId(product.getProductId());
+            productToUpdate.setDiscountPrice(product.getDiscountPrice());
+            productToUpdate.setDealStartTime(product.getDealStartTime());
+            productToUpdate.setDealEndTime(product.getDealEndTime());
+        } catch (ProductNotFoundException ex) {
+            Logger.getLogger(ProductSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
+    }
 
     @Override
     public void updateLuxuryProduct(LuxuryProduct luxuryProduct, Long categoryId, List<Long> tagIds, List<Long> itemIds) throws ProductNotFoundException, CategoryNotFoundException, TagNotFoundException, UpdateProductException, InputDataValidationException, ProductItemNotFoundException {
@@ -427,6 +460,48 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
     }
 //only delete the luxury product itself together with its list of productItem
 //do not have to check in the transactionlineItem because debitQuantityOnHand will remove those productItem that is sold
+
+    @Override
+    public void activatePromotion(Product productToActivate) {
+        try {
+            Product product = retrieveProductByProductId(productToActivate.getProductId());
+            product.setDiscountPrice(productToActivate.getDiscountPrice());
+            product.setDealStartTime(productToActivate.getDealStartTime());
+            product.setDealEndTime(productToActivate.getDealEndTime());
+            
+            TimerService timerService = sessionContext.getTimerService();
+            timerService.createSingleActionTimer(productToActivate.getDealEndTime(), new TimerConfig(product, true));
+        } catch (ProductNotFoundException ex) {
+            Logger.getLogger(ProductSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    //timer and manual
+    @Override
+    public void deactivatePromotion(Product productToDeactivate) {
+        try {
+            Product product = retrieveProductByProductId(productToDeactivate.getProductId());
+            product.setDiscountPrice(null);
+            product.setDealStartTime(null);
+            product.setDealEndTime(null);
+        } catch (ProductNotFoundException ex) {
+            Logger.getLogger(ProductSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Timeout
+    public void handleTimeout(Timer timer) {
+        try {
+            Product product = (Product) timer.getInfo();
+            Product p = retrieveProductByProductId(product.getProductId());
+            p.setDiscountPrice(null);
+            p.setDealStartTime(null);
+            p.setDealEndTime(null);
+        } catch (ProductNotFoundException ex) {
+            Logger.getLogger(ProductSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     @Override
     public void debitQuantityOnHand(Long productId, Integer quantityToDebit) throws ProductNotFoundException, ProductInsufficientQuantityOnHandException {

@@ -43,6 +43,8 @@ public class FlashCouponManagementManagedBean implements Serializable {
     private DiscountCode discountCodeToView;
     private DiscountCode discountCodeToUpdate;
 
+    private String selectedFilter;
+
     public FlashCouponManagementManagedBean() {
 
         newDiscountCode = new DiscountCode();
@@ -61,6 +63,8 @@ public class FlashCouponManagementManagedBean implements Serializable {
         colours.add("#00C853");
         colours.add("#FF7043");
         colours.add("#E53935");
+
+        selectedFilter = "Active";
     }
 
     @PostConstruct
@@ -153,6 +157,15 @@ public class FlashCouponManagementManagedBean implements Serializable {
         discountCodeToUpdate.setDiscountCode(generateRandomCode());
     }
 
+    public void doFilter() {
+
+        if (selectedFilter.equals("Active")) {
+            setDiscountCodes(discountCodeSessionBeanLocal.retrieveAllActiveDiscountCodes());
+        } else if (selectedFilter.equals("Past")) {
+            setDiscountCodes(discountCodeSessionBeanLocal.retrieveAllPastDiscountCodes());
+        }
+    }
+
     public List<DiscountCode> getDiscountCodes() {
         return discountCodes;
     }
@@ -207,6 +220,14 @@ public class FlashCouponManagementManagedBean implements Serializable {
 
     public void setColours(List<String> colours) {
         this.colours = colours;
+    }
+
+    public String getSelectedFilter() {
+        return selectedFilter;
+    }
+
+    public void setSelectedFilter(String selectedFilter) {
+        this.selectedFilter = selectedFilter;
     }
 
 }

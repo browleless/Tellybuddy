@@ -30,28 +30,38 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
     private EntityManager entityManager;
 
     @Override
-    public Long createNewPayment(Payment newPayment) {
-
-        entityManager.persist(newPayment);
-        entityManager.flush();
-
-        return newPayment.getPaymentId();
-    }
-
-    @Override
-    public Long createNewBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException {
+    public Long createNewBillPayment(Payment payment, Bill bill) throws BillAlreadyPaidException, BillNotFoundException {
 
         if (bill.getPaid()) {
             throw new BillAlreadyPaidException("Bill id " + bill.getBillId() + " has already been paid for");
         } else {
-            Customer customer = bill.getCustomer();
             Bill billToPay = billSessionBeanLocal.retrieveBillByBillId(bill.getBillId());
+
+            Payment newPayment = new Payment(payment.getCreditCardNumber(), payment.getCvv(), new Date(), billToPay.getPrice().add(billToPay.getAddOnPrice()).add(billToPay.getExceedPenaltyPrice()));
+
+            entityManager.persist(newPayment);
+            entityManager.flush();
+            billToPay.setPayment(newPayment);
+            billToPay.setPaid(Boolean.TRUE);
+
+            return newPayment.getPaymentId();
+        }
+    }
+
+    @Override
+    public Long automateBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException {
+
+        if (bill.getPaid()) {
+            throw new BillAlreadyPaidException("Bill id " + bill.getBillId() + " has already been paid for");
+        } else {
+            Bill billToPay = billSessionBeanLocal.retrieveBillByBillId(bill.getBillId());
+            Customer customer = billToPay.getCustomer();
 
             if ((customer.getCreditCardNumber() == null && customer.getCvv() == null && customer.getCreditCardExpiryDate() == null) || customer.getCreditCardExpiryDate().before(new Date())) {
                 throw new CustomerStoredCreditCardException("Customer either has no saved credit card or credit card has expired!");
             }
 
-            Payment newPayment = new Payment(customer.getCreditCardNumber(), customer.getCvv(), new Date(), bill.getPrice());
+            Payment newPayment = new Payment(customer.getCreditCardNumber(), customer.getCvv(), new Date(), billToPay.getPrice().add(billToPay.getAddOnPrice()).add(billToPay.getExceedPenaltyPrice()));
 
             entityManager.persist(newPayment);
             entityManager.flush();
@@ -87,6 +97,15 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
         Query query = entityManager.createQuery("SELECT p FROM Payment p WHERE p.datePaid BETWEEN :inStartDate AND :inEndDate ORDER BY p.datePaid");
         query.setParameter("inStartDate", startDate);
         query.setParameter("inEndDate", endDate);
+
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Payment> retrieveCustomerPayments(Customer customer) {
+
+        Query query = entityManager.createQuery("SELECT p FROM Payment p WHERE EXISTS (SELECT b FROM Bill b WHERE b.payment = p AND b.customer = :inCustomer) OR EXISTS (SELECT t FROM Transaction t WHERE t.payment = p AND t.customer = :inCustomer) ORDER BY p.datePaid ASC");
+        query.setParameter("inCustomer", customer);
 
         return query.getResultList();
     }

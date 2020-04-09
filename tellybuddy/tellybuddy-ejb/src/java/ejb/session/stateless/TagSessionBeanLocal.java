@@ -11,6 +11,7 @@ import javax.ejb.Local;
 import util.exception.CreateNewTagException;
 import util.exception.DeleteTagException;
 import util.exception.TagNotFoundException;
+import util.exception.UnknownPersistenceException;
 import util.exception.UpdateTagException;
 
 /**
@@ -20,7 +21,7 @@ import util.exception.UpdateTagException;
 @Local
 public interface TagSessionBeanLocal {
 
-    public Long createNewTag(Tag newTag) throws CreateNewTagException;
+    public Long createNewTag(Tag newTag) throws CreateNewTagException, UnknownPersistenceException;
 
     public Tag retrieveTagByTagId(Long tagId) throws TagNotFoundException;
 

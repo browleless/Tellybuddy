@@ -35,4 +35,6 @@ public interface DiscountCodeSessionBeanLocal {
 
     public DiscountCode retrieveDiscountCodeByDiscountCodeName(String discountCodeName) throws DiscountCodeNotFoundException;
 
+    public List<DiscountCode> retrieveAllPastDiscountCodes();
+
 }

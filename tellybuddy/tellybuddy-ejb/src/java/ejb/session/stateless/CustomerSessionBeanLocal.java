@@ -53,4 +53,10 @@ public interface CustomerSessionBeanLocal {
     //   public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription);
     public void terminateCustomerSubscriptionToAPlan(Long customerId) throws CustomerNotFoundException;
 
+    public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException;
+
+    public Customer retrieveCustomerBySalt(String salt) throws CustomerNotFoundException;
+
+    public void updateCustomerPassword(Customer customer) throws CustomerNotFoundException;
+
 }

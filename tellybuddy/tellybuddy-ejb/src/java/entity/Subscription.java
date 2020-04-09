@@ -19,10 +19,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import util.enumeration.SubscriptionStatusEnum;
 
 /**
@@ -248,15 +245,6 @@ public class Subscription implements Serializable {
         return this.smsUnits.get("allocated");
     }
 
-    public String getFormattedStartDate() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        return dateFormat.format(this.subscriptionStartDate);
-    }
-    public String getFormattedEndDate() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        return dateFormat.format(this.subscriptionEndDate);
-    }
-
     public SubscriptionStatusEnum getSubscriptionStatusEnum() {
         return subscriptionStatusEnum;
     }
@@ -264,5 +252,4 @@ public class Subscription implements Serializable {
     public void setSubscriptionStatusEnum(SubscriptionStatusEnum subscriptionStatusEnum) {
         this.subscriptionStatusEnum = subscriptionStatusEnum;
     }
-
 }
