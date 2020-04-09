@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
 import entity.Transaction;
 import entity.TransactionLineItem;
 import java.util.List;
@@ -28,6 +29,8 @@ public interface TransactionSessionBeanLocal {
     public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId);
 
     public Transaction retrieveTransactionByTransactionId(Long transactionId) throws TransactionNotFoundException;
+    
+    public List<Transaction> retrieveTransactionsByCustomer(Customer customer);
 
     public void updateTransaction(Transaction transaction);
 

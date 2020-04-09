@@ -105,6 +105,14 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     }
 
     @Override
+    public List<Transaction> retrieveTransactionsByCustomer(Customer customer){
+        Query query = em.createQuery("SELECT t FROM Transaction t WHERE t.customer.customerId = :customerId");
+        query.setParameter("customerId", customer.getCustomerId());
+        return query.getResultList();
+        
+    } 
+    
+    @Override
     public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId) {
         Query query = em.createQuery("SELECT tl FROM TransactionLineItem tl WHERE tl.product.productId = :inProductId");
         query.setParameter("inProductId", productId);
@@ -134,7 +142,6 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         em.merge(Transaction);
     }
 
-    // Updated in v4.1
     @Override
     public void voidRefundTransaction(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException {
         Transaction transaction = retrieveTransactionByTransactionId(transactionId);
@@ -164,4 +171,3 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     }
 
 }
-r

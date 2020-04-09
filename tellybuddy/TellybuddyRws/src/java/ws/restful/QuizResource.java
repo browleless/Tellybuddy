@@ -50,7 +50,7 @@ public class QuizResource {
      */
     @Path("retrieveAllUnattemptedActiveQuizzes")
     @GET
-    @Consumes(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN) 
     @Produces(MediaType.APPLICATION_JSON)
     public Response retrieveAllUnattemptedActiveQuizzes(@QueryParam("username") String username, @QueryParam("password") String password) {
         try {
