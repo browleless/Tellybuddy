@@ -17,13 +17,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import util.exception.AnswerNotFoundException;
-import util.exception.CustomerNotFoundException;
+import util.exception.CreateNewQuizAttemptException;
 import util.exception.InvalidLoginCredentialException;
-import util.exception.QuestionNotFoundException;
 import util.exception.QuizAttemptNotFoundException;
-import util.exception.QuizNotFoundException;
-import util.exception.QuizResponseNotFoundException;
 import ws.datamodel.CreateNewQuizAttemptReq;
 import ws.datamodel.CreateNewQuizAttemptRsp;
 import ws.datamodel.ErrorRsp;
@@ -150,7 +146,7 @@ public class QuizAttemptResource {
             } catch (InvalidLoginCredentialException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
-            } catch (AnswerNotFoundException | CustomerNotFoundException | QuestionNotFoundException | QuizNotFoundException | QuizResponseNotFoundException ex) {
+            } catch (CreateNewQuizAttemptException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
             } catch (Exception ex) {

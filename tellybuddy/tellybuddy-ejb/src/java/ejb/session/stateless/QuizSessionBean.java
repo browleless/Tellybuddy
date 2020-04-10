@@ -6,19 +6,23 @@ import entity.Question;
 import entity.Quiz;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.AnswerNotFoundException;
+import util.exception.CreateNewQuizException;
 import util.exception.DeleteAnswerException;
 import util.exception.DeleteQuestionException;
 import util.exception.DeleteQuizException;
 import util.exception.QuestionNotFoundException;
 import util.exception.QuizNameExistException;
 import util.exception.QuizNotFoundException;
+import util.exception.UpdateQuizException;
 
 /**
  *
@@ -36,10 +40,14 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager entityManager;
 
+    @Resource
+    private EJBContext ejbContext;
+
     public QuizSessionBean() {
     }
 
-    public Long createNewQuiz(Quiz newQuiz) throws QuizNameExistException, QuizNotFoundException, QuestionNotFoundException {
+    @Override
+    public Long createNewQuiz(Quiz newQuiz) throws QuizNameExistException, CreateNewQuizException {
 
         try {
 
@@ -73,6 +81,9 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
             }
 
             return newQuiz.getQuizId();
+        } catch (QuestionNotFoundException | QuizNotFoundException ex) {
+            ejbContext.setRollbackOnly();
+            throw new CreateNewQuizException(ex.getMessage());
         } catch (PersistenceException ex) {
             if (ex.getCause() != null && ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException")) {
                 throw new QuizNameExistException("Quiz with same name already exist");
@@ -143,32 +154,32 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
     }
 
     @Override
-    public void updateQuiz(Quiz quiz) throws QuizNotFoundException {
+    public void updateQuiz(Quiz quiz) throws QuizNotFoundException, UpdateQuizException {
 
         if (quiz != null && quiz.getQuizId() != null) {
 
-            Quiz quizToUpdate = retrieveQuizByQuizId(quiz.getQuizId());
+            try {
+                Quiz quizToUpdate = retrieveQuizByQuizId(quiz.getQuizId());
 
-            quizToUpdate.setName(quiz.getName());
-            quizToUpdate.setOpenDate(quiz.getOpenDate());
-            quizToUpdate.setExpiryDate(quiz.getExpiryDate());
-            quizToUpdate.setUnitsWorth(quiz.getUnitsWorth());
+                quizToUpdate.setName(quiz.getName());
+                quizToUpdate.setOpenDate(quiz.getOpenDate());
+                quizToUpdate.setExpiryDate(quiz.getExpiryDate());
+                quizToUpdate.setUnitsWorth(quiz.getUnitsWorth());
 
-            List<Question> updatedQuizQuestions = quiz.getQuestions();
-            List<Question> questionsToDelete = new ArrayList<>();
-            List<Question> questionsToAdd = new ArrayList<>();
+                List<Question> updatedQuizQuestions = quiz.getQuestions();
+                List<Question> questionsToDelete = new ArrayList<>();
+                List<Question> questionsToAdd = new ArrayList<>();
 
-            List<Answer> answersToAdd = new ArrayList<>();
-            List<Answer> answersToUpdate = new ArrayList<>();
-            List<Answer> answersToDelete = new ArrayList<>();
+                List<Answer> answersToAdd = new ArrayList<>();
+                List<Answer> answersToUpdate = new ArrayList<>();
+                List<Answer> answersToDelete = new ArrayList<>();
 
-            for (Question questionToCheck : quizToUpdate.getQuestions()) {
-                if (!updatedQuizQuestions.contains(questionToCheck)) {
-                    questionsToDelete.add(questionToCheck);
-                } else {
-                    for (Question questionToUpdate : updatedQuizQuestions) {
-                        if (questionToCheck.equals(questionToUpdate)) {
-                            try {
+                for (Question questionToCheck : quizToUpdate.getQuestions()) {
+                    if (!updatedQuizQuestions.contains(questionToCheck)) {
+                        questionsToDelete.add(questionToCheck);
+                    } else {
+                        for (Question questionToUpdate : updatedQuizQuestions) {
+                            if (questionToCheck.equals(questionToUpdate)) {
 
                                 questionSessionBeanLocal.updateQuestion(questionToUpdate);
 
@@ -205,45 +216,36 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
                                 answersToDelete.clear();
 
                                 break;
-                            } catch (QuestionNotFoundException | AnswerNotFoundException | DeleteAnswerException ex) {
-                                // won't happen
-                                ex.printStackTrace();
                             }
                         }
                     }
                 }
-            }
 
-            for (Question questionToCheck : updatedQuizQuestions) {
-                if (!quizToUpdate.getQuestions().contains(questionToCheck)) {
-                    questionsToAdd.add(questionToCheck);
-                }
-            }
-
-            for (Question questionToAdd : questionsToAdd) {
-
-                answersToAdd = new ArrayList<>();
-
-                for (Answer answerToAdd : questionToAdd.getAnswers()) {
-                    answersToAdd.add(answerToAdd);
-                }
-
-                questionToAdd.getAnswers().clear();
-
-                questionSessionBeanLocal.createNewQuestion(quizToUpdate, questionToAdd);
-
-                for (Answer answerToAdd : answersToAdd) {
-                    try {
-                        answerSessionBeanLocal.createNewAnswer(questionToAdd, answerToAdd);
-                    } catch (QuestionNotFoundException ex) {
-                        // won't happen
-                        ex.printStackTrace();
+                for (Question questionToCheck : updatedQuizQuestions) {
+                    if (!quizToUpdate.getQuestions().contains(questionToCheck)) {
+                        questionsToAdd.add(questionToCheck);
                     }
                 }
-            }
 
-            for (Question questionToDelete : questionsToDelete) {
-                try {
+                for (Question questionToAdd : questionsToAdd) {
+
+                    answersToAdd = new ArrayList<>();
+
+                    for (Answer answerToAdd : questionToAdd.getAnswers()) {
+                        answersToAdd.add(answerToAdd);
+                    }
+
+                    questionToAdd.getAnswers().clear();
+
+                    questionSessionBeanLocal.createNewQuestion(quizToUpdate, questionToAdd);
+
+                    for (Answer answerToAdd : answersToAdd) {
+                        answerSessionBeanLocal.createNewAnswer(questionToAdd, answerToAdd);
+
+                    }
+                }
+
+                for (Question questionToDelete : questionsToDelete) {
 
                     answersToDelete = new ArrayList<>();
 
@@ -257,37 +259,37 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
 
                     questionSessionBeanLocal.deleteQuestion(questionToDelete);
 
-                } catch (AnswerNotFoundException | DeleteAnswerException | DeleteQuestionException | QuestionNotFoundException ex) {
-                    // won't happen
-                    ex.printStackTrace();
                 }
+            } catch (AnswerNotFoundException | DeleteAnswerException | DeleteQuestionException | QuestionNotFoundException | QuizNotFoundException ex) {
+                ejbContext.setRollbackOnly();
+                throw new UpdateQuizException(ex.getMessage());
             }
-
         } else {
             throw new QuizNotFoundException("Quiz ID not provided for quiz to be updated");
         }
     }
 
     @Override
-    public void deleteQuiz(Quiz quiz) throws QuizNotFoundException, DeleteQuizException, DeleteQuestionException, DeleteAnswerException {
+    public void deleteQuiz(Quiz quiz) throws QuizNotFoundException, DeleteQuizException {
 
         if (quiz != null && quiz.getQuizId() != null) {
 
-            Quiz quizToDelete = retrieveQuizByQuizId(quiz.getQuizId());
+            try {
+                Quiz quizToDelete = retrieveQuizByQuizId(quiz.getQuizId());
 
-            if (!quizToDelete.getQuizAttempts().isEmpty()) {
-                throw new DeleteQuizException("Quiz has attempts already, manage attempts before deleting quiz!");
-            }
-
-            for (Question question : quiz.getQuestions()) {
-                try {
-                    questionSessionBeanLocal.deleteQuestion(question);
-                } catch (QuestionNotFoundException ex) {
-                    // won't happen
-                    ex.printStackTrace();
+                if (!quizToDelete.getQuizAttempts().isEmpty()) {
+                    throw new DeleteQuizException("Quiz has attempts already, manage attempts before deleting quiz!");
                 }
+
+                for (Question question : quiz.getQuestions()) {
+                    questionSessionBeanLocal.deleteQuestion(question);
+                }
+
+                entityManager.remove(quizToDelete);
+            } catch (DeleteAnswerException | DeleteQuestionException | QuestionNotFoundException | QuizNotFoundException ex) {
+                ejbContext.setRollbackOnly();
+                throw new DeleteQuizException(ex.getMessage());
             }
-            entityManager.remove(quizToDelete);
         } else {
             throw new QuizNotFoundException("Quiz ID not provided for quiz to be deleted");
         }

@@ -9,12 +9,11 @@ import entity.Customer;
 import entity.Quiz;
 import java.util.List;
 import javax.ejb.Local;
-import util.exception.DeleteAnswerException;
-import util.exception.DeleteQuestionException;
+import util.exception.CreateNewQuizException;
 import util.exception.DeleteQuizException;
-import util.exception.QuestionNotFoundException;
 import util.exception.QuizNameExistException;
 import util.exception.QuizNotFoundException;
+import util.exception.UpdateQuizException;
 
 /**
  *
@@ -25,9 +24,9 @@ public interface QuizSessionBeanLocal {
 
     public Quiz retrieveQuizByQuizId(Long quizId) throws QuizNotFoundException;
 
-    public void updateQuiz(Quiz quiz) throws QuizNotFoundException;
+    public void updateQuiz(Quiz quiz) throws QuizNotFoundException, UpdateQuizException;
 
-    public void deleteQuiz(Quiz quiz) throws QuizNotFoundException, DeleteQuizException, DeleteQuestionException, DeleteAnswerException;
+    public void deleteQuiz(Quiz quiz) throws QuizNotFoundException, DeleteQuizException;
 
     public List<Quiz> retrieveAllQuizzes();
 
@@ -35,7 +34,7 @@ public interface QuizSessionBeanLocal {
 
     public List<Quiz> retrieveUpcomingQuizzes();
 
-    public Long createNewQuiz(Quiz newQuiz) throws QuizNameExistException, QuizNotFoundException, QuestionNotFoundException;
+    public Long createNewQuiz(Quiz newQuiz) throws QuizNameExistException, CreateNewQuizException;
 
     public List<Quiz> retirevePastQuizzes();
 
