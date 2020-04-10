@@ -77,13 +77,10 @@ public class EmployeeManagedBean implements Serializable {
             employees.add(newEmployee);
             setNewEmployee(new Employee());
             this.employeeProfileImageFile = null;
-            
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New employee created successfully (Employee ID: " + newEmployeeId + ")", null));
         } catch (EmployeeUsernameExistException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred creating new employee: " + ex.getMessage(), null));
-        } catch (UnknownPersistenceException ex) {
-            Logger.getLogger(EmployeeManagedBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InputDataValidationException ex) {
+        } catch (UnknownPersistenceException | InputDataValidationException ex) {
             Logger.getLogger(EmployeeManagedBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
