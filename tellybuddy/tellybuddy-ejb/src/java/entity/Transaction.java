@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
+import util.enumeration.TransactionStatusEnum;
 
 /**
  *
@@ -40,7 +41,7 @@ public class Transaction implements Serializable {
     
     @Column(nullable = false)
     @NotNull
-    private Boolean voidRefund;
+    private TransactionStatusEnum transactionStatus;
     
     @Column(nullable = false)
     @NotNull
@@ -68,7 +69,8 @@ public class Transaction implements Serializable {
         this();
         this.totalPrice = totalPrice;
         this.transactionDateTime = transactionDateTime;
-        this.voidRefund = false;
+        this.transactionStatus = TransactionStatusEnum.PROCESSING;
+        this.transactionLineItems = new ArrayList<TransactionLineItem>();
     }
 
     public Long getTransactionId() {
@@ -152,12 +154,12 @@ public class Transaction implements Serializable {
         this.transactionLineItems = transactionLineItems;
     }
 
-    public Boolean getVoidRefund() {
-        return voidRefund;
+    public TransactionStatusEnum getTransactionStatus() {
+        return transactionStatus;
     }
 
-    public void setVoidRefund(Boolean voidRefund) {
-        this.voidRefund = voidRefund;
+    public void setTransactionStatus(TransactionStatusEnum transactionStatus) {
+        this.transactionStatus = transactionStatus;
     }
     
 }

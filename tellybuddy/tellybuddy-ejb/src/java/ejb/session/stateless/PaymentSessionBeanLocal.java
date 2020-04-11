@@ -3,6 +3,7 @@ package ejb.session.stateless;
 import entity.Bill;
 import entity.Customer;
 import entity.Payment;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
@@ -20,6 +21,8 @@ import util.exception.PaymentNotFoundException;
 public interface PaymentSessionBeanLocal {
 
     public Long createNewBillPayment(Payment payment, Bill bill) throws BillAlreadyPaidException, BillNotFoundException;
+
+    public Payment createNewPayment(String creditCardNo, String cvv, BigDecimal amount);
 
     public Long automateBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException;
 
