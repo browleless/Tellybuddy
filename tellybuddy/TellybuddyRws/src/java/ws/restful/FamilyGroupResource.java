@@ -39,6 +39,7 @@ import ws.datamodel.DonateUnitsToFamilyGroupReq;
 import ws.datamodel.ErrorRsp;
 import ws.datamodel.RemoveFamilyGroupMemberReq;
 import ws.datamodel.RetrieveCustomerFamilyGroupRsp;
+import ws.datamodel.UpdateFamilyGroupReq;
 
 /**
  * REST Web Service
@@ -246,6 +247,36 @@ public class FamilyGroupResource {
             }
         } else {
             ErrorRsp errorRsp = new ErrorRsp("Invalid consume units from family group request");
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("updateFamilyGroup")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateFamilyGroup(UpdateFamilyGroupReq updateFamilyGroupReq) {
+
+        if (updateFamilyGroupReq != null) {
+            try {
+                Customer customer = customerSessionBeanLocal.customerLogin(updateFamilyGroupReq.getUsername(), updateFamilyGroupReq.getPassword());
+                System.out.println("********** FamilyGroup.updateFamilyGroup(): Customer " + updateFamilyGroupReq.getUsername() + " login remotely via web service");
+
+                familyGroupSessionBeanLocal.updateFamilyPlan(updateFamilyGroupReq.getFamilyGroup());
+
+                return Response.status(Response.Status.OK).build();
+            } catch (InvalidLoginCredentialException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
+            } catch (FamilyGroupNotFoundException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+            } catch (Exception ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+            }
+        } else {
+            ErrorRsp errorRsp = new ErrorRsp("Invalid request for update of family group");
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         }
     }
