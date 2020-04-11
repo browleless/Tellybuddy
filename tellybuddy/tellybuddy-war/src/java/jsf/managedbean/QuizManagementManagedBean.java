@@ -19,12 +19,11 @@ import javax.faces.view.ViewScoped;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.event.TabChangeEvent;
-import util.exception.DeleteAnswerException;
-import util.exception.DeleteQuestionException;
+import util.exception.CreateNewQuizException;
 import util.exception.DeleteQuizException;
-import util.exception.QuestionNotFoundException;
 import util.exception.QuizNameExistException;
 import util.exception.QuizNotFoundException;
+import util.exception.UpdateQuizException;
 
 /**
  *
@@ -147,7 +146,7 @@ public class QuizManagementManagedBean implements Serializable {
             }
             initialiseState();
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New Quiz created successfully!", null));
-        } catch (QuizNotFoundException | QuestionNotFoundException | QuizNameExistException ex) {
+        } catch (CreateNewQuizException | QuizNameExistException | QuizNotFoundException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while publishing the quiz: " + ex.getMessage(), null));
         }
     }
@@ -159,7 +158,7 @@ public class QuizManagementManagedBean implements Serializable {
             quizSessionBeanLocal.deleteQuiz(quizToDelete);
             quizzes.remove(quizToDelete);
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Quiz deleted successfully!", null));
-        } catch (DeleteAnswerException | DeleteQuestionException | DeleteQuizException | QuizNotFoundException ex) {
+        } catch (DeleteQuizException | QuizNotFoundException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while deleting the quiz: " + ex.getMessage(), null));
         }
     }
@@ -180,7 +179,7 @@ public class QuizManagementManagedBean implements Serializable {
                 quizzes.remove(quizToUpdate);
             }
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Quiz updated successfully!", null));
-        } catch (QuizNotFoundException ex) {
+        } catch (QuizNotFoundException | UpdateQuizException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while updating the quiz: " + ex.getMessage(), null));
         }
     }

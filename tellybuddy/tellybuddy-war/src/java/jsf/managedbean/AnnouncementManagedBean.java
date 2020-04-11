@@ -18,7 +18,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
-import util.enumeration.AnnouncementRecipientEnum;
 import util.exception.AnnouncementAlreadyExpiredException;
 import util.exception.AnnouncementNotFoundException;
 

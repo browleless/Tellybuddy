@@ -60,7 +60,7 @@ public class Employee implements Serializable {
     private AccessRightEnum accessRightEnum;
     
     @Column(nullable = false, length = 128)
-//    @NotNull
+    @NotNull
     @Size(max = 128)
     private String photoPath;
     

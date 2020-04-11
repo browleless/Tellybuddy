@@ -106,7 +106,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
         try {
             Employee employee = retrieveEmployeeByUsername(username);
             String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + employee.getSalt()));
-
+            System.out.println(passwordHash);
             if (employee.getPassword().equals(passwordHash)) {
                 return employee;
             } else {
