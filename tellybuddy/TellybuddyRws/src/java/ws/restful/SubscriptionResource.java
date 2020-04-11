@@ -25,12 +25,16 @@ import util.exception.PhoneNumberInUseException;
 import util.exception.PlanAlreadyDisabledException;
 import util.exception.SubscriptionExistException;
 import util.exception.SubscriptionNotFoundException;
+import ws.datamodel.AllocateAddOnUnitsForCurrentMonthReq;
+import ws.datamodel.AllocateAddOnUnitsForCurrentMonthRsp;
 import ws.datamodel.AllocateUnitsForNextMonthReq;
+import ws.datamodel.AllocateUnitsForNextMonthRsp;
 import ws.datamodel.CreateSubscriptionReq;
 import ws.datamodel.CreateSubscriptionRsp;
 import ws.datamodel.ErrorRsp;
 import ws.datamodel.RetrieveAllCustomerSubscriptionsRsp;
 import ws.datamodel.RetrieveSubscriptionRsp;
+import ws.datamodel.RetrieveSubscriptionsUnderFamilyRsp;
 import ws.datamodel.TerminateSubscriptionReq;
 
 /**
@@ -79,7 +83,7 @@ public class SubscriptionResource {
                 subscription.getUsageDetails().clear();
                 subscription.getPhoneNumber().setSubscription(null);
             }
-
+            //instantiate the rsp class
             return Response.status(Response.Status.OK).entity(new RetrieveAllCustomerSubscriptionsRsp(subscriptions)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
@@ -94,7 +98,7 @@ public class SubscriptionResource {
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retrieveSubscription(@QueryParam("username") String username, @QueryParam("password") String password, @PathParam("subscriptionId") Long subscriptionId) {
+    public Response retrieveSubscriptionById(@QueryParam("username") String username, @QueryParam("password") String password, @PathParam("subscriptionId") Long subscriptionId) {
         try {
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
             System.out.println("********** SubscriptionResource.retrieveSubscription(): Customer " + customer.getUsername() + " login remotely via web service");
@@ -106,15 +110,15 @@ public class SubscriptionResource {
             subscription.getCustomer().getBills().clear();
             subscription.getCustomer().getTransactions().clear();
             subscription.getCustomer().setFamilyGroup(null);
-            
+
             subscription.getCustomer().setPassword(null);
             subscription.getCustomer().setSalt(null);
-            
+
             for (UsageDetail usageDetail : subscription.getUsageDetails()) {
                 usageDetail.setSubscription(null);
                 usageDetail.setBill(null);
             }
-            
+
             subscription.getPhoneNumber().setSubscription(null);
 
             return Response.status(Response.Status.OK).entity(new RetrieveSubscriptionRsp(subscription)).build();
@@ -124,6 +128,33 @@ public class SubscriptionResource {
         } catch (SubscriptionNotFoundException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+
+    @Path("retrieveSubscriptionsUnderFamily/{familyGroupId}")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveSubscriptionsUnderFamily(@QueryParam("username") String username, @QueryParam("password") String password, @QueryParam("familyGroupId") Long familyGroupId) {
+        try {
+            Customer customer = customerSessionBeanLocal.customerLogin(username, password);
+            System.out.println("********** SubscriptionResource.retrieveSubscriptionsUnderFamily(): Customer " + customer.getUsername() + " login remotely via web service");
+
+            List<Subscription> subscriptions = subscriptionSessonBeanLocal.retrieveSubscriptionsOfFamilyByFamilyGroupId(familyGroupId);
+            for (Subscription subscription : subscriptions) {
+                
+                subscription.setCustomer(null);
+                subscription.getUsageDetails().clear();
+                subscription.getPhoneNumber().setSubscription(null);
+            }
+
+            return Response.status(Response.Status.OK).entity(new RetrieveSubscriptionsUnderFamilyRsp(subscriptions)).build();
+        } catch (InvalidLoginCredentialException ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
         } catch (Exception ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
@@ -176,9 +207,9 @@ public class SubscriptionResource {
                 Customer customer = customerSessionBeanLocal.customerLogin(allocateUnitsForNextMonthReq.getUsername(), allocateUnitsForNextMonthReq.getPassword());
                 System.out.println("********** SubscriptionResource.allocateUnitsForNextMonth(): Customer " + customer.getUsername() + " login remotely via web service");
 
-                subscriptionSessonBeanLocal.allocateUnitsForNextMonth(allocateUnitsForNextMonthReq.getSubscription(), allocateUnitsForNextMonthReq.getDataUnits(), allocateUnitsForNextMonthReq.getSmsUnits(), allocateUnitsForNextMonthReq.getTalktimeUnits());
-
-                return Response.status(Response.Status.OK).build();
+                Subscription subscription = subscriptionSessonBeanLocal.allocateUnitsForNextMonth(allocateUnitsForNextMonthReq.getSubscription(), allocateUnitsForNextMonthReq.getDataUnits(), allocateUnitsForNextMonthReq.getSmsUnits(), allocateUnitsForNextMonthReq.getTalktimeUnits());
+                AllocateUnitsForNextMonthRsp allocateUnitsForNextMonthRsp = new AllocateUnitsForNextMonthRsp(subscription.getSubscriptionId());
+                return Response.status(Response.Status.OK).entity(allocateUnitsForNextMonthRsp).build();
             } catch (InvalidLoginCredentialException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Status.UNAUTHORIZED).entity(errorRsp).build();
@@ -194,12 +225,42 @@ public class SubscriptionResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         }
     }
-
-    @Path("terminateSubscription")
+    
+    @Path("allocateAddOnUnitsForCurrentMonth")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response terminateSubscription(TerminateSubscriptionReq terminateSubscriptionReq) {
+    public Response AllocateAddOnUnitsForCurrentMonth(AllocateAddOnUnitsForCurrentMonthReq allocateAddOnUnitsForCurrentMonthReq) {
+
+        if (allocateAddOnUnitsForCurrentMonthReq != null) {
+            try {
+                Customer customer = customerSessionBeanLocal.customerLogin(allocateAddOnUnitsForCurrentMonthReq.getUsername(), allocateAddOnUnitsForCurrentMonthReq.getPassword());
+                System.out.println("********** SubscriptionResource.allocateAddOnUnitsForCurrentMonth(): Customer " + customer.getUsername() + " login remotely via web service");
+
+                Subscription subscription = subscriptionSessonBeanLocal.allocateAddOnUnitsForCurrentMonth(allocateAddOnUnitsForCurrentMonthReq.getSubscription(),allocateAddOnUnitsForCurrentMonthReq.getDataUnits(),allocateAddOnUnitsForCurrentMonthReq.getSmsUnits(),allocateAddOnUnitsForCurrentMonthReq.getTalktimeUnits());
+                AllocateAddOnUnitsForCurrentMonthRsp allocateAddOnUnitsForCurrentMonthRsp = new AllocateAddOnUnitsForCurrentMonthRsp(subscription.getSubscriptionId());
+                return Response.status(Response.Status.OK).entity(allocateAddOnUnitsForCurrentMonthRsp).build();
+            } catch (InvalidLoginCredentialException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Status.UNAUTHORIZED).entity(errorRsp).build();
+            } catch (SubscriptionNotFoundException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+            } catch (Exception ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+            }
+        } else {
+            ErrorRsp errorRsp = new ErrorRsp("Invalid add on units for current month request");
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("requestToTerminateSubscription")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response requestToTerminateSubscription(TerminateSubscriptionReq terminateSubscriptionReq) {
 
         if (terminateSubscriptionReq != null) {
             try {

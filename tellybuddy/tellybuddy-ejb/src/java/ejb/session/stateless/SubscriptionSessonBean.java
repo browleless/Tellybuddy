@@ -20,6 +20,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Local;
+import javax.ejb.Schedule;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.Timeout;
@@ -78,12 +79,14 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
 
+    //  private Subscription currentSubscription;
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
     public SubscriptionSessonBean() {
         this.validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
+        //     currentSubscription = new Subscription();
     }
 
     @Override
@@ -97,7 +100,6 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 //                if(!customer.getIsApproved()){
 //                    throw new CustomerNotYetApproved("Please wait for approval before subscribing to a new plan!");
 //                }
-                
                 Plan plan = planSessionBeanLocal.retrievePlanByPlanId(planId);
                 plan.setIsInUse(true);
 
@@ -140,6 +142,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         }
 
     }
+
     public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException {
 
         Subscription subscriptionToApprove = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
@@ -215,7 +218,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             // reset everything else
             // if customer got adjust for next month then update
             if (subscriptionToUpdate.getDataUnits().get("nextMonth") != 0 && subscriptionToUpdate.getSmsUnits().get("nextMonth") != 0 && subscriptionToUpdate.getTalkTimeUnits().get("nextMonth") != 0) {
-                amendAllocationOfUniis(subscriptionToUpdate);
+                amendAllocatedUnits(subscriptionToUpdate);
             }
 
             // reset donated units
@@ -274,9 +277,8 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
     }
 
-    //to be done at the start of every month; before this just updateSubscription only
     @Override
-    public Subscription amendAllocationOfUniis(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException {
+    public Subscription amendAllocatedUnits(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException {
         Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
 
         HashMap<String, Integer> smsUnits = subscriptionToAmend.getSmsUnits();
@@ -287,11 +289,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         talkTimeUnits.put("allocated", talkTimeUnits.get("nextMonth"));
         dataUnits.put("allocated", dataUnits.get("nextMonth"));
 
-        //reset to 0 at the start of every month
         smsUnits.put("nextMonth", 0);
         talkTimeUnits.put("nextMonth", 0);
         dataUnits.put("nextMonth", 0);
-
         updateSubscription(subscriptionToAmend);
         return subscriptionToAmend;
     }
@@ -304,7 +304,17 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         subscriptionToAmend.getDataUnits().put("nextMonth", dataUnits);
         subscriptionToAmend.getSmsUnits().put("nextMonth", smsUnits);
         subscriptionToAmend.getTalkTimeUnits().put("nextMonth", talktimeUnits);
+        return subscriptionToAmend;
+    }
 
+
+
+    @Override
+    public Subscription allocateAddOnUnitsForCurrentMonth(Subscription subscription, Integer dataunits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException, InputDataValidationException {
+        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
+        subscriptionToAmend.getDataUnits().put("addOn", dataunits);
+        subscriptionToAmend.getSmsUnits().put("addOn", smsUnits);
+        subscriptionToAmend.getTalkTimeUnits().put("addOn", talktimeUnits);
         return subscriptionToAmend;
     }
 
@@ -355,10 +365,10 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         q.setParameter("inFamilyGroupId", familyGroupId);
         return q.getResultList();
     }
-    
+
     @Override
-    public List<Subscription> retrieveAllPendingSubscriptions(){
-         Query q = em.createQuery("Select s FROM Subscription s WHERE s.subscriptionStatusEnum = :inStatus");
+    public List<Subscription> retrieveAllPendingSubscriptions() {
+        Query q = em.createQuery("Select s FROM Subscription s WHERE s.subscriptionStatusEnum = :inStatus");
         q.setParameter("inStatus", SubscriptionStatusEnum.PENDING);
         return q.getResultList();
     }
@@ -376,7 +386,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             PhoneNumber phoneNumber = subscriptionToTerminate.getPhoneNumber();
             phoneNumber.setSubscription(null);
             phoneNumber.setInUse(Boolean.FALSE);
-            
+
         } catch (SubscriptionNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
@@ -391,4 +401,5 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
         return msg;
     }
+
 }

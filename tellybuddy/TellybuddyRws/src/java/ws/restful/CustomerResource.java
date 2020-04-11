@@ -3,6 +3,7 @@ package ws.restful;
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.EmailSessionBeanLocal;
 import entity.Customer;
+import java.util.List;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -24,7 +25,9 @@ import ws.datamodel.CreateCustomerReq;
 import ws.datamodel.CreateCustomerRsp;
 import ws.datamodel.CustomerLoginRsp;
 import ws.datamodel.ErrorRsp;
+import ws.datamodel.RetrieveCustomerFromFamilyGroupIdRsp;
 import ws.datamodel.RetrieveCustomerRsp;
+import ws.datamodel.UpdateCustomerDetailsForCustomerReq;
 
 /**
  * REST Web Service
@@ -57,8 +60,9 @@ public class CustomerResource {
     public Response customerLogin(@QueryParam("username") String username, @QueryParam("password") String password) {
 
         try {
-            Customer customer = customerSessionBeanLocal.customerLogin(username, password);
 
+            Customer customer = customerSessionBeanLocal.customerLogin(username, password);
+            System.out.println("********** CustomerResource.updateCustomerDetailsForCustomer(): Customer " + customer.getUsername() + " login remotely via web service");
             customer.setPassword(null);
             customer.setSalt(null);
 
@@ -79,7 +83,7 @@ public class CustomerResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("retrieveCustomerBySalt/{salt}")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -96,7 +100,7 @@ public class CustomerResource {
             customer.getQuizAttempts().clear();
             customer.getSubscriptions().clear();
             customer.getTransactions().clear();
-            customer.getAnnouncements().clear();
+            // customer.getAnnouncements().clear();
             customer.setFamilyGroup(null);
 
             return Response.status(Response.Status.OK).entity(new RetrieveCustomerRsp(customer)).build();
@@ -109,7 +113,7 @@ public class CustomerResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("retrieveCustomerByEmail")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -126,7 +130,7 @@ public class CustomerResource {
             customer.getQuizAttempts().clear();
             customer.getSubscriptions().clear();
             customer.getTransactions().clear();
-            customer.getAnnouncements().clear();
+            // customer.getAnnouncements().clear();
             customer.setFamilyGroup(null);
 
             return Response.status(Response.Status.OK).entity(new RetrieveCustomerRsp(customer)).build();
@@ -182,7 +186,7 @@ public class CustomerResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         }
     }
-    
+
     @Path("changePassword")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -206,4 +210,58 @@ public class CustomerResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         }
     }
+
+    @Path("retrieveCustomerFromFamilyGroupId/{familyGroupId}")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveCustomerFromFamilyGroupId(@QueryParam("username") String username, @QueryParam("password") String password, @QueryParam("familyGroupId") Long familyGroupId) {
+        try {
+            Customer customer = customerSessionBeanLocal.customerLogin(username, password);
+            System.out.println("********** CustomerResource.retrieveCustomerFromFamilyGroupId(): Customer " + customer.getUsername() + " login remotely via web service");
+            List<Customer> customers = customerSessionBeanLocal.retrieveCustomerFromFamilyGroupId(familyGroupId);
+            for (Customer c : customers) {
+                c.setPassword(null);
+                c.setSalt(null);
+                c.getSubscriptions().clear();
+                c.getBills().clear();
+                c.getTransactions().clear();
+                c.getQuizAttempts().clear();
+                c.setFamilyGroup(null);
+            }
+            return Response.status(Response.Status.OK).entity(new RetrieveCustomerFromFamilyGroupIdRsp(customers)).build();
+        } catch (InvalidLoginCredentialException ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
+        }catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+
+    @Path("updateCustomerDetailsForCustomer")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response UpdateCustomerDetailsForCustomer(UpdateCustomerDetailsForCustomerReq updateCustomerDetailsForCustomerReq) {
+        if (updateCustomerDetailsForCustomerReq != null) {
+            try {
+                Customer customer = customerSessionBeanLocal.customerLogin(updateCustomerDetailsForCustomerReq.getUsername(), updateCustomerDetailsForCustomerReq.getPassword());
+                System.out.println("********** CustomerResource.updateCustomerDetailsForCustomer(): Customer " + customer.getUsername() + " login remotely via web service");
+                customerSessionBeanLocal.updateCustomerDetailsForCustomer(updateCustomerDetailsForCustomerReq.getCustomer());
+
+                return Response.status(Response.Status.OK).build();
+            } catch (InvalidLoginCredentialException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
+            } catch (CustomerNotFoundException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+            }
+        } else {
+            ErrorRsp errorRsp = new ErrorRsp("Invalid update customer request");
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+        }
+    }
+
 }

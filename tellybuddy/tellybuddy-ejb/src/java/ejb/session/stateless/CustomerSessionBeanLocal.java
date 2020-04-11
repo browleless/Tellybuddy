@@ -26,7 +26,7 @@ public interface CustomerSessionBeanLocal {
 
     public void employeeApprovePendingCustomerAndUpdate(Customer customer) throws CustomerNotFoundException;
 
-    public void updateCustomerTransaction();
+    //public void updateCustomerTransaction();
 
     public void updateCustomerLoyaltyPoint();
 
@@ -51,12 +51,14 @@ public interface CustomerSessionBeanLocal {
     public List<Customer> retrieveAllPendingCustomers();
 
     //   public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription);
-    public void terminateCustomerSubscriptionToAPlan(Long customerId) throws CustomerNotFoundException;
+  //  public void terminateCustomerSubscriptionToAPlan(Long customerId) throws CustomerNotFoundException;
 
     public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException;
 
     public Customer retrieveCustomerBySalt(String salt) throws CustomerNotFoundException;
 
     public void updateCustomerPassword(Customer customer) throws CustomerNotFoundException;
+
+    public boolean checkForActiveSubscription(Customer customer);
 
 }

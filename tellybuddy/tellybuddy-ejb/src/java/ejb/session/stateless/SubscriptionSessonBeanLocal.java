@@ -31,8 +31,7 @@ public interface SubscriptionSessonBeanLocal {
 
     public void updateSubscription(Subscription subscription) throws util.exception.SubscriptionNotFoundException, InputDataValidationException;
 
-    public Subscription amendAllocationOfUniis(Subscription subscription) throws util.exception.SubscriptionNotFoundException, InputDataValidationException;
-
+   
     public Subscription retrieveSubscriptionBySubscriptionId(Long subscriptionId) throws util.exception.SubscriptionNotFoundException;
 
     public List<Subscription> retrieveSubscriptionsOfFamilyByFamilyGroupId(Long familyGroupId);
@@ -52,4 +51,16 @@ public interface SubscriptionSessonBeanLocal {
     public Subscription allocateUnitsForNextMonth(Subscription subscription, Integer dataUnits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException;
 
     public void requestToTerminateSubscription(Subscription subscription) throws SubscriptionNotFoundException;
+
+    public Subscription amendAllocatedUnits(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException;
+
+    //public Subscription amendAddOnUnits(Subscription subscription) throws SubscriptionNotFoundException, InputDataValidationException;
+
+    public Subscription allocateAddOnUnitsForCurrentMonth(Subscription subscription, Integer dataunits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException, InputDataValidationException;
+
+  
+
+  
+
+    
 }

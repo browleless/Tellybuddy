@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.Customer;
+import entity.PhoneNumber;
 import entity.Subscription;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,8 +40,11 @@ import util.security.CryptographicHelper;
  */
 @Stateless
 @Local
-//@DeclareRoles({"employee", "customer"})
+
 public class CustomerSessionBean implements CustomerSessionBeanLocal {
+
+    @EJB(name = "PhoneNumberSessionBeanLocal")
+    private PhoneNumberSessionBeanLocal phoneNumberSessionBeanLocal;
 
     @EJB(name = "EmailSessionBeanLocal")
     private EmailSessionBeanLocal emailSessionBeanLocal;
@@ -58,7 +62,6 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         validator = validatorFactory.getValidator();
     }
 
-//    @RolesAllowed({"customer"})
     @Override
     public Long createCustomer(Customer newCustomer) throws CustomerExistException, CustomerUsernameExistException {
 
@@ -97,32 +100,38 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         return newCustomer.getCustomerId();
     }
 
-//    @RolesAllowed({"customer"})
     @Override
     public void updateCustomerDetailsForCustomer(Customer customer) throws CustomerNotFoundException {
-        Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
-        customerToUpdate.setPassword(customer.getPassword());
-        customerToUpdate.setFirstName(customer.getFirstName());
-        customerToUpdate.setLastName(customer.getLastName());
-        customerToUpdate.setAge(customer.getAge());
-        customerToUpdate.setNewAddress(customer.getNewAddress());
-        customerToUpdate.setNewPostalCode(customer.getNewPostalCode());
-        customerToUpdate.setNewNric(customer.getNewNric());
-        customerToUpdate.setNewNricImagePath(customer.getNewNricImagePath());
+        if (customer != null && customer.getCustomerId() != null) {
+            Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
+//            String newSalt = CryptographicHelper.getInstance().generateRandomString(32);
+//            customerToUpdate.setSalt(newSalt);
+//            customerToUpdate.setPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(customer.getPassword() + newSalt)));
+            //  customerToUpdate.setUpdatedPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(customer.getPassword() + customerToUpdate.getSalt())));
+            customerToUpdate.setFirstName(customer.getFirstName());
+            customerToUpdate.setLastName(customer.getLastName());
+            customerToUpdate.setAge(customer.getAge());
+            customerToUpdate.setNewAddress(customer.getNewAddress());
+            customerToUpdate.setNewPostalCode(customer.getNewPostalCode());
+            customerToUpdate.setNewNric(customer.getNewNric());
+            customerToUpdate.setNewNricImagePath(customer.getNewNricImagePath());
+           // em.flush();
+        } else {
+            throw new CustomerNotFoundException("Customer ID not provided");
+        }
     }
-    
+
     @Override
     public void updateCustomerPassword(Customer customer) throws CustomerNotFoundException {
-        
+
         Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
-        
+
         String newSalt = CryptographicHelper.getInstance().generateRandomString(32);
 
         customerToUpdate.setSalt(newSalt);
         customerToUpdate.setPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(customer.getPassword() + newSalt)));
     }
 
-//    @RolesAllowed({"employee"})
     @Override
     public void employeeApprovePendingCustomerAndUpdate(Customer customer) throws CustomerNotFoundException {
         Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
@@ -156,27 +165,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 //        customer.getSubscriptions().add(newSubscription);
 //        newSubscription.setCustomer(customer);
 //    }
-    @Override
-    public void terminateCustomerSubscriptionToAPlan(Long customerId) throws CustomerNotFoundException {
-
-        Customer customer = retrieveCustomerByCustomerId(customerId);
-        List<Subscription> subscriptions = customer.getSubscriptions();
-        Date today = Calendar.getInstance().getTime();
-        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
-        latestSubscription.setSubscriptionEndDate(today);
-        latestSubscription.setIsActive(false);
-    }
-
-//add loyalty points is in EJB timer
-//    @RolesAllowed({"employee"})
-    @Override
-    public void updateCustomerTransaction() {
-        //void transaction
-        //change the amount
-    }
-
     //updateCustomerBill is written in the bill sessionbean, take in billId and customerId
-//    @RolesAllowed({"employee"})
     @Override
     @Schedule(hour = "6", minute = "0", second = "0", persistent = false)
     public void updateCustomerLoyaltyPoint() {
@@ -223,6 +212,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         }
     }
 
+    @Override
     public boolean checkForActiveSubscription(Customer customer) {
         List<Subscription> subscriptions = subscriptionSessonBeanLocal.retrieveAllSubscriptionUnderCustomer(customer);
         for (Subscription s : subscriptions) {
@@ -233,20 +223,17 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         return false;
     }
 
-//    @RolesAllowed({"employee"})
     @Override
     public List<Customer> retrieveAllCustomer() {
         Query q = em.createQuery("SELECT c FROM Customer c");
         return q.getResultList();
     }
-//    @RolesAllowed({"employee"})
 
     @Override
     public List<Customer> retrieveListOfPendingCustomer() {
         Query q = em.createQuery("SELECT c FROM Customer c WHERE c.newNric IS NOT NULL OR c.newAddress IS NOT NULL OR c.newPostalCode IS NOT NULL OR c.newNricImagePath IS NOT NULL");
         return q.getResultList();
     }
-//    @RolesAllowed({"employee"})
 
     @Override
     public Customer retrieveCustomerFromSubscription(Long subscriptionId) {
@@ -254,27 +241,26 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         q.setParameter("inSubscription", subscriptionId);
         return (Customer) q.getSingleResult();
     }
-//    @RolesAllowed({"employee"})
 
     @Override
     public Customer retrieveCustomerByCustomerId(Long customerId) throws CustomerNotFoundException {
-        {
-            Customer customer = em.find(Customer.class, customerId);
 
-            if (customer != null) {
-                customer.getAnnouncements();
-                customer.getQuizAttempts();
-                customer.getTransactions();
-                customer.getSubscriptions();
-                customer.getBills();
-
-                return customer;
-            } else {
-                throw new CustomerNotFoundException("Customer ID " + customerId + " does not exist!");
-            }
+        Query q = em.createQuery("SELECT c FROM Customer c WHERE c.customerId = :inCustomer");
+        q.setParameter("inCustomer", customerId);
+        Customer customer = (Customer) q.getSingleResult();
+        //  Customer customer = em.find(Customer.class, customerId);
+        if (customer != null) {
+//            customer.getAnnouncements();
+//            customer.getQuizAttempts();
+//            customer.getTransactions();
+//            customer.getSubscriptions();
+//            customer.getBills();
+            return customer;
+        } else {
+            throw new CustomerNotFoundException("Customer ID " + customerId + " does not exist!");
         }
+
     }
-//    @RolesAllowed({"employee"})
 
     @Override
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException {
@@ -286,7 +272,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             throw new CustomerNotFoundException("Customer Username " + username + " does not exist!");
         }
     }
-    
+
     @Override
     public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException {
         Query query = em.createQuery("SELECT c FROM Customer c WHERE c.email = :inEmail");
@@ -297,7 +283,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             throw new CustomerNotFoundException("Customer Email " + email + " does not exist!");
         }
     }
-    
+
     @Override
     public Customer retrieveCustomerBySalt(String salt) throws CustomerNotFoundException {
         Query query = em.createQuery("SELECT c FROM Customer c WHERE c.salt = :inSalt");
@@ -308,32 +294,31 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             throw new CustomerNotFoundException("Customer salt " + salt + " does not exist!");
         }
     }
-    
+
     @Override
-    public int retrieveNoActiveSubscriptions(Customer customer){
+    public int retrieveNoActiveSubscriptions(Customer customer) {
         int count = 0;
-        for(Subscription s:customer.getSubscriptions()){
-            if(s.getIsActive()){
+        for (Subscription s : customer.getSubscriptions()) {
+            if (s.getIsActive()) {
                 count++;
             }
         }
         return count;
     }
-//    @RolesAllowed({"employee", "customer"})
-    
+
     @Override
-    public List<Customer> retrieveAllPendingCustomers(){
+    public List<Customer> retrieveAllPendingCustomers() {
         Query q = em.createQuery("Select c FROM Customer c WHERE c.customerStatusEnum = :inStatus");
         q.setParameter("inStatus", CustomerStatusEnum.PENDING);
         return q.getResultList();
     }
+
     @Override
     public List<Customer> retrieveCustomerFromFamilyGroupId(Long familyGroupId) {
         Query q = em.createQuery("SELECT fg.customers FROM FamilyGroup fg WHERE fg.familyGroupId = :inFamilyGroupId");
         q.setParameter("inFamilyGroupId", familyGroupId);
         return q.getResultList();
     }
-//    @RolesAllowed({"customer"})
 
     @Override
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException {
@@ -355,4 +340,5 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         em.remove(em.find(Customer.class, customerId));
 
     }
+
 }
