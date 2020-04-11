@@ -52,7 +52,7 @@ public interface ProductSessionBeanLocal {
 
     public void creditQuantityOnHand(Long productId, Integer quantityToCredit) throws ProductNotFoundException;
 
-    public void updateLuxuryProduct(LuxuryProduct luxuryProduct, Long categoryId, List<Long> tagIds, List<Long> itemIds) throws ProductNotFoundException, CategoryNotFoundException, TagNotFoundException, UpdateProductException, InputDataValidationException,ProductItemNotFoundException;
+    public void updateLuxuryProduct(LuxuryProduct luxuryProduct, Long categoryId, List<Long> tagIds, List<Long> itemIds) throws ProductNotFoundException, CategoryNotFoundException, TagNotFoundException, UpdateProductException, InputDataValidationException, ProductItemNotFoundException;
 
     public void creditQuantityOnHandForLuxuryProduct(Long productId, Integer quantityToCredit, List<ProductItem> pis) throws ProductNotFoundException;
 
@@ -65,6 +65,10 @@ public interface ProductSessionBeanLocal {
     public void activatePromotion(Product productToActivate);
 
     public void updateProduct(Product product);
+
+    public List<Product> retrieveAllNormalProducts();
+
+    public List<Product> retrieveAllLuxuryProducts();
 
  
     

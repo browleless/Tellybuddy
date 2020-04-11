@@ -117,7 +117,7 @@ public class FamilyGroupResource {
             } catch (InvalidLoginCredentialException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
-            } catch (CustomerNotFoundException | CustomerNotVerifiedException ex) {
+            } catch (CustomerNotFoundException | CustomerNotVerifiedException | CustomerAlreadyInFamilyGroupException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
             } catch (Exception ex) {

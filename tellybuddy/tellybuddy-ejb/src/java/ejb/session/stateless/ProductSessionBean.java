@@ -71,7 +71,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
 
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
-    
+
     @Resource
     private SessionContext sessionContext;
 
@@ -143,6 +143,40 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
     }
 
     @Override
+    public List<Product> retrieveAllNormalProducts() {
+        Query query = em.createQuery("SELECT p FROM Product p ORDER BY p.skuCode ASC");
+        List<Product> products = query.getResultList();
+        List<Product> normalProds = new ArrayList<>();
+
+        for (Product product : products) {
+            if (product instanceof LuxuryProduct) {
+                //do nothing
+            } else {
+                normalProds.add(product);
+                product.getCategory();
+            }
+        }
+
+        return normalProds;
+    }
+
+    @Override
+    public List<Product> retrieveAllLuxuryProducts() {
+        Query query = em.createQuery("SELECT p FROM Product p ORDER BY p.skuCode ASC");
+        List<Product> products = query.getResultList();
+        List<Product> luxuryProds = new ArrayList<>();
+
+        for (Product product : products) {
+            if (product instanceof LuxuryProduct) {
+                luxuryProds.add(product);
+                product.getCategory();
+            }
+        }
+
+        return luxuryProds;
+    }
+
+    @Override
     public List<Product> retrieveAllDiscountedProducts() {
         Query query = em.createQuery("SELECT p FROM Product p WHERE p.discountPrice IS NOT NULL");
         List<Product> discountedProducts = query.getResultList();
@@ -157,7 +191,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
     public String retrieveLatestSerialNum() {
         Query q = em.createQuery("SELECT p FROM LuxuryProduct p ORDER BY p.serialNumber desc");
 
-        List<LuxuryProduct> lp =  q.getResultList();
+        List<LuxuryProduct> lp = q.getResultList();
 
         if (lp.isEmpty()) {
             return "0000000001";
@@ -352,8 +386,9 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
             throw new ProductNotFoundException("Product ID not provided for product to be updated");
         }
     }
+
     @Override
-    public void updateProduct(Product product){
+    public void updateProduct(Product product) {
         try {
             Product productToUpdate = retrieveProductByProductId(product.getProductId());
             productToUpdate.setDiscountPrice(product.getDiscountPrice());
@@ -362,7 +397,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
         } catch (ProductNotFoundException ex) {
             Logger.getLogger(ProductSessionBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-         
+
     }
 
     @Override
@@ -468,7 +503,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
             product.setDiscountPrice(productToActivate.getDiscountPrice());
             product.setDealStartTime(productToActivate.getDealStartTime());
             product.setDealEndTime(productToActivate.getDealEndTime());
-            
+
             TimerService timerService = sessionContext.getTimerService();
             timerService.createSingleActionTimer(productToActivate.getDealEndTime(), new TimerConfig(product, true));
         } catch (ProductNotFoundException ex) {

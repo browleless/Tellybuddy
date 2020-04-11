@@ -75,6 +75,102 @@ public class ProductResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
+    
+    @Path("retrieveAllNormalProducts")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveAllNormalProducts() {
+
+        try {
+            List<Product> products = productSessionBeanLocal.retrieveAllNormalProducts();
+
+            for (Product product : products) {
+                if (product.getCategory().getParentCategory() != null) {
+                    product.getCategory().getParentCategory().getSubCategories().clear();
+                }
+
+                product.getCategory().getProducts().clear();
+
+                for (Tag tag : product.getTags()) {
+                    tag.getProducts().clear();
+                }
+
+                if (product instanceof LuxuryProduct) {
+                    ((LuxuryProduct) product).getProductItems().clear();
+                }
+            }
+
+            return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(products)).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("retrieveAllLuxuryProducts")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveAllLuxuryProducts() {
+
+        try {
+            List<Product> luxuryProducts = productSessionBeanLocal.retrieveAllLuxuryProducts();
+
+            for (Product lp : luxuryProducts) {
+                if (lp.getCategory().getParentCategory() != null) {
+                    lp.getCategory().getParentCategory().getSubCategories().clear();
+                }
+
+                lp.getCategory().getProducts().clear();
+
+                for (Tag tag : lp.getTags()) {
+                    tag.getProducts().clear();
+                }
+
+                if (lp instanceof LuxuryProduct) {
+                    ((LuxuryProduct) lp).getProductItems().clear();
+                }
+            }
+
+            return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(luxuryProducts)).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("retrieveAllDiscountedProducts")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveAllDiscountedProducts() {
+
+        try {
+            List<Product> discounted = productSessionBeanLocal.retrieveAllDiscountedProducts();
+
+            for (Product p : discounted) {
+                if (p.getCategory().getParentCategory() != null) {
+                    p.getCategory().getParentCategory().getSubCategories().clear();
+                }
+
+                p.getCategory().getProducts().clear();
+
+                for (Tag tag : p.getTags()) {
+                    tag.getProducts().clear();
+                }
+
+                if (p instanceof LuxuryProduct) {
+                    ((LuxuryProduct) p).getProductItems().clear();
+                }
+            }
+
+            return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(discounted)).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
 
     @Path("retrieveProduct/{productId}")
     @GET
