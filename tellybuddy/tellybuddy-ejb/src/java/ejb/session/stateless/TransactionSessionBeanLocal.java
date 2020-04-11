@@ -15,6 +15,7 @@ import util.exception.CustomerNotFoundException;
 import util.exception.DiscountCodeNotFoundException;
 import util.exception.TransactionAlreadyVoidedRefundedException;
 import util.exception.TransactionNotFoundException;
+import util.exception.TransactionUnableToBeRefundedException;
 
 /**
  * @markt
@@ -22,8 +23,8 @@ import util.exception.TransactionNotFoundException;
 @Local
 public interface TransactionSessionBeanLocal {
 
-    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException;
-
+   public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName, String creditCardNo, String cvv) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException;
+    
     public List<Transaction> retrieveAllTransactions();
 
     public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId);
@@ -33,8 +34,10 @@ public interface TransactionSessionBeanLocal {
     public List<Transaction> retrieveTransactionsByCustomer(Customer customer);
 
     public void updateTransaction(Transaction transaction);
+    
+    public void requestTransactionRefund(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException, TransactionUnableToBeRefundedException;
 
-    public void voidRefundTransaction(Long saleTransactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException;
+    public void refundTransaction(Long saleTransactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException,TransactionUnableToBeRefundedException;
 
     public void deleteTransaction(Transaction transaction);
 

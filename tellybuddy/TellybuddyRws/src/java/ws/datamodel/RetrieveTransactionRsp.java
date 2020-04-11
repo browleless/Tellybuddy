@@ -14,6 +14,9 @@ import entity.Transaction;
 public class RetrieveTransactionRsp {
     private Transaction transaction;
 
+    public RetrieveTransactionRsp() {
+    }
+    
     public RetrieveTransactionRsp(Transaction transaction) {
         this.transaction = transaction;
     }

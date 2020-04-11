@@ -3,6 +3,7 @@ package ejb.session.stateless;
 import entity.Bill;
 import entity.Customer;
 import entity.Payment;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
@@ -47,6 +48,17 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
             return newPayment.getPaymentId();
         }
     }
+
+    @Override
+    public Payment createNewPayment(String creditCardNo, String cvv, BigDecimal amount) throws CreditCardDetailErrorException{
+
+        Payment newPayment = new Payment(creditCardNo, cvv, new Date(), amount);
+
+        entityManager.persist(newPayment);
+        entityManager.flush();
+
+        return newPayment;
+     }
 
     @Override
     public Long automateBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException {

@@ -34,6 +34,7 @@ import util.exception.DiscountCodeNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.TransactionAlreadyVoidedRefundedException;
 import util.exception.TransactionNotFoundException;
+import util.exception.TransactionUnableToBeRefundedException;
 import ws.datamodel.CreateNewTransactionReq;
 import ws.datamodel.CreateNewTransactionRsp;
 import ws.datamodel.ErrorRsp;
@@ -88,7 +89,7 @@ public class TransactionResource {
         }
     }
 
-    @Path("retrieveTransaction/{transactionId}")
+    @Path("retrieveTransactionById/{transactionId}")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
@@ -98,19 +99,37 @@ public class TransactionResource {
             System.out.println("********** TransactionResource.retrieveTransaction(): Customer " + customer.getUsername() + " login remotely via web service");
 
             Transaction transaction = transactionSessionBeanLocal.retrieveTransactionByTransactionId(transactionId);
-            
+
             transaction.setCustomer(null);
-            transaction.getDiscountCode().setTransaction(null);
             
+            if (transaction.getDiscountCode() != null) {
+                transaction.getDiscountCode().setTransaction(null);
+            }
+
             for (TransactionLineItem tli : transaction.getTransactionLineItems()) {
                 tli.setTransaction(null);
+
+                if (tli.getProduct() != null) {
+                    tli.getProduct().setCategory(null);
+                    tli.getProduct().setTags(null);
+                }
+
+                if (tli.getProductItem() != null) {
+                    tli.getProductItem().setLuxuryProduct(null);
+                }
+
+                if (tli.getSubscription() != null) {
+                    tli.getSubscription().setCustomer(null);
+                    tli.getSubscription().setUsageDetails(null);
+                    tli.getSubscription().getPhoneNumber().setSubscription(null);
+                }
             }
 
             return Response.status(Response.Status.OK).entity(new RetrieveTransactionRsp(transaction)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
-        } catch ( TransactionNotFoundException ex) {
+        } catch (TransactionNotFoundException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         } catch (Exception ex) {
@@ -118,7 +137,7 @@ public class TransactionResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("createNewTransaction")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -130,10 +149,10 @@ public class TransactionResource {
                 Customer customer = customerSessionBeanLocal.customerLogin(createNewTransactionReq.getUsername(), createNewTransactionReq.getPassword());
                 System.out.println("********** TransactionResource.createNewTransaction(): Customer " + customer.getUsername() + " login remotely via web service");
 
-                Transaction transaction = transactionSessionBeanLocal.createNewTransaction(createNewTransactionReq.getCustomerId(), createNewTransactionReq.getNewTransaction(), createNewTransactionReq.getDiscountCodeName());
-                CreateNewTransactionRsp createNewTransactionrsp = new CreateNewTransactionRsp(transaction.getTransactionId());
+                Transaction transaction = transactionSessionBeanLocal.createNewTransaction(createNewTransactionReq.getCustomerId(), createNewTransactionReq.getNewTransaction(), createNewTransactionReq.getDiscountCodeName(), createNewTransactionReq.getCreditCardNo(), createNewTransactionReq.getCvv());
+                CreateNewTransactionRsp createNewTransactionRsp = new CreateNewTransactionRsp(transaction.getTransactionId());
 
-                return Response.status(Response.Status.OK).entity(createNewTransactionrsp).build();
+                return Response.status(Response.Status.OK).entity(createNewTransactionRsp).build();
             } catch (InvalidLoginCredentialException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
                 return Response.status(Status.UNAUTHORIZED).entity(errorRsp).build();
@@ -150,23 +169,23 @@ public class TransactionResource {
         }
     }
 
-    @Path("voidTransaction/{transactionId}}")
+    @Path("refundTransactionRequest/{transactionId}")
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response voidTransaction(@QueryParam("username") String username, @QueryParam("password") String password, @PathParam("transactionId") Long transactionId) {
+    public Response refundTransactionRequest(@QueryParam("username") String username, @QueryParam("password") String password, @PathParam("transactionId") Long transactionId) {
 
         try {
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
-            System.out.println("********** TransactionResource.voidTransaction(): Customer " + customer.getUsername() + " login remotely via web service");
+            System.out.println("********** TransactionResource.refundTransactionRequest(): Customer " + customer.getUsername() + " login remotely via web service");
 
-            transactionSessionBeanLocal.voidRefundTransaction(transactionId);
+            transactionSessionBeanLocal.requestTransactionRefund(transactionId);
 
             return Response.status(Response.Status.OK).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Status.UNAUTHORIZED).entity(errorRsp).build();
-        } catch (TransactionNotFoundException | TransactionAlreadyVoidedRefundedException ex) {
+        } catch (TransactionNotFoundException | TransactionAlreadyVoidedRefundedException | TransactionUnableToBeRefundedException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         } catch (Exception ex) {

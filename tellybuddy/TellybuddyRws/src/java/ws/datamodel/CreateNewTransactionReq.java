@@ -19,14 +19,19 @@ public class CreateNewTransactionReq {
     private String password;
     private Long customerId;
     private String discountCodeName;
+    private String creditCardNo;
+    private String cvv;
 
-    public CreateNewTransactionReq(Transaction newTransaction, String username, String password, Long customerId, String discountCodeName) {
+    public CreateNewTransactionReq(Transaction newTransaction, String username, String password, Long customerId, String discountCodeName, String creditCardNo, String cvv) {
         this.newTransaction = newTransaction;
         this.username = username;
         this.password = password;
         this.customerId = customerId;
         this.discountCodeName = discountCodeName;
+        this.creditCardNo = creditCardNo;
+        this.cvv = cvv;
     }
+    
 
     public CreateNewTransactionReq() {
     }
@@ -69,6 +74,22 @@ public class CreateNewTransactionReq {
 
     public void setDiscountCodeName(String discountCodeName) {
         this.discountCodeName = discountCodeName;
+    }
+
+    public String getCreditCardNo() {
+        return creditCardNo;
+    }
+
+    public void setCreditCardNo(String creditCardNo) {
+        this.creditCardNo = creditCardNo;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
     }
 
 

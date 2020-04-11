@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.Customer;
 import entity.DiscountCode;
+import entity.Payment;
 import entity.Transaction;
 import entity.TransactionLineItem;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.TransactionStatusEnum;
 import util.exception.CreateNewSaleTransactionException;
 import util.exception.CustomerNotFoundException;
 import util.exception.DiscountCodeNotFoundException;
@@ -29,6 +31,7 @@ import util.exception.ProductInsufficientQuantityOnHandException;
 import util.exception.ProductNotFoundException;
 import util.exception.TransactionAlreadyVoidedRefundedException;
 import util.exception.TransactionNotFoundException;
+import util.exception.TransactionUnableToBeRefundedException;
 
 /**
  *
@@ -37,6 +40,9 @@ import util.exception.TransactionNotFoundException;
 @Stateless
 @Local(TransactionSessionBeanLocal.class)
 public class TransactionSessionBean implements TransactionSessionBeanLocal {
+
+    @EJB(name = "PaymentSessionBeanLocal")
+    private PaymentSessionBeanLocal paymentSessionBeanLocal;
 
     @PersistenceContext(unitName = "tellybuddy-ejbPU")
     private EntityManager em;
@@ -54,16 +60,24 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     }
 
     @Override
-    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException {
+    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName, String creditCardNo, String cvv) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException {
         if (newTransaction != null) {
             try {
                 Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
-                DiscountCode discountCode = discountCodeSessionBeanLocal.retrieveDiscountCodeByDiscountCodeName(discountCodeName);
+                if (discountCodeName != null) {
+                    DiscountCode discountCode = discountCodeSessionBeanLocal.retrieveDiscountCodeByDiscountCodeName(discountCodeName);
+                    newTransaction.setDiscountCode(discountCode);
+                }
+                newTransaction.setTransactionStatus(TransactionStatusEnum.PROCESSING);
+                newTransaction.setTransactionDateTime(new Date());
+
                 newTransaction.setCustomer(customer);
-                newTransaction.setDiscountCode(discountCode);
                 customer.getTransactions().add(newTransaction);
 
                 em.persist(newTransaction);
+
+                Payment newPayment = paymentSessionBeanLocal.createNewPayment(creditCardNo, cvv, newTransaction.getTotalPrice());
+                newTransaction.setPayment(newPayment);
 
                 for (TransactionLineItem transactionLineItem : newTransaction.getTransactionLineItems()) {
                     productSessionBeanLocal.debitQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
@@ -105,13 +119,13 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     }
 
     @Override
-    public List<Transaction> retrieveTransactionsByCustomer(Customer customer){
-        Query query = em.createQuery("SELECT t FROM Transaction t WHERE t.customer.customerId = :customerId");
-        query.setParameter("customerId", customer.getCustomerId());
+    public List<Transaction> retrieveTransactionsByCustomer(Customer customer) {
+        Query query = em.createQuery("SELECT t FROM Transaction t WHERE t.customer = :customer");
+        query.setParameter("customer", customer);
         return query.getResultList();
-        
-    } 
-    
+
+    }
+
     @Override
     public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId) {
         Query query = em.createQuery("SELECT tl FROM TransactionLineItem tl WHERE tl.product.productId = :inProductId");
@@ -120,7 +134,7 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         if (query.getResultList() == null) {
             return new ArrayList<TransactionLineItem>();
         } else {
-           return query.getResultList();
+            return query.getResultList();
         }
     }
 
@@ -143,10 +157,23 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     }
 
     @Override
-    public void voidRefundTransaction(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException {
+    public void requestTransactionRefund(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException, TransactionUnableToBeRefundedException {
+        Transaction transactionToRefund = retrieveTransactionByTransactionId(transactionId);
+
+        if (transactionToRefund.getTransactionStatus() == TransactionStatusEnum.RECEIVED) {
+            transactionToRefund.setTransactionStatus(TransactionStatusEnum.REFUND_REQUESTED);
+        } else if (transactionToRefund.getTransactionStatus() == TransactionStatusEnum.REFUNDED) {
+            throw new TransactionAlreadyVoidedRefundedException("The sale transaction has already been refunded!");
+        } else {
+            throw new TransactionUnableToBeRefundedException("Please wait till you have received the product before requesting a refund!");
+        }
+    }
+
+    @Override
+    public void refundTransaction(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException, TransactionUnableToBeRefundedException {
         Transaction transaction = retrieveTransactionByTransactionId(transactionId);
 
-        if (!transaction.getVoidRefund()) {
+        if (transaction.getTransactionStatus() == TransactionStatusEnum.REFUND_REQUESTED) {
             for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
                 try {
                     productSessionBeanLocal.creditQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
@@ -155,9 +182,11 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
                 }
             }
 
-            transaction.setVoidRefund(true);
+            transaction.setTransactionStatus(TransactionStatusEnum.REFUNDED);
+        } else if (transaction.getTransactionStatus() == TransactionStatusEnum.REFUNDED) {
+            throw new TransactionAlreadyVoidedRefundedException("The sale transaction has already been refunded!");
         } else {
-            throw new TransactionAlreadyVoidedRefundedException("The sale transaction has aready been voided/refunded");
+            throw new TransactionUnableToBeRefundedException("An error has occurred! Plesae check that the correct sale transaction has selected");
         }
     }
 
