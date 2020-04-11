@@ -50,7 +50,7 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
     }
 
     @Override
-    public Payment createNewPayment(String creditCardNo, String cvv, BigDecimal amount) throws CreditCardDetailErrorException{
+    public Payment createNewPayment(String creditCardNo, String cvv, BigDecimal amount) {
 
         Payment newPayment = new Payment(creditCardNo, cvv, new Date(), amount);
 
