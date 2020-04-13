@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Customer;
 import entity.DiscountCode;
 import entity.Payment;
+import entity.Subscription;
 import entity.Transaction;
 import entity.TransactionLineItem;
 import java.time.LocalDateTime;
@@ -25,13 +26,20 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.TransactionStatusEnum;
 import util.exception.CreateNewSaleTransactionException;
+import util.exception.CreateNewSubscriptionException;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerNotYetApproved;
 import util.exception.DiscountCodeNotFoundException;
+import util.exception.InputDataValidationException;
+import util.exception.PhoneNumberInUseException;
+import util.exception.PlanAlreadyDisabledException;
 import util.exception.ProductInsufficientQuantityOnHandException;
 import util.exception.ProductNotFoundException;
+import util.exception.SubscriptionExistException;
 import util.exception.TransactionAlreadyVoidedRefundedException;
 import util.exception.TransactionNotFoundException;
 import util.exception.TransactionUnableToBeRefundedException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -40,6 +48,9 @@ import util.exception.TransactionUnableToBeRefundedException;
 @Stateless
 @Local(TransactionSessionBeanLocal.class)
 public class TransactionSessionBean implements TransactionSessionBeanLocal {
+
+    @EJB
+    private SubscriptionSessonBeanLocal subscriptionSessonBeanLocal;
 
     @EJB(name = "PaymentSessionBeanLocal")
     private PaymentSessionBeanLocal paymentSessionBeanLocal;
@@ -63,31 +74,77 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName, String creditCardNo, String cvv) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException {
         if (newTransaction != null) {
             try {
+
                 Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
+
+                List<TransactionLineItem> transactionLineItemsToAdd = new ArrayList<>();
+
+                for (TransactionLineItem transactionLineItem : newTransaction.getTransactionLineItems()) {
+                    transactionLineItem.setTransaction(null);
+                    transactionLineItemsToAdd.add(transactionLineItem);
+                }
+
+                newTransaction.setTransactionStatus(TransactionStatusEnum.PROCESSING);
+                newTransaction.setTransactionDateTime(new Date());
+                newTransaction.setCustomer(customer);
+                newTransaction.getTransactionLineItems().clear();
+
+                em.persist(newTransaction);
+                em.flush();
+
                 if (discountCodeName != null) {
                     DiscountCode discountCode = discountCodeSessionBeanLocal.retrieveDiscountCodeByDiscountCodeName(discountCodeName);
                     newTransaction.setDiscountCode(discountCode);
+                    discountCode.setTransaction(newTransaction);
                 }
-                newTransaction.setTransactionStatus(TransactionStatusEnum.PROCESSING);
-                newTransaction.setTransactionDateTime(new Date());
 
-                newTransaction.setCustomer(customer);
-                customer.getTransactions().add(newTransaction);
+                for (TransactionLineItem transactionLineItemToAdd : transactionLineItemsToAdd) {
+                    if (transactionLineItemToAdd.getProductItem() != null || transactionLineItemToAdd.getProduct() != null) {
+                        if (transactionLineItemToAdd.getProduct() != null) {
+                            productSessionBeanLocal.debitQuantityOnHand(transactionLineItemToAdd.getProduct().getProductId(), transactionLineItemToAdd.getQuantity());
 
-                em.persist(newTransaction);
+                            transactionLineItemToAdd.setTransaction(newTransaction);
+
+                            em.persist(transactionLineItemToAdd);
+                            em.flush();
+
+                            transactionLineItemToAdd.setProduct(transactionLineItemToAdd.getProduct());
+                        } else {
+                            productSessionBeanLocal.debitQuantityOnHand(transactionLineItemToAdd.getProductItem().getLuxuryProduct().getProductId(), transactionLineItemToAdd.getQuantity());
+
+                            transactionLineItemToAdd.setTransaction(newTransaction);
+
+                            em.persist(transactionLineItemToAdd);
+                            em.flush();
+
+                            transactionLineItemToAdd.setProductItem(transactionLineItemToAdd.getProductItem());
+                        }
+                    } else {
+                        Subscription subscription = transactionLineItemToAdd.getSubscription();
+                        Subscription newSubscription = new Subscription(subscription.getAllocatedData(), subscription.getAllocatedTalkTime(), subscription.getAllocatedSms());
+
+                        newSubscription = subscriptionSessonBeanLocal.createNewSubscription(newSubscription, subscription.getPlan().getPlanId(), subscription.getCustomer().getCustomerId(), subscription.getPhoneNumber().getPhoneNumberId());
+
+                        transactionLineItemToAdd.setTransaction(newTransaction);
+                        transactionLineItemToAdd.setSubscription(null);
+
+                        em.persist(transactionLineItemToAdd);
+                        em.flush();
+
+                        transactionLineItemToAdd.setSubscription(newSubscription);
+                    }
+
+                    transactionLineItemToAdd.setTransaction(newTransaction);
+                    newTransaction.getTransactionLineItems().add(transactionLineItemToAdd);
+                }
 
                 Payment newPayment = paymentSessionBeanLocal.createNewPayment(creditCardNo, cvv, newTransaction.getTotalPrice());
+
                 newTransaction.setPayment(newPayment);
-
-                for (TransactionLineItem transactionLineItem : newTransaction.getTransactionLineItems()) {
-                    productSessionBeanLocal.debitQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
-                    em.persist(transactionLineItem);
-                }
-
-                em.flush();
+                customer.getTransactions().add(newTransaction);
 
                 return newTransaction;
-            } catch (ProductNotFoundException | ProductInsufficientQuantityOnHandException ex) {
+            } catch (ProductNotFoundException | ProductInsufficientQuantityOnHandException | CreateNewSubscriptionException | CustomerNotFoundException | CustomerNotYetApproved | DiscountCodeNotFoundException | PhoneNumberInUseException | PlanAlreadyDisabledException | SubscriptionExistException | InputDataValidationException | UnknownPersistenceException ex) {
                 // The line below rolls back all changes made to the database.
                 eJBContext.setRollbackOnly();
                 throw new CreateNewSaleTransactionException(ex.getMessage());
@@ -101,7 +158,13 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     public List<Transaction> retrieveAllTransactions() {
         Query query = em.createQuery("SELECT st FROM Transaction st");
 
-        return query.getResultList();
+        List<Transaction> transactions = query.getResultList();
+
+        for (Transaction transaction : transactions) {
+            transaction.getTransactionLineItems().size();
+        }
+
+        return transactions;
     }
 
     @Override

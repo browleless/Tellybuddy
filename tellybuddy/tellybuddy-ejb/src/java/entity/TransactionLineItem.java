@@ -61,8 +61,7 @@ public class TransactionLineItem implements Serializable {
     @OneToOne
     private ProductItem productItem;
     
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @OneToOne
     private Product product;
 
     public TransactionLineItem() {

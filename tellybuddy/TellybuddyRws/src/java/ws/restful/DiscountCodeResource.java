@@ -51,26 +51,19 @@ public class DiscountCodeResource {
      *
      * @return an instance of java.lang.String
      */
-    @Path("retrieveAllAvailableDiscountCodes")
+    @Path("retrieveAllUsableActiveDiscountCodes")
     @GET
-    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retrieveAllAvailableDiscountCodes(@QueryParam("username") String username, @QueryParam("password") String password) {
+    public Response retrieveAllUsableActiveDiscountCodes() {
 
         try {
-            Customer customer = customerSessionBeanLocal.customerLogin(username, password);
-            System.out.println("********** DiscountCodeResource.retrieveAllAvailableDiscountCodes(): Customer " + customer.getUsername() + " login remotely via web service");
-
-            List<DiscountCode> discountCodes = discountCodeSessionBeanLocal.retrieveAllActiveDiscountCodes();
+            List<DiscountCode> discountCodes = discountCodeSessionBeanLocal.retrieveAllUsableActiveDiscountCodes();
 
             for (DiscountCode discountCode : discountCodes) {
                 discountCode.setTransaction(null);
             }
 
             return Response.status(Response.Status.OK).entity(new RetrieveAllAvailableDiscountCodesRsp(discountCodes)).build();
-        } catch (InvalidLoginCredentialException ex) {
-            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
-            return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
         } catch (Exception ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
