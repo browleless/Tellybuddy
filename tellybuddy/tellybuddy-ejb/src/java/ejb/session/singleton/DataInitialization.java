@@ -117,6 +117,7 @@ public class DataInitialization {
                 cal.add(Calendar.MONTH, -2);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 1l, 1l);
+                subscription.setIsActive(true);
                 subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.TERMINATING);
 
                 subscription = new Subscription(20, 5, 5);
@@ -183,11 +184,11 @@ public class DataInitialization {
             fg2.getCustomers().add(customer3);
             fg2.getCustomers().add(customer4);
             fg2.getCustomers().add(customer5);
-            fg2.getCustomers().add(customer6);
+          //  fg2.getCustomers().add(customer6);
             customer3.setFamilyGroup(fg2);
             customer4.setFamilyGroup(fg2);
             customer5.setFamilyGroup(fg2);
-            customer6.setFamilyGroup(fg2);
+        //    customer6.setFamilyGroup(fg2);
             em.persist(fg2);
             em.flush();
             initialiseProducts();

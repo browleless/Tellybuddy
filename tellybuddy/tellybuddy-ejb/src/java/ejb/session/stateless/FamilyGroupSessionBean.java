@@ -53,7 +53,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
 
         try {
             Customer customerToAssociateWith = customerSessionBeanLocal.retrieveCustomerByCustomerId(customer.getCustomerId());
-
+           
             if (customerToAssociateWith.getFamilyGroup() != null) {
                 throw new CustomerAlreadyInFamilyGroupException("Customer already has a family group!");
             }
@@ -61,7 +61,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
             if (customerToAssociateWith.getAddress() == null && customerToAssociateWith.getPostalCode() == null) {
                 throw new CustomerNotVerifiedException("Customer has not yet been verified, unable to create family group, please wait for the management to verify your account details.");
             }
-
+            customerToAssociateWith.setOwnerOfFamilyGroup(true);
             newFamilyGroup.getCustomers().add(customerToAssociateWith);
 
             em.persist(newFamilyGroup);
@@ -222,7 +222,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
             if (familyGroupToUpdate.getCustomers().contains(familyMember)) {
                 //check if selected subscription has enough units to donate to family group
                 if (smsUnits != 0) {
-                    if (subscriptionToUpdate.getSmsUnits().get("allocated") >= smsUnits) {
+                    if (subscriptionToUpdate.getSmsUnits().get("allocated") - subscriptionToUpdate.getSmsUnits().get("donated")>= smsUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 units 
                         if (familyGroupToUpdate.getDonatedUnits() + smsUnits > 1000) {
                             throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
@@ -240,7 +240,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                 }
 
                 if (dataUnits != 0) {
-                    if (subscriptionToUpdate.getDataUnits().get("allocated") >= dataUnits) {
+                    if (subscriptionToUpdate.getDataUnits().get("allocated") - subscriptionToUpdate.getDataUnits().get("donated") >= dataUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 limits
                         if (familyGroupToUpdate.getDonatedUnits() + dataUnits > 1000) {
                             throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
@@ -258,7 +258,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                 }
 
                 if (talktimeUnits != 0) {
-                    if (subscriptionToUpdate.getTalkTimeUnits().get("allocated") >= talktimeUnits) {
+                    if (subscriptionToUpdate.getTalkTimeUnits().get("allocated") - subscriptionToUpdate.getTalkTimeUnits().get("donated") >= talktimeUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 limits
                         if (familyGroupToUpdate.getDonatedUnits() + talktimeUnits > 1000) {
                             throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "

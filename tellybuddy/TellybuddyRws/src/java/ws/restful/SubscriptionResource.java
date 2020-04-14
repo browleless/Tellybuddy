@@ -285,4 +285,5 @@ public class SubscriptionResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         }
     }
+    
 }
