@@ -37,4 +37,6 @@ public interface DiscountCodeSessionBeanLocal {
 
     public List<DiscountCode> retrieveAllPastDiscountCodes();
 
+    public List<DiscountCode> retrieveAllUsableActiveDiscountCodes();
+
 }
