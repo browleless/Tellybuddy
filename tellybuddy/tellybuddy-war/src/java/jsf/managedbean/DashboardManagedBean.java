@@ -14,6 +14,7 @@ import entity.Announcement;
 import entity.Customer;
 import entity.Employee;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,6 @@ public class DashboardManagedBean implements Serializable {
 
     private String stickyNoteToDelete;
 
-    
     @PostConstruct
     public void postConstruct() {
         this.currentEmployee = (Employee) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
@@ -99,7 +99,7 @@ public class DashboardManagedBean implements Serializable {
         try {
             employeeSessionBeanLocal.updateStickyNotes(stickyNotes, currentEmployee);
         } catch (EmployeeNotFoundException ex) {
-            
+
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unknown error occurred", null));
         }
 
@@ -108,15 +108,16 @@ public class DashboardManagedBean implements Serializable {
 
     public void deleteStickyNote() {
         this.stickyNotes.remove(stickyNoteToDelete);
-        
+
         try {
             employeeSessionBeanLocal.updateStickyNotes(stickyNotes, currentEmployee);
         } catch (EmployeeNotFoundException ex) {
-            
+
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unknown error occurred", null));
         }
         this.newStickyNote = "";
     }
+
     public void retrieveCurrentEmployeeAnnouncements() {
         this.employeeAnnouncements = announcementSessionBeanLocal.retrieveAllActiveAnnoucementsForEmployees();
     }
@@ -129,8 +130,8 @@ public class DashboardManagedBean implements Serializable {
         return subscriptionSessonBeanLocal.retrieveAllPendingSubscriptions().size();
     }
 
-    public int retrieveMonthlyTransactions() {
-        return transactionSessionBeanLocal.retrieveAllMonthlyTransactions().size();
+    public BigDecimal retrieveMonthlyTransactions() {
+        return transactionSessionBeanLocal.retrieveAllMonthlyTransactions().stream().map(x -> x.getTotalPrice()).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public void createLineModel() {

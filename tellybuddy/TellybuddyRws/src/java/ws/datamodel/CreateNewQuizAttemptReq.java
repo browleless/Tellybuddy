@@ -2,7 +2,6 @@ package ws.datamodel;
 
 import entity.Customer;
 import entity.Quiz;
-import entity.QuizAttempt;
 import entity.QuizResponse;
 import java.util.List;
 
@@ -14,7 +13,6 @@ public class CreateNewQuizAttemptReq {
 
     private String username;
     private String password;
-    private QuizAttempt quizAttempt;
     private Customer customer;
     private Quiz quiz;
     private List<QuizResponse> quizResponses;
@@ -22,10 +20,9 @@ public class CreateNewQuizAttemptReq {
     public CreateNewQuizAttemptReq() {
     }
 
-    public CreateNewQuizAttemptReq(String username, String password, QuizAttempt quizAttempt, Customer customer, Quiz quiz, List<QuizResponse> quizResponses) {
+    public CreateNewQuizAttemptReq(String username, String password, Customer customer, Quiz quiz, List<QuizResponse> quizResponses) {
         this.username = username;
         this.password = password;
-        this.quizAttempt = quizAttempt;
         this.customer = customer;
         this.quiz = quiz;
         this.quizResponses = quizResponses;
@@ -45,14 +42,6 @@ public class CreateNewQuizAttemptReq {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public QuizAttempt getQuizAttempt() {
-        return quizAttempt;
-    }
-
-    public void setQuizAttempt(QuizAttempt quizAttempt) {
-        this.quizAttempt = quizAttempt;
     }
 
     public Customer getCustomer() {

@@ -46,7 +46,7 @@ public class QuizAttemptSessionBean implements QuizAttemptSessionBeanLocal {
     }
     
     @Override
-    public Long createNewQuizAttempt(Customer customer, QuizAttempt quizAttempt, Quiz quiz, List<QuizResponse> quizResponses) throws CreateNewQuizAttemptException {
+    public Long createNewQuizAttempt(Customer customer, Quiz quiz, List<QuizResponse> quizResponses) throws CreateNewQuizAttemptException {
 
         try {
         int score = 0;

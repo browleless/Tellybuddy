@@ -27,6 +27,7 @@ import util.exception.SubscriptionExistException;
 import util.exception.SubscriptionNotFoundException;
 import ws.datamodel.AllocateAddOnUnitsForCurrentMonthReq;
 import ws.datamodel.AllocateAddOnUnitsForCurrentMonthRsp;
+import ws.datamodel.AllocateQuizExtraUnitsReq;
 import ws.datamodel.AllocateUnitsForNextMonthReq;
 import ws.datamodel.AllocateUnitsForNextMonthRsp;
 import ws.datamodel.CreateSubscriptionReq;
@@ -252,6 +253,40 @@ public class SubscriptionResource {
             }
         } else {
             ErrorRsp errorRsp = new ErrorRsp("Invalid add on units for current month request");
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("allocateQuizExtraUnits")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allocateQuizExtraUnits(AllocateQuizExtraUnitsReq allocateQuizExtraUnitsReq) {
+
+        if (allocateQuizExtraUnitsReq != null) {
+            try {
+                Customer customer = customerSessionBeanLocal.customerLogin(allocateQuizExtraUnitsReq.getUsername(), allocateQuizExtraUnitsReq.getPassword());
+                System.out.println("********** SubscriptionResource.allocateQuizExtraUnits(): Customer " + customer.getUsername() + " login remotely via web service");
+
+                Subscription subscription = subscriptionSessonBeanLocal.allocateQuizExtraUnits(allocateQuizExtraUnitsReq.getSubscription(), allocateQuizExtraUnitsReq.getDataUnits(), allocateQuizExtraUnitsReq.getSmsUnits(), allocateQuizExtraUnitsReq.getTalktimeUnits());
+                
+                System.out.println("added " + subscription.getDataUnits().get("quizExtraUnits") + " data units for " + subscription.getPhoneNumber().getPhoneNumber());
+                System.out.println("added " + subscription.getSmsUnits().get("quizExtraUnits") + " SMS units for " + subscription.getPhoneNumber().getPhoneNumber());
+                System.out.println("added " + subscription.getTalkTimeUnits().get("quizExtraUnits") + " talktime units for " + subscription.getPhoneNumber().getPhoneNumber());
+                
+                return Response.status(Response.Status.OK).build();
+            } catch (InvalidLoginCredentialException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Status.UNAUTHORIZED).entity(errorRsp).build();
+            } catch (SubscriptionNotFoundException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+            } catch (Exception ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+            }
+        } else {
+            ErrorRsp errorRsp = new ErrorRsp("Invalid allocate quiz extra units request");
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         }
     }

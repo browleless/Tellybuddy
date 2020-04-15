@@ -140,7 +140,7 @@ public class QuizAttemptResource {
                 Customer customer = customerSessionBeanLocal.customerLogin(createNewQuizAttemptReq.getUsername(), createNewQuizAttemptReq.getPassword());
                 System.out.println("********** QuizAttemptResource.createNewQuizAttempt(): Customer " + customer.getUsername() + " login remotely via web service");
 
-                Long quizAttemptId = quizAttemptSessionBeanLocal.createNewQuizAttempt(customer, createNewQuizAttemptReq.getQuizAttempt(), createNewQuizAttemptReq.getQuiz(), createNewQuizAttemptReq.getQuizResponses());
+                Long quizAttemptId = quizAttemptSessionBeanLocal.createNewQuizAttempt(customer, createNewQuizAttemptReq.getQuiz(), createNewQuizAttemptReq.getQuizResponses());
 
                 return Response.status(Response.Status.OK).entity(new CreateNewQuizAttemptRsp(quizAttemptId)).build();
             } catch (InvalidLoginCredentialException ex) {

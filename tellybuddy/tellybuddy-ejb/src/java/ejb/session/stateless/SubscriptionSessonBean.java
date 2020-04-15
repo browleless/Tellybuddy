@@ -307,7 +307,16 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         return subscriptionToAmend;
     }
 
+    @Override
+    public Subscription allocateQuizExtraUnits(Subscription subscription, Integer dataUnits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException {
 
+        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
+
+        subscriptionToAmend.getDataUnits().put("quizExtraUnits", dataUnits);
+        subscriptionToAmend.getSmsUnits().put("quizExtraUnits", smsUnits);
+        subscriptionToAmend.getTalkTimeUnits().put("quizExtraUnits", talktimeUnits);
+        return subscriptionToAmend;
+    }
 
     @Override
     public Subscription allocateAddOnUnitsForCurrentMonth(Subscription subscription, Integer dataunits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException, InputDataValidationException {
