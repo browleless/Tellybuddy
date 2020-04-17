@@ -106,11 +106,12 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
                     if (transactionLineItemToAdd.getProductItem() != null || transactionLineItemToAdd.getProduct() != null) {
                         if (transactionLineItemToAdd.getProductItem() != null) { //luxury product
                             System.out.println("ENTERED HERE**********");
-                            System.out.println("ENTERED HERE**********: " + transactionLineItemToAdd.getProduct().getProductId());
+                            //System.out.println("ENTERED HERE**********: " + transactionLineItemToAdd.getProduct().getProductId());
+                            System.out.println("entered: " + transactionLineItemToAdd.getProductItem().getLuxuryProduct().getProductId());
 
                             //retrieve an available product item 
-                            ProductItem pi = productSessionBeanLocal.retrieveAvailableProductItemFromLuxury(transactionLineItemToAdd.getProduct().getProductId());
-                            productSessionBeanLocal.debitProductItem(transactionLineItemToAdd.getProduct().getProductId(), pi);
+                            ProductItem pi = productSessionBeanLocal.retrieveAvailableProductItemFromLuxury(transactionLineItemToAdd.getProductItem().getLuxuryProduct().getProductId());
+                            productSessionBeanLocal.debitProductItem(transactionLineItemToAdd.getProductItem().getLuxuryProduct().getProductId(), pi);
 
                             transactionLineItemToAdd.setTransaction(newTransaction);
                             transactionLineItemToAdd.setProductItem(null);
