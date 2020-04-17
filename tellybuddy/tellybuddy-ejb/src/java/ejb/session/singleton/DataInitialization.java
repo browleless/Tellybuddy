@@ -320,7 +320,7 @@ public class DataInitialization {
         em.flush();
 
         //product 1
-        LuxuryProduct iphoneXS = new LuxuryProduct("0000000001", "SKU001", "iPhone XS", "iphone xs", BigDecimal.valueOf(1000.0), 10, 50, "iphoneXS.JPG");
+        LuxuryProduct iphoneXS = new LuxuryProduct("0000000001", "SKU001", "iPhone XS", "iPhone XS (Black)", BigDecimal.valueOf(1000.0), 10, 50, "iphoneXS.JPG");
         iphoneXS.setCategory(apple);
         List<Tag> tags = new ArrayList<>();
         List<Product> products = apple.getProducts();
@@ -352,12 +352,13 @@ public class DataInitialization {
             ProductItem pi = new ProductItem(s, iphoneXS.getPrice());
             pi.setLuxuryProduct(iphoneXS);
             em.persist(pi);
+            em.flush();
             unique++;
             productItems.add(pi);
         }
 
         //product 2
-        LuxuryProduct googlePixel4 = new LuxuryProduct("0000000002", "SKU002", "Google Pixel 4", "Google Pixel 4", BigDecimal.valueOf(799.0), 20, 20, "googlePixel4.jpg");
+        LuxuryProduct googlePixel4 = new LuxuryProduct("0000000002", "SKU002", "Google Pixel 4", "Google Pixel 4 (White)", BigDecimal.valueOf(799.0), 20, 20, "googlePixel4.jpg");
         googlePixel4.setCategory(android);
         tags = new ArrayList<>();
         products = android.getProducts();
@@ -384,12 +385,13 @@ public class DataInitialization {
             ProductItem pi = new ProductItem(s, googlePixel4.getPrice());
             pi.setLuxuryProduct(googlePixel4);
             em.persist(pi);
+            em.flush();
             unique++;
             productItems.add(pi);
         }
 
         //product 3
-        LuxuryProduct samsungFlipZ = new LuxuryProduct("0000000003", "SKU003", "Samsung Flip Z", "Samsung Flip Z", BigDecimal.valueOf(899.0), 20, 20, "samsungFlipZ.jpg");
+        LuxuryProduct samsungFlipZ = new LuxuryProduct("0000000003", "SKU003", "Samsung Flip Z", "Samsung Flip Z (Black)", BigDecimal.valueOf(899.0), 20, 20, "samsungFlipZ.jpg");
         samsungFlipZ.setCategory(android);
         tags = new ArrayList<>();
         products = android.getProducts();
@@ -416,12 +418,13 @@ public class DataInitialization {
             ProductItem pi = new ProductItem(s, googlePixel4.getPrice());
             pi.setLuxuryProduct(googlePixel4);
             em.persist(pi);
+            em.flush();
             unique++;
             productItems.add(pi);
         }
 
         //product 4
-        Product iphoneXScover = new Product("SKU004", "iPhone XS WeBareBear Case", "iphone xs hp case", BigDecimal.valueOf(15.0), 10, 50, "iphoneXSwbbcase.jpg");
+        Product iphoneXScover = new Product("SKU004", "iPhone XS WeBareBear Case", "iPhone XS case", BigDecimal.valueOf(15.0), 10, 50, "iphoneXSwbbcase.jpg");
         iphoneXScover.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(iphoneXScover);
@@ -444,7 +447,7 @@ public class DataInitialization {
         tagT.add(iphoneXScover);
 
         //product 5
-        Product appleWire = new Product("SKU005", "Apple Charger", "Apple Lighting to USB Cable (1 meter)", BigDecimal.valueOf(10.0), 40, 20, "appleWire.JPG");
+        Product appleWire = new Product("SKU005", "Apple Charger", "Apple Lighting to USB Cable (1 meter, White)", BigDecimal.valueOf(10.0), 40, 20, "appleWire.JPG");
         appleWire.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(appleWire);
@@ -461,7 +464,7 @@ public class DataInitialization {
         tagT.add(appleWire);
 
         //product 6
-        Product androidCharger = new Product("SKU006", "Android Charger", "Android Charger (1 meter)", BigDecimal.valueOf(10.0), 40, 20, "androidCharger.jpg");
+        Product androidCharger = new Product("SKU006", "Android Charger", "Android Charger (1 meter, White)", BigDecimal.valueOf(10.0), 40, 20, "androidCharger.jpg");
         androidCharger.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(androidCharger);
@@ -469,7 +472,7 @@ public class DataInitialization {
         tags = new ArrayList<>();
         tags.add(samsung);
         tags.add(popular);
-        appleWire.setTags(tags);
+        androidCharger.setTags(tags);
         em.persist(androidCharger);
         em.flush();
         tagT = samsung.getProducts();
@@ -478,7 +481,7 @@ public class DataInitialization {
         tagT.add(androidCharger);
 
         //product 7
-        LuxuryProduct sonyXperia1 = new LuxuryProduct("0000000007", "SKU007", "Sony Xperia1-ii", "Sony Xperia1-ii", BigDecimal.valueOf(999.0), 20, 20, "sonyXperia1.JPG");
+        LuxuryProduct sonyXperia1 = new LuxuryProduct("0000000007", "SKU007", "Sony Xperia1-ii", "Sony Xperia1-ii (White)", BigDecimal.valueOf(999.0), 20, 20, "sonyXperia1.JPG");
         sonyXperia1.setCategory(android);
         tags = new ArrayList<>();
         products = android.getProducts();
@@ -505,9 +508,146 @@ public class DataInitialization {
             ProductItem pi = new ProductItem(s, sonyXperia1.getPrice());
             pi.setLuxuryProduct(sonyXperia1);
             em.persist(pi);
+            em.flush();
             unique++;
             productItems.add(pi);
         }
+
+        //product 8
+        LuxuryProduct iPhone11Pro = new LuxuryProduct("0000000008", "SKU008", "iPhone 11 Pro", "iPhone 11 Pro (Black)", BigDecimal.valueOf(1010.0), 20, 20, "iphone11Pro.jpg");
+        iPhone11Pro.setCategory(apple);
+        tags = new ArrayList<>();
+        products = apple.getProducts();
+        products.add(iPhone11Pro);
+        apple.setProducts(products);
+        tags.add(popular);
+        tags.add(mobile);
+        tags.add(tagNew);
+        tags.add(appleTag);
+        iPhone11Pro.setTags(tags);
+        em.persist(iPhone11Pro);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(iPhone11Pro);
+        tagT = mobile.getProducts();
+        tagT.add(iPhone11Pro);
+        tagT = tagNew.getProducts();
+        tagT.add(iPhone11Pro);
+        tagT = appleTag.getProducts();
+        tagT.add(iPhone11Pro);
+
+        productItems = iPhone11Pro.getProductItems();
+
+        for (int i = 0; i < iPhone11Pro.getQuantityOnHand(); i++) {
+            String s = uniqueSerialNum(unique);
+
+            ProductItem pi = new ProductItem(s, iPhone11Pro.getPrice());
+            pi.setLuxuryProduct(iPhone11Pro);
+            em.persist(pi);
+            em.flush();
+            unique++;
+            productItems.add(pi);
+        }
+
+        //product 9
+        LuxuryProduct oppoReno2 = new LuxuryProduct("0000000009", "SKU009", "OPPO Reno 2", "OPPO Reno 2 (Black)", BigDecimal.valueOf(798.0), 20, 20, "oppoReno2.jpg");
+        oppoReno2.setCategory(android);
+        tags = new ArrayList<>();
+        products = android.getProducts();
+        products.add(oppoReno2);
+        android.setProducts(products);
+        tags.add(popular);
+        tags.add(mobile);
+        tags.add(tagNew);
+        oppoReno2.setTags(tags);
+        em.persist(oppoReno2);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(oppoReno2);
+        tagT = mobile.getProducts();
+        tagT.add(oppoReno2);
+        tagT = tagNew.getProducts();
+        tagT.add(oppoReno2);
+
+        productItems = oppoReno2.getProductItems();
+
+        for (int i = 0; i < oppoReno2.getQuantityOnHand(); i++) {
+            String s = uniqueSerialNum(unique);
+
+            ProductItem pi = new ProductItem(s, oppoReno2.getPrice());
+            pi.setLuxuryProduct(oppoReno2);
+            em.persist(pi);
+            em.flush();
+            unique++;
+            productItems.add(pi);
+        }
+
+        //product 10
+        LuxuryProduct galaxyNote10 = new LuxuryProduct("0000000010", "SKU010", "Galaxy Note 10+", "Galaxy Note 10+ (Black)", BigDecimal.valueOf(888.0), 20, 20, "galaxyNote10+.jpg");
+        galaxyNote10.setCategory(android);
+        tags = new ArrayList<>();
+        products = android.getProducts();
+        products.add(galaxyNote10);
+        android.setProducts(products);
+        tags.add(popular);
+        tags.add(mobile);
+        tags.add(tagNew);
+        tags.add(samsung);
+        galaxyNote10.setTags(tags);
+        em.persist(galaxyNote10);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(galaxyNote10);
+        tagT = mobile.getProducts();
+        tagT.add(galaxyNote10);
+        tagT = tagNew.getProducts();
+        tagT.add(galaxyNote10);
+        tagT = samsung.getProducts();
+        tagT.add(galaxyNote10);
+
+        productItems = galaxyNote10.getProductItems();
+
+        for (int i = 0; i < galaxyNote10.getQuantityOnHand(); i++) {
+            String s = uniqueSerialNum(unique);
+
+            ProductItem pi = new ProductItem(s, galaxyNote10.getPrice());
+            pi.setLuxuryProduct(galaxyNote10);
+            em.persist(pi);
+            em.flush();
+            unique++;
+            productItems.add(pi);
+        }
+
+        //product 11
+        Product carMount = new Product("SKU011", "Universal Car Mount", "Universal Car Mount (Black)", BigDecimal.valueOf(15.0), 40, 20, "carMount.jpg");
+        carMount.setCategory(phoneAccessories);
+        products = phoneAccessories.getProducts();
+        products.add(carMount);
+        phoneAccessories.setProducts(products);
+        tags = new ArrayList<>();
+        tags.add(popular);
+        carMount.setTags(tags);
+        em.persist(carMount);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(carMount);
+        
+        //product 12
+        Product leatherCover = new Product("SKU012", "Samsung Flip Z Leather Phone Cover", "Samsung Flip Z Leather Phone Cover (Gret)", BigDecimal.valueOf(49.0), 40, 20, "leatherCover.jpg");
+        leatherCover.setCategory(phoneAccessories);
+        products = phoneAccessories.getProducts();
+        products.add(leatherCover);
+        phoneAccessories.setProducts(products);
+        tags = new ArrayList<>();
+        tags.add(popular);
+        tags.add(samsung);
+        leatherCover.setTags(tags);
+        em.persist(leatherCover);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(leatherCover);
+        tagT = samsung.getProducts();
+        tagT.add(leatherCover);
 
     }
 
