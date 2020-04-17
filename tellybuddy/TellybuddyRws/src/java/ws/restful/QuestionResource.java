@@ -2,6 +2,7 @@ package ws.restful;
 
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.QuestionSessionBeanLocal;
+import entity.Answer;
 import entity.Customer;
 import entity.Question;
 import java.util.List;
@@ -64,8 +65,11 @@ public class QuestionResource {
             List<Question> questions = questionSessionBeanLocal.retrieveQuestionsByQuizId(quizId);
 
             for (Question question : questions) {
-                question.setQuiz(null);
-                question.getAnswers().clear();
+                question.getQuiz().getQuestions().clear();
+                question.getQuiz().getQuizAttempts().clear();
+                for (Answer answer : question.getAnswers()) {
+                    answer.setQuestion(null);
+                }
             }
 
             return Response.status(Response.Status.OK).entity(new RetrieveQuestionsByQuizIdRsp(questions)).build();

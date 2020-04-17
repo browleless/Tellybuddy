@@ -72,7 +72,9 @@
                 </p:column>
 
                 <p:column headerText="Total Charge" sortBy="#{transaction.totalPrice}" filterBy="#{transaction.totalPrice}" filterMatchMode="contains" style="text-align: right;">
-                    <h:outputText value="#{transaction.totalPrice}"  style="text-align: right;"/>
+                    <h:outputText value="#{transaction.totalPrice}"  style="text-align: right;">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD" />
+                    </h:outputText>
                 </p:column>
 
                 <p:column style="width:16px">
@@ -92,31 +94,31 @@
                             <h:outputText value="#{transaction.customer.lastName}" />
 
                             <h:outputText value="Transaction Status (void/refund):"  />
-                            <h:outputText value="#{transaction.voidRefund}" />
+                            <h:outputText value="#{transaction.transactionStatus}" />
 
                             <h:outputText value="Discount Code (if any):" />
-                            <h:outputText value="#{transaction.discountCode}" />
+                            <h:outputText value="#{transaction.discountCode != null ? transaction.discountCode.discountCode : '-'}" />
 
                         </p:panelGrid>
                     </div>
                     <div class="ui-g-8">
-                        
+
                         <h:form id="formViewTransactionLineItems" style="margin: 0 auto; ui-g-6">
-                            <p:dataTable id="dataTableTransactionLineItems" widgetVar="dataTableTransactionLineItems" style="text-align: center" value="#{transaction.transactionLineItems}" var="trLineItem" rowKey="#{trLineItem.transactionLineItemId}" rowIndexVar="row" scrollable="true" liveScroll="true" >
+                            <p:dataTable id="dataTableTransactionLineItems" widgetVar="dataTableTransactionLineItems" style="text-align: center" value="#{transaction.transactionLineItems}" var="trLineItem" rowKey="#{trLineItem.transactionLineItemId}" rowIndexVar="row" >
                                 <p:column headerText="Id" width="5%" style="text-align: center">
-                                    <h:outputText value="#{trLineItem.transactionLineItemId}" />
+                                    <h:outputText value="#{row + 1}" />
                                 </p:column>
 
                                 <p:column headerText="Product" width="20%" style="text-align: center">
-                                    <h:outputText value="#{trLineItem.product}" />
+                                    <h:outputText value="#{trLineItem.product != null ? trLineItem.product.name : '-'}" />
                                 </p:column>
 
                                 <p:column headerText="Product Item" width="20%" style="text-align: center">
-                                    <h:outputText value="#{trLineItem.productItem}" />
+                                    <h:outputText value="#{trLineItem.productItem != null ? trLineItem.productItem.name : '-'}" />
                                 </p:column>
 
                                 <p:column headerText="Subscription" width="20%" style="text-align: center">
-                                    <h:outputText value="#{trLineItem.subscription}" />
+                                    <h:outputText value="#{trLineItem.subscription != null ? trLineItem.subscription.plan.name : '-'}" />
                                 </p:column>
 
                                 <p:column headerText="Quantity" width="10%" style="text-align: center">
@@ -124,7 +126,9 @@
                                 </p:column>
 
                                 <p:column headerText="Subtotal" width="10%" style="text-align: center">
-                                    <h:outputText value="#{trLineItem.subtotal}" />
+                                    <h:outputText value="#{trLineItem.subtotal}">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD" />
+                                    </h:outputText>
                                 </p:column>
 
                             </p:dataTable>

@@ -145,7 +145,7 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
         Query query = entityManager.createQuery("SELECT q FROM Quiz q WHERE q.quizAttempts IS EMPTY AND (CURRENT_TIMESTAMP BETWEEN q.openDate AND q.expiryDate)");
         quizzesToReturn = query.getResultList();
 
-        query = entityManager.createQuery("SELECT q FROM Quiz q, IN (q.quizAttempts) qa WHERE (CURRENT_TIMESTAMP BETWEEN q.openDate AND q.expiryDate) AND qa.customer <> :inCustomer");
+        query = entityManager.createQuery("SELECT q FROM Quiz q WHERE q.quizAttempts IS NOT EMPTY AND (CURRENT_TIMESTAMP BETWEEN q.openDate AND q.expiryDate) AND NOT EXISTS (SELECT qa from QuizAttempt qa WHERE qa.quiz = q AND qa.customer = :inCustomer)");
         query.setParameter("inCustomer", customer);
 
         quizzesToReturn.addAll(query.getResultList());

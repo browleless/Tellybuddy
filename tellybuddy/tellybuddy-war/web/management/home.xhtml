@@ -22,7 +22,7 @@
             .ui-dialog .ui-dialog-title {
                 color: white;
             }
-            
+
             .box {
                 background-color: #cce4f7;
                 text-align: center;
@@ -135,7 +135,9 @@
                             <div class="elementTitle">
                                 <h:outputText value="Monthly Transactions"/>
                                 <br/>
-                                <h:outputText value="#{dashboardManagedBean.retrieveMonthlyTransactions()}" styleClass="statistics"/>
+                                <h:outputText value="#{dashboardManagedBean.retrieveMonthlyTransactions()}" styleClass="statistics">
+                                    <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD" />
+                                </h:outputText>
                             </div>
                         </div>
                     </div>
@@ -152,7 +154,9 @@
                                 <!--                                //Method to be written  -->
                                 <h:outputText value="Sales Revenue"/>
                                 <br/>
-                                <h:outputText value="#{dashboardManagedBean.retrieveMonthlyTransactions()}" styleClass="statistics"/>
+                                <h:outputText value="#{dashboardManagedBean.retrieveMonthlyTransactions()}" styleClass="statistics">
+                                    <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD" />
+                                </h:outputText>
                             </div>
                         </div>
                     </div></div>
