@@ -10,14 +10,16 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import util.exception.InvalidLoginCredentialException;
 import ws.datamodel.ErrorRsp;
 import ws.datamodel.RetrieveAllUnattemptedActiveQuizzesRsp;
+import ws.datamodel.RetrieveQuizUnattemptedFamilyMembersReq;
+import ws.datamodel.RetrieveQuizUnattemptedFamilyMembersRsp;
 
 /**
  * REST Web Service
@@ -65,6 +67,35 @@ public class QuizResource {
             }
 
             return Response.status(Response.Status.OK).entity(new RetrieveAllUnattemptedActiveQuizzesRsp(quizzes)).build();
+        } catch (InvalidLoginCredentialException ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("retrieveQuizUnattemptedFamilyMembers")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveQuizUnattemptedFamilyMembers(RetrieveQuizUnattemptedFamilyMembersReq retrieveQuizUnattemptedFamilyMembersReq) {
+        try {
+            Customer customer = customerSessionBeanLocal.customerLogin(retrieveQuizUnattemptedFamilyMembersReq.getUsername(), retrieveQuizUnattemptedFamilyMembersReq.getPassword());
+            System.out.println("********** QuizResource.retrieveQuizUnattemptedFamilyMembers(): Customer " + customer.getUsername() + " login remotely via web service");
+
+            List<Customer> familyGroupMembers = quizSessionBeanLocal.retrieveQuizUnattemptedFamilyMembers(retrieveQuizUnattemptedFamilyMembersReq.getQuiz(), retrieveQuizUnattemptedFamilyMembersReq.getCustomer());
+            
+            for (Customer familyGroupMember : familyGroupMembers) {
+                familyGroupMember.setFamilyGroup(null);
+                familyGroupMember.getTransactions().clear();
+                familyGroupMember.getBills().clear();
+                familyGroupMember.getSubscriptions().clear();
+                familyGroupMember.getQuizAttempts().clear();
+            }
+
+            return Response.status(Response.Status.OK).entity(new RetrieveQuizUnattemptedFamilyMembersRsp(familyGroupMembers)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();

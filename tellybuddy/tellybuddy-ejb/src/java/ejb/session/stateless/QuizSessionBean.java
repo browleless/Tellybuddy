@@ -2,6 +2,7 @@ package ejb.session.stateless;
 
 import entity.Answer;
 import entity.Customer;
+import entity.FamilyGroup;
 import entity.Question;
 import entity.Quiz;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import util.exception.CreateNewQuizException;
 import util.exception.DeleteAnswerException;
 import util.exception.DeleteQuestionException;
 import util.exception.DeleteQuizException;
+import util.exception.FamilyGroupNotFoundException;
 import util.exception.QuestionNotFoundException;
 import util.exception.QuizNameExistException;
 import util.exception.QuizNotFoundException;
@@ -30,6 +32,9 @@ import util.exception.UpdateQuizException;
  */
 @Stateless
 public class QuizSessionBean implements QuizSessionBeanLocal {
+
+    @EJB
+    private FamilyGroupSessionBeanLocal familyGroupSessionBeanLocal;
 
     @EJB
     private AnswerSessionBeanLocal answerSessionBeanLocal;
@@ -140,17 +145,23 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
     @Override
     public List<Quiz> retrieveAllUnattemptedActiveQuizzes(Customer customer) {
 
-        List<Quiz> quizzesToReturn = new ArrayList<>();
-
-        Query query = entityManager.createQuery("SELECT q FROM Quiz q WHERE q.quizAttempts IS EMPTY AND (CURRENT_TIMESTAMP BETWEEN q.openDate AND q.expiryDate)");
-        quizzesToReturn = query.getResultList();
-
-        query = entityManager.createQuery("SELECT q FROM Quiz q WHERE q.quizAttempts IS NOT EMPTY AND (CURRENT_TIMESTAMP BETWEEN q.openDate AND q.expiryDate) AND NOT EXISTS (SELECT qa from QuizAttempt qa WHERE qa.quiz = q AND qa.customer = :inCustomer)");
+        Query query = entityManager.createQuery("SELECT q FROM Quiz q WHERE q.quizAttempts IS EMPTY AND (CURRENT_TIMESTAMP BETWEEN q.openDate AND q.expiryDate) UNION SELECT q FROM Quiz q WHERE q.quizAttempts IS NOT EMPTY AND (CURRENT_TIMESTAMP BETWEEN q.openDate AND q.expiryDate) AND NOT EXISTS (SELECT qa from QuizAttempt qa WHERE qa.quiz = q AND qa.customer = :inCustomer)");
         query.setParameter("inCustomer", customer);
 
-        quizzesToReturn.addAll(query.getResultList());
+        return query.getResultList();
+    }
 
-        return quizzesToReturn;
+    @Override
+    public List<Customer> retrieveQuizUnattemptedFamilyMembers(Quiz quiz, Customer customer) throws FamilyGroupNotFoundException {
+        
+        FamilyGroup familyGroup = familyGroupSessionBeanLocal.retrieveFamilyGroupByCustomer(customer);
+        
+        Query query = entityManager.createQuery("SELECT c FROM Customer c WHERE c <> :inCustomer AND c.familyGroup IS NOT NULL AND c.familyGroup = :inFamilyGroup AND (EXISTS (SELECT q FROM Quiz q WHERE q = :inQuiz AND q.quizAttempts IS EMPTY) OR EXISTS (SELECT q FROM Quiz q, IN (q.quizAttempts) qa WHERE q = :inQuiz AND q.quizAttempts IS NOT EMPTY AND c <> qa.customer))");
+        query.setParameter("inQuiz", quiz);
+        query.setParameter("inFamilyGroup", familyGroup);
+        query.setParameter("inCustomer", customer);
+
+        return query.getResultList();
     }
 
     @Override

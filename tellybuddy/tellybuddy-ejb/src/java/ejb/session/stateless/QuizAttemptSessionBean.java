@@ -46,7 +46,7 @@ public class QuizAttemptSessionBean implements QuizAttemptSessionBeanLocal {
     }
     
     @Override
-    public Long createNewQuizAttempt(Customer customer, Quiz quiz, List<QuizResponse> quizResponses) throws CreateNewQuizAttemptException {
+    public Integer createNewQuizAttempt(Customer customer, Quiz quiz, List<QuizResponse> quizResponses) throws CreateNewQuizAttemptException {
 
         try {
         int score = 0;
@@ -75,7 +75,7 @@ public class QuizAttemptSessionBean implements QuizAttemptSessionBeanLocal {
             customerToAssociateWith.getQuizAttempts().add(newQuizAttempt);
             quizToAssociateWith.getQuizAttempts().add(newQuizAttempt);
 
-            return newQuizAttempt.getQuizAttemptId();
+            return newQuizAttempt.getScore();
         } catch (AnswerNotFoundException | CustomerNotFoundException | QuestionNotFoundException | QuizNotFoundException ex) {
             ejbContext.setRollbackOnly();
             throw new CreateNewQuizAttemptException(ex.getMessage());

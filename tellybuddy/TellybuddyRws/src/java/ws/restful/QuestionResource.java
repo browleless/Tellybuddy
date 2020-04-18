@@ -69,6 +69,7 @@ public class QuestionResource {
                 question.getQuiz().getQuizAttempts().clear();
                 for (Answer answer : question.getAnswers()) {
                     answer.setQuestion(null);
+                    answer.setIsAnswer(null);
                 }
             }
 

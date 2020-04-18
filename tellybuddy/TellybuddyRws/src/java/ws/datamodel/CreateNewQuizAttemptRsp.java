@@ -6,20 +6,20 @@ package ws.datamodel;
  */
 public class CreateNewQuizAttemptRsp {
 
-    private Long quizAttemptId;
+    private Integer quizScore;
 
     public CreateNewQuizAttemptRsp() {
     }
 
-    public CreateNewQuizAttemptRsp(Long quizAttemptId) {
-        this.quizAttemptId = quizAttemptId;
+    public CreateNewQuizAttemptRsp(Integer quizScore) {
+        this.quizScore = quizScore;
     }
 
-    public Long getQuizAttemptId() {
-        return quizAttemptId;
+    public Integer getQuizScore() {
+        return quizScore;
     }
 
-    public void setQuizAttemptId(Long quizAttemptId) {
-        this.quizAttemptId = quizAttemptId;
+    public void setQuizScore(Integer quizScore) {
+        this.quizScore = quizScore;
     }
 }
