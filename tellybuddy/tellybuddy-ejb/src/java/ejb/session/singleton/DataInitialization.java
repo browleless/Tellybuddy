@@ -50,6 +50,7 @@ import util.enumeration.AccessRightEnum;
 import util.enumeration.AnnouncementRecipientEnum;
 import util.enumeration.SubscriptionStatusEnum;
 import util.exception.CreateNewSubscriptionException;
+import util.exception.CustomerNotFoundException;
 import util.exception.CustomerNotYetApproved;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
@@ -175,6 +176,7 @@ public class DataInitialization {
 
             FamilyGroup fg1 = new FamilyGroup("IS3106 Warriors");
             fg1.getCustomers().add(customer1);
+            customer1.setOwnerOfFamilyGroup(true);
             fg1.getCustomers().add(customer2);
             customer1.setFamilyGroup(fg1);
             customer2.setFamilyGroup(fg1);
@@ -183,11 +185,11 @@ public class DataInitialization {
             FamilyGroup fg2 = new FamilyGroup("I lOVE NUS");
             fg2.getCustomers().add(customer3);
             fg2.getCustomers().add(customer4);
-            fg2.getCustomers().add(customer5);
+            //fg2.getCustomers().add(customer5);
           //  fg2.getCustomers().add(customer6);
             customer3.setFamilyGroup(fg2);
             customer4.setFamilyGroup(fg2);
-            customer5.setFamilyGroup(fg2);
+         //   customer5.setFamilyGroup(fg2);
         //    customer6.setFamilyGroup(fg2);
             em.persist(fg2);
             em.flush();
@@ -222,11 +224,13 @@ public class DataInitialization {
         Calendar timeNow = Calendar.getInstance();
         timeNow.add(Calendar.MONTH, -2);
         Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "This is my address", "428198", "marktan@gmail.com", "S9709388A", "./nricPhoto.jpg", timeNow.getTime(), "mt.jpg");
+        customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
 
         customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "This is my address", "428198", "tayjl@gmail.com", "S9941179A", null, timeNow.getTime(), "tayjl.jpg");
         em.persist(customer);
+        customer.setIsApproved(true);
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
@@ -240,11 +244,25 @@ public class DataInitialization {
 
         timeNow.add(Calendar.MONTH, 1);
         customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk@gmail.com", "S4041179A", null, timeNow.getTime(), "tanwk.jpg");
+        customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
+        
+        
         customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "This is my address", "117417", "ethank@gmail.com", "S4041889A", null, timeNow.getTime(), "ethan.jpg");
+        customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
+        
+
+        
+        
+//        try {
+//            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
+//        } catch (CustomerNotFoundException ex) {
+//            Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+       
 
     }
 

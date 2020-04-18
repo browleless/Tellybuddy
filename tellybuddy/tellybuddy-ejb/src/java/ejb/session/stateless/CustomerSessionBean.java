@@ -248,13 +248,12 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         Query q = em.createQuery("SELECT c FROM Customer c WHERE c.customerId = :inCustomer");
         q.setParameter("inCustomer", customerId);
         Customer customer = (Customer) q.getSingleResult();
-        //  Customer customer = em.find(Customer.class, customerId);
         if (customer != null) {
-//            customer.getAnnouncements();
-//            customer.getQuizAttempts();
-//            customer.getTransactions();
-//            customer.getSubscriptions();
-//            customer.getBills();
+            customer.getAnnouncements();
+            customer.getQuizAttempts();
+            customer.getTransactions();
+            customer.getSubscriptions();
+            customer.getBills();
             return customer;
         } else {
             throw new CustomerNotFoundException("Customer ID " + customerId + " does not exist!");

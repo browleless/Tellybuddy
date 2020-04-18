@@ -58,9 +58,10 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                 throw new CustomerAlreadyInFamilyGroupException("Customer already has a family group!");
             }
 
-            if (customerToAssociateWith.getAddress() == null && customerToAssociateWith.getPostalCode() == null) {
+            if (customerToAssociateWith.getIsApproved()==false) {
                 throw new CustomerNotVerifiedException("Customer has not yet been verified, unable to create family group, please wait for the management to verify your account details.");
             }
+            
             customerToAssociateWith.setOwnerOfFamilyGroup(true);
             newFamilyGroup.getCustomers().add(customerToAssociateWith);
 
