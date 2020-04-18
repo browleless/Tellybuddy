@@ -47,6 +47,19 @@ public class UsageDetail implements Serializable {
     @Digits(integer = 3, fraction = 1)
     @DecimalMin("0.0")
     private BigDecimal dataUsage;
+    
+    @Column
+    @Min(0)
+    private Integer allowedTalktimeUsage;
+
+    @Column
+    @Min(0)
+    private Integer allowedSmsUsage;
+
+    @Column(precision = 4, scale = 1)
+    @Digits(integer = 3, fraction = 1)
+    @DecimalMin("0.0")
+    private BigDecimal allowedDataUsage;
 
     @Column(nullable = false)
     @NotNull
@@ -165,6 +178,30 @@ public class UsageDetail implements Serializable {
 
     public void setSubscription(Subscription subscription) {
         this.subscription = subscription;
+    }
+
+    public Integer getAllowedTalktimeUsage() {
+        return allowedTalktimeUsage;
+    }
+
+    public void setAllowedTalktimeUsage(Integer allowedTalktimeUsage) {
+        this.allowedTalktimeUsage = allowedTalktimeUsage;
+    }
+
+    public Integer getAllowedSmsUsage() {
+        return allowedSmsUsage;
+    }
+
+    public void setAllowedSmsUsage(Integer allowedSmsUsage) {
+        this.allowedSmsUsage = allowedSmsUsage;
+    }
+
+    public BigDecimal getAllowedDataUsage() {
+        return allowedDataUsage;
+    }
+
+    public void setAllowedDataUsage(BigDecimal allowedDataUsage) {
+        this.allowedDataUsage = allowedDataUsage;
     }
 
 }

@@ -183,6 +183,11 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
             // latest usage detail for the month
             UsageDetail currentUsageDetail = subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() - 1);
+            
+            // store latest allowed quota as info will be lost in the next cycle
+            currentUsageDetail.setAllowedDataUsage(BigDecimal.valueOf(subscriptionTotalAllowedData.doubleValue() / 1000));
+            currentUsageDetail.setAllowedSmsUsage(subscriptionTotalAllowedSms);
+            currentUsageDetail.setAllowedTalktimeUsage(subscriptionTotalAllowedTalktime);
 
             BigDecimal totalExceedPenaltyPrice = BigDecimal.ZERO;
 
