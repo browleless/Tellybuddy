@@ -156,7 +156,7 @@ public class QuizSessionBean implements QuizSessionBeanLocal {
         
         FamilyGroup familyGroup = familyGroupSessionBeanLocal.retrieveFamilyGroupByCustomer(customer);
         
-        Query query = entityManager.createQuery("SELECT c FROM Customer c WHERE c <> :inCustomer AND c.familyGroup IS NOT NULL AND c.familyGroup = :inFamilyGroup AND (EXISTS (SELECT q FROM Quiz q WHERE q = :inQuiz AND q.quizAttempts IS EMPTY) OR EXISTS (SELECT q FROM Quiz q, IN (q.quizAttempts) qa WHERE q = :inQuiz AND q.quizAttempts IS NOT EMPTY AND c <> qa.customer))");
+        Query query = entityManager.createQuery("SELECT c FROM Customer c WHERE c <> :inCustomer AND c.familyGroup IS NOT NULL AND c.familyGroup = :inFamilyGroup AND (EXISTS (SELECT q FROM Quiz q WHERE q = :inQuiz AND q.quizAttempts IS EMPTY) OR EXISTS (SELECT q FROM Quiz q WHERE q = :inQuiz AND q.quizAttempts IS NOT EMPTY AND NOT EXISTS (SELECT qa from QuizAttempt qa WHERE qa.quiz = q AND qa.customer = c)))");
         query.setParameter("inQuiz", quiz);
         query.setParameter("inFamilyGroup", familyGroup);
         query.setParameter("inCustomer", customer);
