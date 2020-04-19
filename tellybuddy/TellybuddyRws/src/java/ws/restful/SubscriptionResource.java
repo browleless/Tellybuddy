@@ -237,8 +237,10 @@ public class SubscriptionResource {
             try {
                 Customer customer = customerSessionBeanLocal.customerLogin(allocateAddOnUnitsForCurrentMonthReq.getUsername(), allocateAddOnUnitsForCurrentMonthReq.getPassword());
                 System.out.println("********** SubscriptionResource.allocateAddOnUnitsForCurrentMonth(): Customer " + customer.getUsername() + " login remotely via web service");
-
                 Subscription subscription = subscriptionSessonBeanLocal.allocateAddOnUnitsForCurrentMonth(allocateAddOnUnitsForCurrentMonthReq.getSubscription(),allocateAddOnUnitsForCurrentMonthReq.getDataUnits(),allocateAddOnUnitsForCurrentMonthReq.getSmsUnits(),allocateAddOnUnitsForCurrentMonthReq.getTalktimeUnits());
+                System.out.println("Customer: " + subscription.getSubscriptionId()+" purchased data add-ons"+ subscription.getDataUnits().get("addOn"));
+                System.out.println("Customer: " + subscription.getSubscriptionId()+" purchased Sms add-ons"+ subscription.getSmsUnits().get("addOn"));
+                System.out.println("Customer: " + subscription.getSubscriptionId()+" purchased talk time add-ons"+ subscription.getTalkTimeUnits().get("addOn"));
                 AllocateAddOnUnitsForCurrentMonthRsp allocateAddOnUnitsForCurrentMonthRsp = new AllocateAddOnUnitsForCurrentMonthRsp(subscription.getSubscriptionId());
                 return Response.status(Response.Status.OK).entity(allocateAddOnUnitsForCurrentMonthRsp).build();
             } catch (InvalidLoginCredentialException ex) {

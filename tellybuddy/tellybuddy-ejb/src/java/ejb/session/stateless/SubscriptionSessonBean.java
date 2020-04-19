@@ -196,9 +196,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getSmsUsage() - subscriptionTotalAllowedSms) * 0.05));
             }
 
-            if (currentUsageDetail.getTalktimeUsage() > subscriptionTotalAllowedTalktime) {
+            if (currentUsageDetail.getTalktimeUsage().intValue() > subscriptionTotalAllowedTalktime) {
                 // hardcoded $0.10 per exceeded min
-                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getTalktimeUsage() - subscriptionTotalAllowedTalktime) * 0.10));
+                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getTalktimeUsage().subtract(BigDecimal.valueOf(subscriptionTotalAllowedTalktime)).intValue()) * 0.10));
             }
 
             Integer familyGroupDiscountRate = 0;
@@ -249,6 +249,17 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         } catch (SubscriptionNotFoundException | InputDataValidationException | CustomerNotFoundException | UsageDetailNotFoundException | InterruptedException ex) {
             // won't happen
             ex.printStackTrace();
+        }
+    }
+    
+    @Schedule(second="*/10", minute="*", hour="*")
+    public void incrementUsageDetail() {
+        for(Subscription s: this.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.ACTIVE)){
+            UsageDetail currentUsageDetail = s.getUsageDetails().get(s.getUsageDetails().size() - 1);
+            
+            currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(new BigDecimal(0.015)));
+            currentUsageDetail.setSmsUsage(currentUsageDetail.getSmsUsage());
+            currentUsageDetail.setTalktimeUsage(currentUsageDetail.getTalktimeUsage().add(new BigDecimal(0.010)));
         }
     }
 

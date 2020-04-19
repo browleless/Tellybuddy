@@ -32,20 +32,19 @@ public class UsageDetail implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long usageDetailId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 7, scale = 3)
     @NotNull
-    @Min(0)
-    private Integer talktimeUsage;
+//    @Digits(integer = 4, fraction = 3)
+    private BigDecimal talktimeUsage;
 
     @Column(nullable = false)
     @NotNull
     @Min(0)
     private Integer smsUsage;
 
-    @Column(nullable = false, precision = 4, scale = 1)
+    @Column(nullable = false, precision = 7, scale = 3)
     @NotNull
-    @Digits(integer = 3, fraction = 1)
-    @DecimalMin("0.0")
+//    @Digits(integer = 4, fraction = 3)
     private BigDecimal dataUsage;
 
     @Column(nullable = false)
@@ -69,7 +68,7 @@ public class UsageDetail implements Serializable {
     public UsageDetail() {
         this.dataUsage = BigDecimal.valueOf(0);
         this.smsUsage = 0;
-        this.talktimeUsage = 0;
+        this.talktimeUsage = BigDecimal.valueOf(0);
     }
 
     public UsageDetail(Date startDate, Date endDate) {
@@ -111,11 +110,11 @@ public class UsageDetail implements Serializable {
         return "entity.UsageDetails[ id=" + usageDetailId + " ]";
     }
 
-    public Integer getTalktimeUsage() {
+    public BigDecimal getTalktimeUsage() {
         return talktimeUsage;
     }
 
-    public void setTalktimeUsage(Integer talktimeUsage) {
+    public void setTalktimeUsage(BigDecimal talktimeUsage) {
         this.talktimeUsage = talktimeUsage;
     }
 

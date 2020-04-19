@@ -229,7 +229,7 @@ public class DataInitialization {
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer3", "password2", "Jing Wen", "Ng", Integer.valueOf(20), "This is my address", "117417", "ngJW@gmail.com", "S9841379A", null, timeNow.getTime(), "jw.jpg");
+        customer = new Customer("customer3", "password3", "Jing Wen", "Ng", Integer.valueOf(20), "This is my address", "117417", "ngJW@gmail.com", "S9841379A", null, timeNow.getTime(), "jw.jpg");
         em.persist(customer);
         em.flush();
 

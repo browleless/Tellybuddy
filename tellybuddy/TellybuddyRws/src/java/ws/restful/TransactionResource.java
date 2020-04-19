@@ -78,7 +78,7 @@ public class TransactionResource {
                 transaction.setDiscountCode(null);
                 transaction.setTransactionLineItems(null);
             }
-
+            System.out.println("SDfsadfsdfasfdf");
             return Response.status(Status.OK).entity(new RetrieveCustomerTransactionsRsp(transactions)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
