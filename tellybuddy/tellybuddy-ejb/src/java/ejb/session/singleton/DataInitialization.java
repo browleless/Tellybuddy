@@ -49,6 +49,7 @@ import javax.persistence.PersistenceContext;
 import util.enumeration.AccessRightEnum;
 import util.enumeration.AnnouncementRecipientEnum;
 import util.enumeration.SubscriptionStatusEnum;
+import util.enumeration.TransactionStatusEnum;
 import util.exception.CreateNewSubscriptionException;
 import util.exception.CustomerNotYetApproved;
 import util.exception.InputDataValidationException;
@@ -197,6 +198,7 @@ public class DataInitialization {
             em.flush();
 
             Transaction testTransaction = new Transaction(new BigDecimal("12.12"), new Date());
+            testTransaction.setTransactionStatusEnum(TransactionStatusEnum.REFUNDED);
             testTransaction.setCustomer(customer1);
             testTransaction.setPayment(payment);
             em.persist(testTransaction);
@@ -220,28 +222,28 @@ public class DataInitialization {
     private void createCustomers() {
         Calendar timeNow = Calendar.getInstance();
         timeNow.add(Calendar.MONTH, -2);
-        Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "This is my address", "428198", "marktan@gmail.com", "S9709388A", "./nricPhoto.jpg", timeNow.getTime(), "mt.jpg");
+        Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "marktan@gmail.com", "S9702228A", "./nricPhoto.jpg", timeNow.getTime(), "mt.jpg");
         em.persist(customer);
         em.flush();
 
-        customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "This is my address", "428198", "tayjl@gmail.com", "S9941179A", null, timeNow.getTime(), "tayjl.jpg");
-        em.persist(customer);
-        em.flush();
-
-        timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer3", "password3", "Jing Wen", "Ng", Integer.valueOf(20), "This is my address", "117417", "ngJW@gmail.com", "S9841379A", null, timeNow.getTime(), "jw.jpg");
-        em.persist(customer);
-        em.flush();
-
-        customer = new Customer("customer4", "password4", "Kai Xin", "Zhu", Integer.valueOf(20), "This is my address", "117417", "kathareverusa@gmail.com", "S9641179A", null, timeNow.getTime(), "kx.jpg");
+        customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tayjl@gmail.com", "S9941179A", null, timeNow.getTime(), "tayjl.jpg");
         em.persist(customer);
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk@gmail.com", "S4041179A", null, timeNow.getTime(), "tanwk.jpg");
+        customer = new Customer("customer3", "password3", "Jing Wen", "Ng", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ngJW@gmail.com", "S9841379A", null, timeNow.getTime(), "jw.jpg");
         em.persist(customer);
         em.flush();
-        customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "This is my address", "117417", "ethank@gmail.com", "S4041889A", null, timeNow.getTime(), "ethan.jpg");
+
+        customer = new Customer("customer4", "password4", "Kai Xin", "Zhu", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "kathareverusa@gmail.com", "S9641179A", null, timeNow.getTime(), "kx.jpg");
+        em.persist(customer);
+        em.flush();
+
+        timeNow.add(Calendar.MONTH, 1);
+        customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tanwk@gmail.com", "S4041179A", null, timeNow.getTime(), "tanwk.jpg");
+        em.persist(customer);
+        em.flush();
+        customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ethank@gmail.com", "S4041889A", null, timeNow.getTime(), "ethan.jpg");
         em.persist(customer);
         em.flush();
 

@@ -38,6 +38,8 @@ import util.exception.TransactionUnableToBeRefundedException;
 import ws.datamodel.CreateNewTransactionReq;
 import ws.datamodel.CreateNewTransactionRsp;
 import ws.datamodel.ErrorRsp;
+import ws.datamodel.RefundTransactionReq;
+import ws.datamodel.RefundTransactionRsp;
 import ws.datamodel.RetrieveCustomerTransactionsRsp;
 import ws.datamodel.RetrieveTransactionRsp;
 
@@ -78,7 +80,6 @@ public class TransactionResource {
                 transaction.setDiscountCode(null);
                 transaction.setTransactionLineItems(null);
             }
-            System.out.println("SDfsadfsdfasfdf");
             return Response.status(Status.OK).entity(new RetrieveCustomerTransactionsRsp(transactions)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
@@ -169,19 +170,19 @@ public class TransactionResource {
         }
     }
 
-    @Path("refundTransactionRequest/{transactionId}")
+    @Path("refundTransactionRequest")
     @POST
-    @Consumes(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response refundTransactionRequest(@QueryParam("username") String username, @QueryParam("password") String password, @PathParam("transactionId") Long transactionId) {
+    public Response refundTransactionRequest(RefundTransactionReq refundTransactionReq) {
 
         try {
-            Customer customer = customerSessionBeanLocal.customerLogin(username, password);
+            Customer customer = customerSessionBeanLocal.customerLogin(refundTransactionReq.getUsername(), refundTransactionReq.getPassword());
             System.out.println("********** TransactionResource.refundTransactionRequest(): Customer " + customer.getUsername() + " login remotely via web service");
 
-            transactionSessionBeanLocal.requestTransactionRefund(transactionId);
+            transactionSessionBeanLocal.requestTransactionRefund(refundTransactionReq.getTransactionId());
 
-            return Response.status(Response.Status.OK).build();
+            return Response.status(Response.Status.OK).entity(new RefundTransactionRsp(refundTransactionReq.getTransactionId())).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Status.UNAUTHORIZED).entity(errorRsp).build();
