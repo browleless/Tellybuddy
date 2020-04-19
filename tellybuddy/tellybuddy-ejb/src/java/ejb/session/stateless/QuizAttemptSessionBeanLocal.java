@@ -23,7 +23,7 @@ public interface QuizAttemptSessionBeanLocal {
 
     public List<QuizAttempt> retrieveCustomerQuizAttempts(Customer customer);
 
-    public Long createNewQuizAttempt(Customer customer, Quiz quiz, List<QuizResponse> quizResponses) throws CreateNewQuizAttemptException;
+    public Integer createNewQuizAttempt(Customer customer, Quiz quiz, List<QuizResponse> quizResponses) throws CreateNewQuizAttemptException;
 
     public QuizAttempt retrieveQuizAttemptByQuizAttemptId(Long quizAttemptId) throws QuizAttemptNotFoundException;
     
