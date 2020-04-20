@@ -308,7 +308,16 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         return subscriptionToAmend;
     }
 
+    @Override
+    public Subscription allocateQuizExtraUnits(Subscription subscription, Integer dataUnits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException {
 
+        Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
+
+        subscriptionToAmend.getDataUnits().put("quizExtraUnits", dataUnits);
+        subscriptionToAmend.getSmsUnits().put("quizExtraUnits", smsUnits);
+        subscriptionToAmend.getTalkTimeUnits().put("quizExtraUnits", talktimeUnits);
+        return subscriptionToAmend;
+    }
 
     @Override
     public Subscription allocateAddOnUnitsForCurrentMonth(Subscription subscription, Integer dataunits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException, InputDataValidationException {
@@ -355,7 +364,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     }
     @Override
     public List<Subscription> retrieveAllActiveSubscriptionUnderCustomer(Customer customer){
-         Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.isActive AND s.customer = :inCustomer ");
+         Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer AND s.isActive = TRUE ");
         q.setParameter("inCustomer", customer);
         return q.getResultList();
     }

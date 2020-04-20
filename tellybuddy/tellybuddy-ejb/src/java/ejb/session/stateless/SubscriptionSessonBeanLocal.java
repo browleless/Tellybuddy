@@ -57,6 +57,10 @@ public interface SubscriptionSessonBeanLocal {
     public Subscription allocateAddOnUnitsForCurrentMonth(Subscription subscription, Integer dataunits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException, InputDataValidationException;
 
 
+
     public List<Subscription> retrieveAllActiveSubscriptionUnderCustomer(Customer customer);
+
+    public Subscription allocateQuizExtraUnits(Subscription subscription, Integer dataUnits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException;
+
 
 }

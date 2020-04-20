@@ -32,7 +32,6 @@ public class QuizAttempt implements Serializable {
     
     @Column(nullable = false)
     @NotNull
-    @Positive
     @Min(0)
     private Integer score;
     

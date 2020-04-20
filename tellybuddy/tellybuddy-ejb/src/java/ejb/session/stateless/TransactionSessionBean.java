@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Customer;
 import entity.DiscountCode;
 import entity.Payment;
+import entity.ProductItem;
 import entity.Subscription;
 import entity.Transaction;
 import entity.TransactionLineItem;
@@ -51,6 +52,9 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
 
     @EJB
     private SubscriptionSessonBeanLocal subscriptionSessonBeanLocal;
+
+    @EJB(name = "ProductItemSessionBeanLocal")
+    private ProductItemSessionBeanLocal productItemSessionBeanLocal;
 
     @EJB(name = "PaymentSessionBeanLocal")
     private PaymentSessionBeanLocal paymentSessionBeanLocal;
@@ -100,7 +104,23 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
 
                 for (TransactionLineItem transactionLineItemToAdd : transactionLineItemsToAdd) {
                     if (transactionLineItemToAdd.getProductItem() != null || transactionLineItemToAdd.getProduct() != null) {
-                        if (transactionLineItemToAdd.getProduct() != null) {
+                        if (transactionLineItemToAdd.getProductItem() != null) { //luxury product
+                            System.out.println("ENTERED HERE**********");
+                            //System.out.println("ENTERED HERE**********: " + transactionLineItemToAdd.getProduct().getProductId());
+                            System.out.println("entered: " + transactionLineItemToAdd.getProductItem().getLuxuryProduct().getProductId());
+
+                            //retrieve an available product item 
+                            ProductItem pi = productSessionBeanLocal.retrieveAvailableProductItemFromLuxury(transactionLineItemToAdd.getProductItem().getLuxuryProduct().getProductId());
+                            productSessionBeanLocal.debitProductItem(transactionLineItemToAdd.getProductItem().getLuxuryProduct().getProductId(), pi);
+
+                            transactionLineItemToAdd.setTransaction(newTransaction);
+                            transactionLineItemToAdd.setProductItem(null);
+
+                            em.persist(transactionLineItemToAdd);
+                            em.flush();
+
+                            transactionLineItemToAdd.setProductItem(pi);
+                        } else { // normal products
                             productSessionBeanLocal.debitQuantityOnHand(transactionLineItemToAdd.getProduct().getProductId(), transactionLineItemToAdd.getQuantity());
 
                             transactionLineItemToAdd.setTransaction(newTransaction);
@@ -109,15 +129,6 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
                             em.flush();
 
                             transactionLineItemToAdd.setProduct(transactionLineItemToAdd.getProduct());
-                        } else {
-                            productSessionBeanLocal.debitQuantityOnHand(transactionLineItemToAdd.getProductItem().getLuxuryProduct().getProductId(), transactionLineItemToAdd.getQuantity());
-
-                            transactionLineItemToAdd.setTransaction(newTransaction);
-
-                            em.persist(transactionLineItemToAdd);
-                            em.flush();
-
-                            transactionLineItemToAdd.setProductItem(transactionLineItemToAdd.getProductItem());
                         }
                     } else {
                         Subscription subscription = transactionLineItemToAdd.getSubscription();

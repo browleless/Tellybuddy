@@ -28,6 +28,7 @@ import entity.ProductItem;
 import entity.Tag;
 import entity.Transaction;
 import entity.TransactionLineItem;
+import entity.UsageDetail;
 import java.math.BigDecimal;
 
 import java.text.ParseException;
@@ -120,18 +121,63 @@ public class DataInitialization {
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 1l, 1l);
                 subscription.setIsActive(true);
                 subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.TERMINATING);
+                
+                
+                
+                UsageDetail u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
+                subscription.getUsageDetails().add(u1);
+                u1.setSubscription(subscription);
+                u1.setBill(null);
+                em.persist(u1);
+                em.flush();
+                UsageDetail u2 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/03/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/04/2020"));
+                subscription.getUsageDetails().add(u2);
+                u2.setSubscription(subscription);
+                u2.setBill(null);
+                em.persist(u2);
+                em.flush();
+                
 
                 subscription = new Subscription(20, 5, 5);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -2);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 2l, 2l);
+                subscription.setIsActive(true);
+                
+                
+                u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
+                subscription.getUsageDetails().add(u1);
+                u1.setSubscription(subscription);
+                u1.setBill(null);
+                em.persist(u1);
+                em.flush();
+                u2 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/03/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/04/2020"));
+                subscription.getUsageDetails().add(u2);
+                u2.setSubscription(subscription);
+                u2.setBill(null);
+                em.persist(u2);
+                em.flush();
 
                 subscription = new Subscription(30, 0, 0);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -1);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 2l, 3l);
+                subscription.setIsActive(true);
+                u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
+                subscription.getUsageDetails().add(u1);
+                u1.setSubscription(subscription);
+                u1.setBill(null);
+                em.persist(u1);
+                em.flush();
+                u2 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/03/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/04/2020"));
+                subscription.getUsageDetails().add(u2);
+                u2.setSubscription(subscription);
+                u2.setBill(null);
+                em.persist(u2);
+                em.flush();
+                
 
                 subscription = new Subscription(15, 5, 10);
                 cal = Calendar.getInstance();
@@ -186,11 +232,11 @@ public class DataInitialization {
             fg2.getCustomers().add(customer3);
             fg2.getCustomers().add(customer4);
             //fg2.getCustomers().add(customer5);
-          //  fg2.getCustomers().add(customer6);
+            //  fg2.getCustomers().add(customer6);
             customer3.setFamilyGroup(fg2);
             customer4.setFamilyGroup(fg2);
-         //   customer5.setFamilyGroup(fg2);
-        //    customer6.setFamilyGroup(fg2);
+            //   customer5.setFamilyGroup(fg2);
+            //    customer6.setFamilyGroup(fg2);
             em.persist(fg2);
             em.flush();
             initialiseProducts();
@@ -224,13 +270,13 @@ public class DataInitialization {
         Calendar timeNow = Calendar.getInstance();
         timeNow.add(Calendar.MONTH, -2);
         Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "This is my address", "428198", "marktan@gmail.com", "S9709388A", "./nricPhoto.jpg", timeNow.getTime(), "mt.jpg");
-        customer.setIsApproved(true);
+        //customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
 
         customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "This is my address", "428198", "tayjl@gmail.com", "S9941179A", null, timeNow.getTime(), "tayjl.jpg");
         em.persist(customer);
-        customer.setIsApproved(true);
+        //customer.setIsApproved(true);
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
@@ -244,25 +290,24 @@ public class DataInitialization {
 
         timeNow.add(Calendar.MONTH, 1);
         customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk@gmail.com", "S4041179A", null, timeNow.getTime(), "tanwk.jpg");
-        customer.setIsApproved(true);
+       // customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
-        
-        
-        customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "This is my address", "117417", "ethank@gmail.com", "S4041889A", null, timeNow.getTime(), "ethan.jpg");
-        customer.setIsApproved(true);
-        em.persist(customer);
-        em.flush();
-        
 
+        customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "This is my address", "117417", "ethank@gmail.com", "S4041889A", null, timeNow.getTime(), "ethan.jpg");
+       // customer.setIsApproved(true);
+        em.persist(customer);
+        em.flush();
+        
+        timeNow.add(Calendar.MONTH, 1);
+        customer = new Customer("customer7", "password7", "WK wife", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk2@gmail.com", "S4041178A", null, timeNow.getTime(), null);
+        em.persist(customer);
+        em.flush();
+        customer = new Customer("customer8", "password8", "WK son", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk3@gmail.com", "S4041177A", null, timeNow.getTime(), null);
+        em.persist(customer);
+        em.flush();
         
         
-//        try {
-//            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
-//        } catch (CustomerNotFoundException ex) {
-//            Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-       
 
     }
 
@@ -339,7 +384,7 @@ public class DataInitialization {
         em.flush();
 
         //product 1
-        LuxuryProduct iphoneXS = new LuxuryProduct("0000000001", "SKU001", "iPhone XS", "iphone xs", BigDecimal.valueOf(1000.0), 10, 50, "iphoneXS.JPG");
+        LuxuryProduct iphoneXS = new LuxuryProduct("0000000001", "SKU001", "iPhone XS", "iPhone XS (Black)", BigDecimal.valueOf(1000.0), 10, 50, "iphoneXS.JPG");
         iphoneXS.setCategory(apple);
         List<Tag> tags = new ArrayList<>();
         List<Product> products = apple.getProducts();
@@ -371,12 +416,13 @@ public class DataInitialization {
             ProductItem pi = new ProductItem(s, iphoneXS.getPrice());
             pi.setLuxuryProduct(iphoneXS);
             em.persist(pi);
+            em.flush();
             unique++;
             productItems.add(pi);
         }
 
         //product 2
-        LuxuryProduct googlePixel4 = new LuxuryProduct("0000000002", "SKU002", "Google Pixel 4", "Google Pixel 4", BigDecimal.valueOf(799.0), 20, 20, "googlePixel4.jpg");
+        LuxuryProduct googlePixel4 = new LuxuryProduct("0000000002", "SKU002", "Google Pixel 4", "Google Pixel 4 (White)", BigDecimal.valueOf(799.0), 20, 20, "googlePixel4.jpg");
         googlePixel4.setCategory(android);
         tags = new ArrayList<>();
         products = android.getProducts();
@@ -403,12 +449,13 @@ public class DataInitialization {
             ProductItem pi = new ProductItem(s, googlePixel4.getPrice());
             pi.setLuxuryProduct(googlePixel4);
             em.persist(pi);
+            em.flush();
             unique++;
             productItems.add(pi);
         }
 
         //product 3
-        LuxuryProduct samsungFlipZ = new LuxuryProduct("0000000003", "SKU003", "Samsung Flip Z", "Samsung Flip Z", BigDecimal.valueOf(899.0), 20, 20, "samsungFlipZ.jpg");
+        LuxuryProduct samsungFlipZ = new LuxuryProduct("0000000003", "SKU003", "Samsung Flip Z", "Samsung Flip Z (Black)", BigDecimal.valueOf(899.0), 20, 20, "samsungFlipZ.jpg");
         samsungFlipZ.setCategory(android);
         tags = new ArrayList<>();
         products = android.getProducts();
@@ -435,12 +482,13 @@ public class DataInitialization {
             ProductItem pi = new ProductItem(s, googlePixel4.getPrice());
             pi.setLuxuryProduct(googlePixel4);
             em.persist(pi);
+            em.flush();
             unique++;
             productItems.add(pi);
         }
 
         //product 4
-        Product iphoneXScover = new Product("SKU004", "iPhone XS WeBareBear Case", "iphone xs hp case", BigDecimal.valueOf(15.0), 10, 50, "iphoneXSwbbcase.jpg");
+        Product iphoneXScover = new Product("SKU004", "iPhone XS WeBareBear Case", "iPhone XS case", BigDecimal.valueOf(15.0), 10, 50, "iphoneXSwbbcase.jpg");
         iphoneXScover.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(iphoneXScover);
@@ -463,7 +511,7 @@ public class DataInitialization {
         tagT.add(iphoneXScover);
 
         //product 5
-        Product appleWire = new Product("SKU005", "Apple Charger", "Apple Lighting to USB Cable (1 meter)", BigDecimal.valueOf(10.0), 40, 20, "appleWire.JPG");
+        Product appleWire = new Product("SKU005", "Apple Charger", "Apple Lighting to USB Cable (1 meter, White)", BigDecimal.valueOf(10.0), 40, 20, "appleWire.JPG");
         appleWire.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(appleWire);
@@ -480,7 +528,7 @@ public class DataInitialization {
         tagT.add(appleWire);
 
         //product 6
-        Product androidCharger = new Product("SKU006", "Android Charger", "Android Charger (1 meter)", BigDecimal.valueOf(10.0), 40, 20, "androidCharger.jpg");
+        Product androidCharger = new Product("SKU006", "Android Charger", "Android Charger (1 meter, White)", BigDecimal.valueOf(10.0), 40, 20, "androidCharger.jpg");
         androidCharger.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(androidCharger);
@@ -488,7 +536,7 @@ public class DataInitialization {
         tags = new ArrayList<>();
         tags.add(samsung);
         tags.add(popular);
-        appleWire.setTags(tags);
+        androidCharger.setTags(tags);
         em.persist(androidCharger);
         em.flush();
         tagT = samsung.getProducts();
@@ -497,7 +545,7 @@ public class DataInitialization {
         tagT.add(androidCharger);
 
         //product 7
-        LuxuryProduct sonyXperia1 = new LuxuryProduct("0000000007", "SKU007", "Sony Xperia1-ii", "Sony Xperia1-ii", BigDecimal.valueOf(999.0), 20, 20, "sonyXperia1.JPG");
+        LuxuryProduct sonyXperia1 = new LuxuryProduct("0000000007", "SKU007", "Sony Xperia1-ii", "Sony Xperia1-ii (White)", BigDecimal.valueOf(999.0), 20, 20, "sonyXperia1.JPG");
         sonyXperia1.setCategory(android);
         tags = new ArrayList<>();
         products = android.getProducts();
@@ -524,9 +572,146 @@ public class DataInitialization {
             ProductItem pi = new ProductItem(s, sonyXperia1.getPrice());
             pi.setLuxuryProduct(sonyXperia1);
             em.persist(pi);
+            em.flush();
             unique++;
             productItems.add(pi);
         }
+
+        //product 8
+        LuxuryProduct iPhone11Pro = new LuxuryProduct("0000000008", "SKU008", "iPhone 11 Pro", "iPhone 11 Pro (Black)", BigDecimal.valueOf(1010.0), 20, 20, "iphone11Pro.jpg");
+        iPhone11Pro.setCategory(apple);
+        tags = new ArrayList<>();
+        products = apple.getProducts();
+        products.add(iPhone11Pro);
+        apple.setProducts(products);
+        tags.add(popular);
+        tags.add(mobile);
+        tags.add(tagNew);
+        tags.add(appleTag);
+        iPhone11Pro.setTags(tags);
+        em.persist(iPhone11Pro);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(iPhone11Pro);
+        tagT = mobile.getProducts();
+        tagT.add(iPhone11Pro);
+        tagT = tagNew.getProducts();
+        tagT.add(iPhone11Pro);
+        tagT = appleTag.getProducts();
+        tagT.add(iPhone11Pro);
+
+        productItems = iPhone11Pro.getProductItems();
+
+        for (int i = 0; i < iPhone11Pro.getQuantityOnHand(); i++) {
+            String s = uniqueSerialNum(unique);
+
+            ProductItem pi = new ProductItem(s, iPhone11Pro.getPrice());
+            pi.setLuxuryProduct(iPhone11Pro);
+            em.persist(pi);
+            em.flush();
+            unique++;
+            productItems.add(pi);
+        }
+
+        //product 9
+        LuxuryProduct oppoReno2 = new LuxuryProduct("0000000009", "SKU009", "OPPO Reno 2", "OPPO Reno 2 (Black)", BigDecimal.valueOf(798.0), 20, 20, "oppoReno2.jpg");
+        oppoReno2.setCategory(android);
+        tags = new ArrayList<>();
+        products = android.getProducts();
+        products.add(oppoReno2);
+        android.setProducts(products);
+        tags.add(popular);
+        tags.add(mobile);
+        tags.add(tagNew);
+        oppoReno2.setTags(tags);
+        em.persist(oppoReno2);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(oppoReno2);
+        tagT = mobile.getProducts();
+        tagT.add(oppoReno2);
+        tagT = tagNew.getProducts();
+        tagT.add(oppoReno2);
+
+        productItems = oppoReno2.getProductItems();
+
+        for (int i = 0; i < oppoReno2.getQuantityOnHand(); i++) {
+            String s = uniqueSerialNum(unique);
+
+            ProductItem pi = new ProductItem(s, oppoReno2.getPrice());
+            pi.setLuxuryProduct(oppoReno2);
+            em.persist(pi);
+            em.flush();
+            unique++;
+            productItems.add(pi);
+        }
+
+        //product 10
+        LuxuryProduct galaxyNote10 = new LuxuryProduct("0000000010", "SKU010", "Galaxy Note 10+", "Galaxy Note 10+ (Black)", BigDecimal.valueOf(888.0), 20, 20, "galaxyNote10+.jpg");
+        galaxyNote10.setCategory(android);
+        tags = new ArrayList<>();
+        products = android.getProducts();
+        products.add(galaxyNote10);
+        android.setProducts(products);
+        tags.add(popular);
+        tags.add(mobile);
+        tags.add(tagNew);
+        tags.add(samsung);
+        galaxyNote10.setTags(tags);
+        em.persist(galaxyNote10);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(galaxyNote10);
+        tagT = mobile.getProducts();
+        tagT.add(galaxyNote10);
+        tagT = tagNew.getProducts();
+        tagT.add(galaxyNote10);
+        tagT = samsung.getProducts();
+        tagT.add(galaxyNote10);
+
+        productItems = galaxyNote10.getProductItems();
+
+        for (int i = 0; i < galaxyNote10.getQuantityOnHand(); i++) {
+            String s = uniqueSerialNum(unique);
+
+            ProductItem pi = new ProductItem(s, galaxyNote10.getPrice());
+            pi.setLuxuryProduct(galaxyNote10);
+            em.persist(pi);
+            em.flush();
+            unique++;
+            productItems.add(pi);
+        }
+
+        //product 11
+        Product carMount = new Product("SKU011", "Universal Car Mount", "Universal Car Mount (Black)", BigDecimal.valueOf(15.0), 40, 20, "carMount.jpg");
+        carMount.setCategory(phoneAccessories);
+        products = phoneAccessories.getProducts();
+        products.add(carMount);
+        phoneAccessories.setProducts(products);
+        tags = new ArrayList<>();
+        tags.add(popular);
+        carMount.setTags(tags);
+        em.persist(carMount);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(carMount);
+
+        //product 12
+        Product leatherCover = new Product("SKU012", "Samsung Flip Z Leather Phone Cover", "Samsung Flip Z Leather Phone Cover (Gret)", BigDecimal.valueOf(49.0), 40, 20, "leatherCover.jpg");
+        leatherCover.setCategory(phoneAccessories);
+        products = phoneAccessories.getProducts();
+        products.add(leatherCover);
+        phoneAccessories.setProducts(products);
+        tags = new ArrayList<>();
+        tags.add(popular);
+        tags.add(samsung);
+        leatherCover.setTags(tags);
+        em.persist(leatherCover);
+        em.flush();
+        tagT = popular.getProducts();
+        tagT.add(leatherCover);
+        tagT = samsung.getProducts();
+        tagT.add(leatherCover);
 
     }
 

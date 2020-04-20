@@ -70,6 +70,10 @@ public interface ProductSessionBeanLocal {
 
     public List<Product> retrieveAllLuxuryProducts();
 
+    public ProductItem retrieveAvailableProductItemFromLuxury(Long luxuryId);
+
+    public void debitProductItem(Long luxuryId, ProductItem pi) throws ProductNotFoundException;
+
  
     
     
