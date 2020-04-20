@@ -58,4 +58,6 @@ public interface SubscriptionSessonBeanLocal {
 
     public Subscription allocateQuizExtraUnits(Subscription subscription, Integer dataUnits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException;
 
+    public List<Subscription> retrieveAllSubscriptionsWithBillsUnderCustomer(Customer customer);
+
 }

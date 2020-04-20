@@ -72,7 +72,7 @@ public class BillSessionBean implements BillSessionBeanLocal {
     @Override
     public List<Bill> retrieveBillsBySubscription(Subscription subscription) {
 
-        Query query = entityManager.createQuery("SELECT b FROM Bill b WHERE b.usageDetail.subscription = :inSubscription ORDER BY b.paid, b.date ASC");
+        Query query = entityManager.createQuery("SELECT b FROM Bill b WHERE b.usageDetail.subscription = :inSubscription ORDER BY b.date ASC");
         query.setParameter("inSubscription", subscription);
 
         return query.getResultList();

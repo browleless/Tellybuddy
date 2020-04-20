@@ -34,6 +34,7 @@ import ws.datamodel.CreateSubscriptionReq;
 import ws.datamodel.CreateSubscriptionRsp;
 import ws.datamodel.ErrorRsp;
 import ws.datamodel.RetrieveAllCustomerSubscriptionsRsp;
+import ws.datamodel.RetrieveAllCustomerSubscriptionsWithBillsRsp;
 import ws.datamodel.RetrieveSubscriptionRsp;
 import ws.datamodel.RetrieveSubscriptionsUnderFamilyRsp;
 import ws.datamodel.TerminateSubscriptionReq;
@@ -153,6 +154,33 @@ public class SubscriptionResource {
             }
 
             return Response.status(Response.Status.OK).entity(new RetrieveSubscriptionsUnderFamilyRsp(subscriptions)).build();
+        } catch (InvalidLoginCredentialException ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("retrieveAllCustomerSubscriptionsWithBills")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveAllCustomerSubscriptionsWithBills(@QueryParam("username") String username, @QueryParam("password") String password) {
+        try {
+            Customer customer = customerSessionBeanLocal.customerLogin(username, password);
+            System.out.println("********** SubscriptionResource.retrieveAllCustomerSubscriptionsWithBills(): Customer " + customer.getUsername() + " login remotely via web service");
+
+            List<Subscription> subscriptions = subscriptionSessonBeanLocal.retrieveAllSubscriptionsWithBillsUnderCustomer(customer);
+
+            for (Subscription subscription : subscriptions) {
+                subscription.setCustomer(null);
+                subscription.getUsageDetails().clear();
+                subscription.getPhoneNumber().setSubscription(null);
+            }
+            
+            return Response.status(Response.Status.OK).entity(new RetrieveAllCustomerSubscriptionsWithBillsRsp(subscriptions)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();

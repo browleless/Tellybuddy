@@ -3,6 +3,7 @@ package util.email;
 import entity.Bill;
 import entity.Customer;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,8 +39,8 @@ public class EmailManager {
 
         emailBody += "You have a new bill to attend to for Subscription: " + bill.getUsageDetail().getSubscription().getPlan().getName() + " (" + bill.getUsageDetail().getSubscription().getPhoneNumber().getPhoneNumber() + ")\n\n\n";
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy");
-        emailBody += "Billing Cycle: " + formatter.format(bill.getUsageDetail().getStartDate()) + " — " + formatter.format(bill.getUsageDetail().getEndDate()) + "\n\n";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
+        emailBody += "Billing Cycle: " + formatter.format(bill.getUsageDetail().getStartDate()) + " – " + formatter.format(bill.getUsageDetail().getEndDate()) + "\n\n";
 
         emailBody += "SUMMARY\n";
         emailBody += "Standard Plan Price: " + NumberFormat.getCurrencyInstance().format(bill.getPrice()) + "\n";
@@ -53,7 +54,7 @@ public class EmailManager {
         emailBody += "Total Payable Price: " + NumberFormat.getCurrencyInstance().format(bill.getPrice().add(bill.getAddOnPrice()).add(bill.getExceedPenaltyPrice()).subtract(discountPrice)) + "\n\n\n";
 
         emailBody += "BREAKDOWN OF USAGE DETAIL:\n";
-        emailBody += "Data Usage: " + bill.getUsageDetail().getDataUsage().setScale(1) + " / " + ((double) subscriptionTotalAllowedData / 1000) + " (GB)\n";
+        emailBody += "Data Usage: " + bill.getUsageDetail().getDataUsage() + " / " + ((double) subscriptionTotalAllowedData / 1000) + " (GB)\n";
         emailBody += "SMS Usage: " + bill.getUsageDetail().getSmsUsage() + " / " + subscriptionTotalAllowedSms + "\n";
         emailBody += "Talktime Usage: " + bill.getUsageDetail().getTalktimeUsage() + " / " + subscriptionTotalAllowedTalktime + " (min)\n\n\n";
 
