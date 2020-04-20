@@ -116,7 +116,9 @@ public class TransactionResource {
                 }
 
                 if (tli.getProductItem() != null) {
-                    tli.getProductItem().setLuxuryProduct(null);
+                    tli.getProductItem().getLuxuryProduct().setProductItems(null);
+                    tli.getProductItem().getLuxuryProduct().setCategory(null);
+                    tli.getProductItem().getLuxuryProduct().setTags(null);
                 }
 
                 if (tli.getSubscription() != null) {
