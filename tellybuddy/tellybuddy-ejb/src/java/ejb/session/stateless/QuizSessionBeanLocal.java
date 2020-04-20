@@ -6,11 +6,13 @@
 package ejb.session.stateless;
 
 import entity.Customer;
+import entity.FamilyGroup;
 import entity.Quiz;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.CreateNewQuizException;
 import util.exception.DeleteQuizException;
+import util.exception.FamilyGroupNotFoundException;
 import util.exception.QuizNameExistException;
 import util.exception.QuizNotFoundException;
 import util.exception.UpdateQuizException;
@@ -39,5 +41,7 @@ public interface QuizSessionBeanLocal {
     public List<Quiz> retirevePastQuizzes();
 
     public List<Quiz> retrieveAllUnattemptedActiveQuizzes(Customer customer);
+
+    public List<Customer> retrieveQuizUnattemptedFamilyMembers(Quiz quiz, Customer customer) throws FamilyGroupNotFoundException;
 
 }

@@ -41,7 +41,7 @@ public class Transaction implements Serializable {
     
     @Column(nullable = false)
     @NotNull
-    private TransactionStatusEnum transactionStatus;
+    private TransactionStatusEnum transactionStatusEnum;
     
     @Column(nullable = false)
     @NotNull
@@ -69,7 +69,7 @@ public class Transaction implements Serializable {
         this();
         this.totalPrice = totalPrice;
         this.transactionDateTime = transactionDateTime;
-        this.transactionStatus = TransactionStatusEnum.PROCESSING;
+        this.transactionStatusEnum = TransactionStatusEnum.PROCESSING;
         this.transactionLineItems = new ArrayList<TransactionLineItem>();
     }
 
@@ -154,12 +154,12 @@ public class Transaction implements Serializable {
         this.transactionLineItems = transactionLineItems;
     }
 
-    public TransactionStatusEnum getTransactionStatus() {
-        return transactionStatus;
+    public TransactionStatusEnum getTransactionStatusEnum() {
+        return transactionStatusEnum;
     }
 
-    public void setTransactionStatus(TransactionStatusEnum transactionStatus) {
-        this.transactionStatus = transactionStatus;
+    public void setTransactionStatusEnum(TransactionStatusEnum transactionStatusEnum) {
+        this.transactionStatusEnum = transactionStatusEnum;
     }
     
 }

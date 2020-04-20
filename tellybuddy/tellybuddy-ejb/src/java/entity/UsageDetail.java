@@ -32,21 +32,33 @@ public class UsageDetail implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long usageDetailId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 7, scale = 3)
     @NotNull
-    @Min(0)
-    private Integer talktimeUsage;
+//    @Digits(integer = 4, fraction = 3)
+    private BigDecimal talktimeUsage;
 
     @Column(nullable = false)
     @NotNull
     @Min(0)
     private Integer smsUsage;
 
-    @Column(nullable = false, precision = 4, scale = 1)
+    @Column(nullable = false, precision = 7, scale = 3)
     @NotNull
+//    @Digits(integer = 4, fraction = 3)
+    private BigDecimal dataUsage;
+    
+    @Column
+    @Min(0)
+    private Integer allowedTalktimeUsage;
+
+    @Column
+    @Min(0)
+    private Integer allowedSmsUsage;
+
+    @Column(precision = 4, scale = 1)
     @Digits(integer = 3, fraction = 1)
     @DecimalMin("0.0")
-    private BigDecimal dataUsage;
+    private BigDecimal allowedDataUsage;
 
     @Column(nullable = false)
     @NotNull
@@ -69,7 +81,7 @@ public class UsageDetail implements Serializable {
     public UsageDetail() {
         this.dataUsage = BigDecimal.valueOf(0);
         this.smsUsage = 0;
-        this.talktimeUsage = 0;
+        this.talktimeUsage = BigDecimal.valueOf(0);
     }
 
     public UsageDetail(Date startDate, Date endDate) {
@@ -111,11 +123,11 @@ public class UsageDetail implements Serializable {
         return "entity.UsageDetails[ id=" + usageDetailId + " ]";
     }
 
-    public Integer getTalktimeUsage() {
+    public BigDecimal getTalktimeUsage() {
         return talktimeUsage;
     }
 
-    public void setTalktimeUsage(Integer talktimeUsage) {
+    public void setTalktimeUsage(BigDecimal talktimeUsage) {
         this.talktimeUsage = talktimeUsage;
     }
 
@@ -165,6 +177,30 @@ public class UsageDetail implements Serializable {
 
     public void setSubscription(Subscription subscription) {
         this.subscription = subscription;
+    }
+
+    public Integer getAllowedTalktimeUsage() {
+        return allowedTalktimeUsage;
+    }
+
+    public void setAllowedTalktimeUsage(Integer allowedTalktimeUsage) {
+        this.allowedTalktimeUsage = allowedTalktimeUsage;
+    }
+
+    public Integer getAllowedSmsUsage() {
+        return allowedSmsUsage;
+    }
+
+    public void setAllowedSmsUsage(Integer allowedSmsUsage) {
+        this.allowedSmsUsage = allowedSmsUsage;
+    }
+
+    public BigDecimal getAllowedDataUsage() {
+        return allowedDataUsage;
+    }
+
+    public void setAllowedDataUsage(BigDecimal allowedDataUsage) {
+        this.allowedDataUsage = allowedDataUsage;
     }
 
 }

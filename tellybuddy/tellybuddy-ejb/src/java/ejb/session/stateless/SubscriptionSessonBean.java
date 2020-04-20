@@ -184,6 +184,11 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
             // latest usage detail for the month
             UsageDetail currentUsageDetail = subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() - 1);
+            
+            // store latest allowed quota as info will be lost in the next cycle
+            currentUsageDetail.setAllowedDataUsage(BigDecimal.valueOf(subscriptionTotalAllowedData.doubleValue() / 1000));
+            currentUsageDetail.setAllowedSmsUsage(subscriptionTotalAllowedSms);
+            currentUsageDetail.setAllowedTalktimeUsage(subscriptionTotalAllowedTalktime);
 
             BigDecimal totalExceedPenaltyPrice = BigDecimal.ZERO;
 
@@ -197,9 +202,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getSmsUsage() - subscriptionTotalAllowedSms) * 0.05));
             }
 
-            if (currentUsageDetail.getTalktimeUsage() > subscriptionTotalAllowedTalktime) {
+            if (currentUsageDetail.getTalktimeUsage().intValue() > subscriptionTotalAllowedTalktime) {
                 // hardcoded $0.10 per exceeded min
-                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getTalktimeUsage() - subscriptionTotalAllowedTalktime) * 0.10));
+                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getTalktimeUsage().subtract(BigDecimal.valueOf(subscriptionTotalAllowedTalktime)).intValue()) * 0.10));
             }
 
             Integer familyGroupDiscountRate = 0;
@@ -250,6 +255,17 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         } catch (SubscriptionNotFoundException | InputDataValidationException | CustomerNotFoundException | UsageDetailNotFoundException | InterruptedException ex) {
             // won't happen
             ex.printStackTrace();
+        }
+    }
+    
+    @Schedule(second="*/10", minute="*", hour="*")
+    public void incrementUsageDetail() {
+        for(Subscription s: this.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.ACTIVE)){
+            UsageDetail currentUsageDetail = s.getUsageDetails().get(s.getUsageDetails().size() - 1);
+            
+            currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(new BigDecimal(0.015)));
+            currentUsageDetail.setSmsUsage(currentUsageDetail.getSmsUsage());
+            currentUsageDetail.setTalktimeUsage(currentUsageDetail.getTalktimeUsage().add(new BigDecimal(0.010)));
         }
     }
 
@@ -322,9 +338,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     @Override
     public Subscription allocateAddOnUnitsForCurrentMonth(Subscription subscription, Integer dataunits, Integer smsUnits, Integer talktimeUnits) throws SubscriptionNotFoundException, InputDataValidationException {
         Subscription subscriptionToAmend = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
-        subscriptionToAmend.getDataUnits().put("addOn", dataunits);
-        subscriptionToAmend.getSmsUnits().put("addOn", smsUnits);
-        subscriptionToAmend.getTalkTimeUnits().put("addOn", talktimeUnits);
+        subscriptionToAmend.getDataUnits().put("addOn", dataunits + subscriptionToAmend.getDataUnits().get("addOn"));
+        subscriptionToAmend.getSmsUnits().put("addOn", smsUnits + subscriptionToAmend.getSmsUnits().get("addOn"));
+        subscriptionToAmend.getTalkTimeUnits().put("addOn", talktimeUnits + subscriptionToAmend.getTalkTimeUnits().get("addOn"));
         return subscriptionToAmend;
     }
 

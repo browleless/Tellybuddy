@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.Bill;
 import entity.Customer;
+import entity.Subscription;
 import entity.UsageDetail;
 import java.util.List;
 import javax.ejb.Local;
@@ -26,5 +27,11 @@ public interface BillSessionBeanLocal {
     public Bill createNewBill(Bill newBill, UsageDetail usageDetail, Customer customer) throws CustomerNotFoundException, UsageDetailNotFoundException;
 
     public List<Bill> retrieveBillByCustomer(Customer customer);
+
+    public List<Bill> retrieveBillsBySubscription(Subscription subscription);
+
+    public List<Bill> retrieveCustomerOutstandingBills(Customer customer);
+
+    public List<Bill> retrieveSubscriptionOutstandingBills(Subscription subscription);
     
 }

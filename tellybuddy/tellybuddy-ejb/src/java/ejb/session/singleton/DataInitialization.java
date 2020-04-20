@@ -50,6 +50,7 @@ import javax.persistence.PersistenceContext;
 import util.enumeration.AccessRightEnum;
 import util.enumeration.AnnouncementRecipientEnum;
 import util.enumeration.SubscriptionStatusEnum;
+import util.enumeration.TransactionStatusEnum;
 import util.exception.CreateNewSubscriptionException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerNotYetApproved;
@@ -121,9 +122,7 @@ public class DataInitialization {
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 1l, 1l);
                 subscription.setIsActive(true);
                 subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.TERMINATING);
-                
-                
-                
+
                 UsageDetail u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
                 subscription.getUsageDetails().add(u1);
                 u1.setSubscription(subscription);
@@ -136,7 +135,6 @@ public class DataInitialization {
                 u2.setBill(null);
                 em.persist(u2);
                 em.flush();
-                
 
                 subscription = new Subscription(20, 5, 5);
                 cal = Calendar.getInstance();
@@ -144,8 +142,7 @@ public class DataInitialization {
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 2l, 2l);
                 subscription.setIsActive(true);
-                
-                
+
                 u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
                 subscription.getUsageDetails().add(u1);
                 u1.setSubscription(subscription);
@@ -177,7 +174,6 @@ public class DataInitialization {
                 u2.setBill(null);
                 em.persist(u2);
                 em.flush();
-                
 
                 subscription = new Subscription(15, 5, 10);
                 cal = Calendar.getInstance();
@@ -246,6 +242,7 @@ public class DataInitialization {
             em.flush();
 
             Transaction testTransaction = new Transaction(new BigDecimal("12.12"), new Date());
+            testTransaction.setTransactionStatusEnum(TransactionStatusEnum.REFUNDED);
             testTransaction.setCustomer(customer1);
             testTransaction.setPayment(payment);
             em.persist(testTransaction);
@@ -269,45 +266,46 @@ public class DataInitialization {
     private void createCustomers() {
         Calendar timeNow = Calendar.getInstance();
         timeNow.add(Calendar.MONTH, -2);
-        Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "This is my address", "428198", "marktan@gmail.com", "S9709388A", "./nricPhoto.jpg", timeNow.getTime(), "mt.jpg");
-        //customer.setIsApproved(true);
+
+        Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "marktan@gmail.com", "S9702228A", "./nricPhoto.jpg", timeNow.getTime(), "mt.jpg");
+
         em.persist(customer);
         em.flush();
 
-        customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "This is my address", "428198", "tayjl@gmail.com", "S9941179A", null, timeNow.getTime(), "tayjl.jpg");
+        customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tayjl@gmail.com", "S9941179A", null, timeNow.getTime(), "tayjl.jpg");
         em.persist(customer);
         //customer.setIsApproved(true);
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer3", "password2", "Jing Wen", "Ng", Integer.valueOf(20), "This is my address", "117417", "ngJW@gmail.com", "S9841379A", null, timeNow.getTime(), "jw.jpg");
+        customer = new Customer("customer3", "password3", "Jing Wen", "Ng", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ngJW@gmail.com", "S9841379A", null, timeNow.getTime(), "jw.jpg");
         em.persist(customer);
         em.flush();
 
-        customer = new Customer("customer4", "password4", "Kai Xin", "Zhu", Integer.valueOf(20), "This is my address", "117417", "kathareverusa@gmail.com", "S9641179A", null, timeNow.getTime(), "kx.jpg");
+        customer = new Customer("customer4", "password4", "Kai Xin", "Zhu", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "kathareverusa@gmail.com", "S9641179A", null, timeNow.getTime(), "kx.jpg");
         em.persist(customer);
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk@gmail.com", "S4041179A", null, timeNow.getTime(), "tanwk.jpg");
-       // customer.setIsApproved(true);
+
+        customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tanwk@gmail.com", "S4041179A", null, timeNow.getTime(), "tanwk.jpg");
+        // customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
 
-        customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "This is my address", "117417", "ethank@gmail.com", "S4041889A", null, timeNow.getTime(), "ethan.jpg");
-       // customer.setIsApproved(true);
+        customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ethank@gmail.com", "S4041889A", null, timeNow.getTime(), "ethan.jpg");
+        // customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
-        
+
         timeNow.add(Calendar.MONTH, 1);
         customer = new Customer("customer7", "password7", "WK wife", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk2@gmail.com", "S4041178A", null, timeNow.getTime(), null);
+
         em.persist(customer);
         em.flush();
         customer = new Customer("customer8", "password8", "WK son", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk3@gmail.com", "S4041177A", null, timeNow.getTime(), null);
         em.persist(customer);
         em.flush();
-        
-        
 
     }
 
