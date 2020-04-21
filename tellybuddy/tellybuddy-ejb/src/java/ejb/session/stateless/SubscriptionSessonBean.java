@@ -12,6 +12,7 @@ import entity.Plan;
 import entity.Subscription;
 import entity.UsageDetail;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -189,22 +190,22 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             currentUsageDetail.setAllowedDataUsage(BigDecimal.valueOf(subscriptionTotalAllowedData.doubleValue() / 1000));
             currentUsageDetail.setAllowedSmsUsage(subscriptionTotalAllowedSms);
             currentUsageDetail.setAllowedTalktimeUsage(subscriptionTotalAllowedTalktime);
-
+            
             BigDecimal totalExceedPenaltyPrice = BigDecimal.ZERO;
 
             if (currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() > subscriptionTotalAllowedData) {
                 // hardcoded $3.50 per exceeded gb, int division on purpose
-                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf(Math.ceil((double) (currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() - subscriptionTotalAllowedData) / 1000) * 3.50));
+                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf(Math.ceil((double) (currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() - subscriptionTotalAllowedData) / 1000)).multiply(BigDecimal.valueOf(3.5)));
             }
 
             if (currentUsageDetail.getSmsUsage() > subscriptionTotalAllowedSms) {
                 // hardcoded $0.05 per exceeded SMS
-                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getSmsUsage() - subscriptionTotalAllowedSms) * 0.05));
+                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf(currentUsageDetail.getSmsUsage() - subscriptionTotalAllowedSms).multiply(BigDecimal.valueOf(0.05)));
             }
 
-            if (currentUsageDetail.getTalktimeUsage().intValue() > subscriptionTotalAllowedTalktime) {
+            if (currentUsageDetail.getTalktimeUsage().setScale(0, RoundingMode.CEILING).intValue() > subscriptionTotalAllowedTalktime) {
                 // hardcoded $0.10 per exceeded min
-                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(BigDecimal.valueOf((currentUsageDetail.getTalktimeUsage().subtract(BigDecimal.valueOf(subscriptionTotalAllowedTalktime)).intValue()) * 0.10));
+                totalExceedPenaltyPrice = totalExceedPenaltyPrice.add(currentUsageDetail.getTalktimeUsage().setScale(0, RoundingMode.CEILING).subtract(BigDecimal.valueOf(subscriptionTotalAllowedTalktime)).multiply(BigDecimal.valueOf(0.1)));
             }
 
             Integer familyGroupDiscountRate = 0;
@@ -263,9 +264,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         for(Subscription s: this.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.ACTIVE)){
             UsageDetail currentUsageDetail = s.getUsageDetails().get(s.getUsageDetails().size() - 1);
             
-            currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(new BigDecimal(0.015)));
+            currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(BigDecimal.valueOf(0.015)));
             currentUsageDetail.setSmsUsage(currentUsageDetail.getSmsUsage());
-            currentUsageDetail.setTalktimeUsage(currentUsageDetail.getTalktimeUsage().add(new BigDecimal(0.010)));
+            currentUsageDetail.setTalktimeUsage(currentUsageDetail.getTalktimeUsage().add(BigDecimal.valueOf(0.010)));
         }
     }
 
@@ -378,12 +379,23 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         q.setParameter("inCustomer", customer);
         return q.getResultList();
     }
+
     @Override
     public List<Subscription> retrieveAllActiveSubscriptionUnderCustomer(Customer customer){
          Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer AND s.isActive = TRUE ");
         q.setParameter("inCustomer", customer);
         return q.getResultList();
     }
+
+    
+    @Override
+    public List<Subscription> retrieveAllSubscriptionsWithBillsUnderCustomer(Customer customer) {
+        Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer AND EXISTS (SELECT b FROM Bill b WHERE b.usageDetail.subscription = s)");
+        q.setParameter("inCustomer", customer);
+        return q.getResultList();
+    }
+
+
     @Override
     public List<Subscription> retrieveAllSubscriptions() {
         Query q = em.createQuery("SELECT s FROM Subscription s");

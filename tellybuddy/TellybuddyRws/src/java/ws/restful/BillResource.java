@@ -100,7 +100,8 @@ public class BillResource {
 
             for (Bill bill : bills) {
                 bill.setCustomer(null);
-                bill.setUsageDetail(null);
+                bill.getUsageDetail().setBill(null);
+                bill.getUsageDetail().setSubscription(null);
             }
 
             return Response.status(Status.OK).entity(new RetrieveSubscriptionBillsRsp(bills)).build();
