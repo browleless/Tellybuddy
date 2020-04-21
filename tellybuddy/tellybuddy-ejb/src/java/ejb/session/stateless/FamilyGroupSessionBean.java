@@ -170,15 +170,17 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
             FamilyGroupNotFoundException {
 
         try {
+            
             FamilyGroup familyGroupToUpdate = retrieveFamilyGroupByFamilyGroupId(fg.getFamilyGroupId());
             Customer familyMemberToDelete = customerSessionBeanLocal.retrieveCustomerByCustomerId(familyMember.getCustomerId());
 
             //check if the customer belongs to the family group
             if (familyGroupToUpdate.getCustomers().contains(familyMemberToDelete)) {
+                familyGroupToUpdate.setNumberOfMembers(familyGroupToUpdate.getNumberOfMembers() - 1);
                 familyGroupToUpdate.getCustomers().remove(familyMemberToDelete);
                 familyMemberToDelete.setFamilyGroup(null);
 
-                familyGroupToUpdate.setNumberOfMembers(familyGroupToUpdate.getNumberOfMembers() - 1);
+              
                 familyGroupToUpdate.setDiscountRate(familyGroupToUpdate.getDiscountRate() - 5);
 
                 //check if family group only has 1 member, auto delete the family group

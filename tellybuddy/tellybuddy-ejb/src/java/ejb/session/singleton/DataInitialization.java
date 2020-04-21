@@ -226,6 +226,7 @@ public class DataInitialization {
             em.flush();
             FamilyGroup fg2 = new FamilyGroup("I lOVE NUS");
             fg2.getCustomers().add(customer3);
+            customer3.setOwnerOfFamilyGroup(true);
             fg2.getCustomers().add(customer4);
             //fg2.getCustomers().add(customer5);
             //  fg2.getCustomers().add(customer6);
