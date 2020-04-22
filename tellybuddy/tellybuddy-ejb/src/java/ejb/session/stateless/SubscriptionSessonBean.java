@@ -150,7 +150,14 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         subscriptionToApprove.setIsActive(Boolean.TRUE);
 
         subscriptionToApprove.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
-        subscriptionToApprove.setSubscriptionStartDate(Calendar.getInstance().getTime());
+        Calendar now = Calendar.getInstance();
+        subscriptionToApprove.setSubscriptionStartDate(now.getTime());
+        
+        if (subscriptionToApprove.getIsContract()) {
+            now.add(Calendar.YEAR, 2);
+            Date end = now.getTime();
+            subscriptionToApprove.setSubscriptionEndDate(end);
+        }
         usageDetailSessionBeanLocal.createNewUsageDetail(subscriptionToApprove);
 
         Date dateInAMonthsTime = new Date();

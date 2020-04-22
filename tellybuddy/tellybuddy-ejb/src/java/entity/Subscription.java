@@ -76,9 +76,13 @@ public class Subscription implements Serializable {
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
     private PhoneNumber phoneNumber;
+    
+    @Column(nullable = false) 
+    private Boolean isContract;
 
     public Subscription() {
         this.isActive = false;
+        this.isContract = false;
         this.usageDetails = new ArrayList<>();
         this.dataUnits = new HashMap<>();
         this.smsUnits = new HashMap<>();
@@ -101,11 +105,12 @@ public class Subscription implements Serializable {
         this.talkTimeUnits.put("quizExtraUnits", 0);
     }
 
-    public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits) {
+    public Subscription(Integer allocatedDataUnits, Integer allocatedTalktimeUnits, Integer allocatedSmsUnits, Boolean isContract) {
         this();
         this.dataUnits.put("allocated", allocatedDataUnits);
         this.smsUnits.put("allocated", allocatedSmsUnits);
         this.talkTimeUnits.put("allocated", allocatedTalktimeUnits);
+        this.isContract = isContract;
     }
 
     public Long getSubscriptionId() {
@@ -251,5 +256,19 @@ public class Subscription implements Serializable {
 
     public void setSubscriptionStatusEnum(SubscriptionStatusEnum subscriptionStatusEnum) {
         this.subscriptionStatusEnum = subscriptionStatusEnum;
+    }
+
+    /**
+     * @return the isContract
+     */
+    public Boolean getIsContract() {
+        return isContract;
+    }
+
+    /**
+     * @param isContract the isContract to set
+     */
+    public void setIsContract(Boolean isContract) {
+        this.isContract = isContract;
     }
 }

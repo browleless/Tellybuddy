@@ -12,6 +12,7 @@ import entity.ProductItem;
 import entity.Subscription;
 import entity.Transaction;
 import entity.TransactionLineItem;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -103,8 +104,8 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
                 }
 
                 for (TransactionLineItem transactionLineItemToAdd : transactionLineItemsToAdd) {
-                    if (transactionLineItemToAdd.getProductItem() != null || transactionLineItemToAdd.getProduct() != null) {
-                        if (transactionLineItemToAdd.getProductItem() != null) { //luxury product
+                    if (((transactionLineItemToAdd.getProductItem() != null) && (transactionLineItemToAdd.getPrice().compareTo(BigDecimal.valueOf(500.0)) == 1) ) || transactionLineItemToAdd.getProduct() != null) {
+                        if (transactionLineItemToAdd.getProductItem() != null && (transactionLineItemToAdd.getPrice().compareTo(BigDecimal.valueOf(500.0)) == 1)) { //luxury product
                             System.out.println("ENTERED HERE**********");
                             //System.out.println("ENTERED HERE**********: " + transactionLineItemToAdd.getProduct().getProductId());
                             System.out.println("entered: " + transactionLineItemToAdd.getProductItem().getLuxuryProduct().getProductId());
@@ -115,6 +116,7 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
 
                             transactionLineItemToAdd.setTransaction(newTransaction);
                             transactionLineItemToAdd.setProductItem(null);
+                            transactionLineItemToAdd.setSubscription(null);
 
                             em.persist(transactionLineItemToAdd);
                             em.flush();
@@ -132,12 +134,13 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
                         }
                     } else {
                         Subscription subscription = transactionLineItemToAdd.getSubscription();
-                        Subscription newSubscription = new Subscription(subscription.getAllocatedData(), subscription.getAllocatedTalkTime(), subscription.getAllocatedSms());
+                        Subscription newSubscription = new Subscription(subscription.getAllocatedData(), subscription.getAllocatedTalkTime(), subscription.getAllocatedSms(), subscription.getIsContract());
 
                         newSubscription = subscriptionSessonBeanLocal.createNewSubscription(newSubscription, subscription.getPlan().getPlanId(), subscription.getCustomer().getCustomerId(), subscription.getPhoneNumber().getPhoneNumberId());
 
                         transactionLineItemToAdd.setTransaction(newTransaction);
                         transactionLineItemToAdd.setSubscription(null);
+                        transactionLineItemToAdd.setProductItem(null);
 
                         em.persist(transactionLineItemToAdd);
                         em.flush();

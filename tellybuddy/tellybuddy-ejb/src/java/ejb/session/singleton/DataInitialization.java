@@ -113,26 +113,26 @@ public class DataInitialization {
             em.persist(newPlan);
             em.flush();
             try {
-                Subscription subscription = new Subscription(10, 10, 10);
+                Subscription subscription = new Subscription(10, 10, 10, false);
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -2);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 1l, 1l);
                 subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.TERMINATING);
 
-                subscription = new Subscription(20, 5, 5);
+                subscription = new Subscription(20, 5, 5, false);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -2);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 2l, 2l);
 
-                subscription = new Subscription(30, 0, 0);
+                subscription = new Subscription(30, 0, 0, false);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -1);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 2l, 3l);
 
-                subscription = new Subscription(15, 5, 10);
+                subscription = new Subscription(15, 5, 10, false);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -1);
                 subscription.setSubscriptionStartDate(cal.getTime());
