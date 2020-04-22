@@ -4,6 +4,8 @@ import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.EmailSessionBeanLocal;
 import entity.Customer;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -25,6 +27,7 @@ import ws.datamodel.CreateCustomerReq;
 import ws.datamodel.CreateCustomerRsp;
 import ws.datamodel.CustomerLoginRsp;
 import ws.datamodel.ErrorRsp;
+import ws.datamodel.RetrieveCurrentCustomerRsp;
 import ws.datamodel.RetrieveCustomerFromFamilyGroupIdRsp;
 import ws.datamodel.RetrieveCustomerRsp;
 import ws.datamodel.UpdateCustomerDetailsForCustomerReq;
@@ -234,6 +237,31 @@ public class CustomerResource {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
         }catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("retrieveCurrentCustomer")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveCurrentCustomer(@QueryParam("username")String username, @QueryParam("password") String password){
+        try{
+            Customer customer = customerSessionBeanLocal.customerLogin(username, password);
+            System.out.println("********** CustomerResource.retrieveCustomerByUsername(): Customer " + customer.getUsername() + " login remotely via web service");
+            customer.setPassword(null);
+            customer.setSalt(null);
+            customer.getBills().clear();
+            customer.getQuizAttempts().clear();
+            customer.getSubscriptions().clear();
+            customer.getTransactions().clear();
+            customer.setFamilyGroup(null);
+            return Response.status(Response.Status.OK).entity(new RetrieveCurrentCustomerRsp(customer)).build();
+        }catch(InvalidLoginCredentialException ex){
+           ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build(); 
+        } catch (Exception ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }

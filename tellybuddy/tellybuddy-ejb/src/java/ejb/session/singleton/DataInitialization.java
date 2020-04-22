@@ -28,6 +28,7 @@ import entity.ProductItem;
 import entity.Tag;
 import entity.Transaction;
 import entity.TransactionLineItem;
+import entity.UsageDetail;
 import java.math.BigDecimal;
 
 import java.text.ParseException;
@@ -51,6 +52,7 @@ import util.enumeration.AnnouncementRecipientEnum;
 import util.enumeration.SubscriptionStatusEnum;
 import util.enumeration.TransactionStatusEnum;
 import util.exception.CreateNewSubscriptionException;
+import util.exception.CustomerNotFoundException;
 import util.exception.CustomerNotYetApproved;
 import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
@@ -118,19 +120,61 @@ public class DataInitialization {
                 cal.add(Calendar.MONTH, -2);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 1l, 1l);
+                subscription.setIsActive(true);
                 subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.TERMINATING);
+
+
+                UsageDetail u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
+                subscription.getUsageDetails().add(u1);
+                u1.setSubscription(subscription);
+                u1.setBill(null);
+                em.persist(u1);
+                em.flush();
+                UsageDetail u2 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/03/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/04/2020"));
+                subscription.getUsageDetails().add(u2);
+                u2.setSubscription(subscription);
+                u2.setBill(null);
+                em.persist(u2);
+                em.flush();
 
                 subscription = new Subscription(20, 5, 5, false);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -2);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 2l, 2l);
+                subscription.setIsActive(true);
+
+                u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
+                subscription.getUsageDetails().add(u1);
+                u1.setSubscription(subscription);
+                u1.setBill(null);
+                em.persist(u1);
+                em.flush();
+                u2 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/03/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/04/2020"));
+                subscription.getUsageDetails().add(u2);
+                u2.setSubscription(subscription);
+                u2.setBill(null);
+                em.persist(u2);
+                em.flush();
 
                 subscription = new Subscription(30, 0, 0, false);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -1);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 2l, 3l);
+                subscription.setIsActive(true);
+                u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
+                subscription.getUsageDetails().add(u1);
+                u1.setSubscription(subscription);
+                u1.setBill(null);
+                em.persist(u1);
+                em.flush();
+                u2 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/03/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/04/2020"));
+                subscription.getUsageDetails().add(u2);
+                u2.setSubscription(subscription);
+                u2.setBill(null);
+                em.persist(u2);
+                em.flush();
 
                 subscription = new Subscription(15, 5, 10, false);
                 cal = Calendar.getInstance();
@@ -175,6 +219,7 @@ public class DataInitialization {
 
             FamilyGroup fg1 = new FamilyGroup("IS3106 Warriors");
             fg1.getCustomers().add(customer1);
+            customer1.setOwnerOfFamilyGroup(true);
             fg1.getCustomers().add(customer2);
             customer1.setFamilyGroup(fg1);
             customer2.setFamilyGroup(fg1);
@@ -182,13 +227,14 @@ public class DataInitialization {
             em.flush();
             FamilyGroup fg2 = new FamilyGroup("I lOVE NUS");
             fg2.getCustomers().add(customer3);
+            customer3.setOwnerOfFamilyGroup(true);
             fg2.getCustomers().add(customer4);
-            fg2.getCustomers().add(customer5);
-            fg2.getCustomers().add(customer6);
+            //fg2.getCustomers().add(customer5);
+            //  fg2.getCustomers().add(customer6);
             customer3.setFamilyGroup(fg2);
             customer4.setFamilyGroup(fg2);
-            customer5.setFamilyGroup(fg2);
-            customer6.setFamilyGroup(fg2);
+            //   customer5.setFamilyGroup(fg2);
+            //    customer6.setFamilyGroup(fg2);
             em.persist(fg2);
             em.flush();
             initialiseProducts();
@@ -222,12 +268,15 @@ public class DataInitialization {
     private void createCustomers() {
         Calendar timeNow = Calendar.getInstance();
         timeNow.add(Calendar.MONTH, -2);
+
         Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "marktan@gmail.com", "S9702228A", "./nricPhoto.jpg", timeNow.getTime(), "mt.jpg");
+
         em.persist(customer);
         em.flush();
 
         customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tayjl@gmail.com", "S9941179A", null, timeNow.getTime(), "tayjl.jpg");
         em.persist(customer);
+        //customer.setIsApproved(true);
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
@@ -240,10 +289,23 @@ public class DataInitialization {
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
+
         customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tanwk@gmail.com", "S4041179A", null, timeNow.getTime(), "tanwk.jpg");
+        // customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
+
         customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ethank@gmail.com", "S4041889A", null, timeNow.getTime(), "ethan.jpg");
+        // customer.setIsApproved(true);
+        em.persist(customer);
+        em.flush();
+
+        timeNow.add(Calendar.MONTH, 1);
+        customer = new Customer("customer7", "password7", "WK wife", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk2@gmail.com", "S4041178A", null, timeNow.getTime(), null);
+
+        em.persist(customer);
+        em.flush();
+        customer = new Customer("customer8", "password8", "WK son", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk3@gmail.com", "S4041177A", null, timeNow.getTime(), null);
         em.persist(customer);
         em.flush();
 
@@ -633,7 +695,7 @@ public class DataInitialization {
         em.flush();
         tagT = popular.getProducts();
         tagT.add(carMount);
-        
+
         //product 12
         Product leatherCover = new Product("SKU012", "Samsung Flip Z Leather Phone Cover", "Samsung Flip Z Leather Phone Cover (Gret)", BigDecimal.valueOf(49.0), 40, 20, "leatherCover.jpg");
         leatherCover.setCategory(phoneAccessories);

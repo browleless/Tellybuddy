@@ -181,6 +181,8 @@ public class Customer implements Serializable {
 
     @ManyToOne
     private FamilyGroup familyGroup;
+    
+    private Boolean ownerOfFamilyGroup;
 
     public Customer() {
         this.salt = CryptographicHelper.getInstance().generateRandomString(32);
@@ -193,6 +195,7 @@ public class Customer implements Serializable {
         this.transactions = new ArrayList<>();
         this.announcements = new ArrayList<>();
         this.isApproved = false;
+        this.ownerOfFamilyGroup = false;
     }
 
     public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String email, String newNric, String newNricImagePath, Date joinDate, String profilePhoto) {
@@ -238,6 +241,14 @@ public class Customer implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public Boolean getOwnerOfFamilyGroup() {
+        return ownerOfFamilyGroup;
+    }
+
+    public void setOwnerOfFamilyGroup(Boolean ownerOfFamilyGroup) {
+        this.ownerOfFamilyGroup = ownerOfFamilyGroup;
     }
 
     @Override

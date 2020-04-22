@@ -144,6 +144,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
     }
 
+    @Override
     public void approveSubsriptionRequest(Subscription subscription) throws SubscriptionNotFoundException {
 
         Subscription subscriptionToApprove = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
@@ -385,6 +386,14 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         q.setParameter("inCustomer", customer);
         return q.getResultList();
     }
+
+    @Override
+    public List<Subscription> retrieveAllActiveSubscriptionUnderCustomer(Customer customer){
+         Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer AND s.isActive = TRUE ");
+        q.setParameter("inCustomer", customer);
+        return q.getResultList();
+    }
+
     
     @Override
     public List<Subscription> retrieveAllSubscriptionsWithBillsUnderCustomer(Customer customer) {
@@ -392,6 +401,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         q.setParameter("inCustomer", customer);
         return q.getResultList();
     }
+
 
     @Override
     public List<Subscription> retrieveAllSubscriptions() {

@@ -281,7 +281,7 @@ public class FamilyGroupResource {
         }
     }
 
-    @Path("{familyGroupId}")
+    @Path("deleteFamilyGroup/{familyGroupId}")
     @DELETE
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)

@@ -68,7 +68,7 @@ public class UsageDetail implements Serializable {
     @Column(nullable = false)
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    @Future
+   // @Future
     private Date endDate;
     
     @OneToOne(mappedBy = "usageDetail")
