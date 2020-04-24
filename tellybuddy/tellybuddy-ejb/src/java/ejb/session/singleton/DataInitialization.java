@@ -488,7 +488,7 @@ public class DataInitialization {
         }
 
         //product 4
-        Product iphoneXScover = new Product("SKU004", "iPhone XS WeBareBear Case", "iPhone XS case", BigDecimal.valueOf(15.0), 10, 50, "iphoneXSwbbcase.jpg");
+        Product iphoneXScover = new Product("SKU004", "iPhone XS Case", "iPhone XS WeBareBear case", BigDecimal.valueOf(15.0), 10, 50, "iphoneXSwbbcase.jpg");
         iphoneXScover.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(iphoneXScover);
@@ -647,7 +647,7 @@ public class DataInitialization {
         }
 
         //product 10
-        LuxuryProduct galaxyNote10 = new LuxuryProduct("0000000010", "SKU010", "Galaxy Note 10+", "Galaxy Note 10+ (Black)", BigDecimal.valueOf(888.0), 20, 20, "galaxyNote10+.jpg");
+        LuxuryProduct galaxyNote10 = new LuxuryProduct("0000000010", "SKU010", "Galaxy Note 10+", "Galaxy Note 10+ (Black)", BigDecimal.valueOf(888.0), 20, 20, "galaxyNote10.jpg");
         galaxyNote10.setCategory(android);
         tags = new ArrayList<>();
         products = android.getProducts();
@@ -697,7 +697,7 @@ public class DataInitialization {
         tagT.add(carMount);
 
         //product 12
-        Product leatherCover = new Product("SKU012", "Samsung Flip Z Leather Phone Cover", "Samsung Flip Z Leather Phone Cover (Gret)", BigDecimal.valueOf(49.0), 40, 20, "leatherCover.jpg");
+        Product leatherCover = new Product("SKU012", "Samsung Flip Z Case", "Samsung Flip Z Leather Phone Cover (Grey)", BigDecimal.valueOf(49.0), 40, 20, "leatherCover.jpg");
         leatherCover.setCategory(phoneAccessories);
         products = phoneAccessories.getProducts();
         products.add(leatherCover);

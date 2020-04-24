@@ -5,6 +5,7 @@ import ejb.session.stateless.ProductSessionBeanLocal;
 import entity.LuxuryProduct;
 import entity.Product;
 import entity.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
@@ -13,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import util.exception.ProductNotFoundException;
@@ -75,7 +77,7 @@ public class ProductResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("retrieveAllNormalProducts")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -107,7 +109,7 @@ public class ProductResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("retrieveAllLuxuryProducts")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -139,7 +141,7 @@ public class ProductResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("retrieveAllDiscountedProducts")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -198,6 +200,168 @@ public class ProductResource {
         } catch (ProductNotFoundException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+
+    @Path("searchProductsByName")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchProductsByName(@QueryParam("searchString") String searchString) {
+        try {
+            List<Product> products = productSessionBeanLocal.searchProductsByName(searchString);
+
+            for (Product p : products) {
+                if (p.getCategory().getParentCategory() != null) {
+                    p.getCategory().getParentCategory().getSubCategories().clear();
+                }
+
+                p.getCategory().getProducts().clear();
+
+                for (Tag tag : p.getTags()) {
+                    tag.getProducts().clear();
+                }
+
+                if (p instanceof LuxuryProduct) {
+                    ((LuxuryProduct) p).getProductItems().clear();
+                }
+            }
+            return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(products)).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("filterProductsByCategory/{categoryId}")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response filterProductsByCategory(@PathParam("categoryId") Long categoryId) {
+        try {
+            List<Product> products = productSessionBeanLocal.filterProductsByCategory(categoryId);
+            
+            for (Product p : products) {
+                if (p.getCategory().getParentCategory() != null) {
+                    p.getCategory().getParentCategory().getSubCategories().clear();
+                }
+
+                p.getCategory().getProducts().clear();
+
+                for (Tag tag : p.getTags()) {
+                    tag.getProducts().clear();
+                }
+
+                if (p instanceof LuxuryProduct) {
+                    ((LuxuryProduct) p).getProductItems().clear();
+                }
+            }
+            System.out.println("restful: " + products.size());
+            return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(products)).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("filterProductsByTags")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response filterProductsByTags(@QueryParam("tagIds") List<Long> tagIds, @QueryParam("condition") String condition) {
+        try {
+            List<Product> products = productSessionBeanLocal.filterProductsByTags(tagIds, condition);
+
+            for (Product p : products) {
+                if (p.getCategory().getParentCategory() != null) {
+                    p.getCategory().getParentCategory().getSubCategories().clear();
+                }
+
+                p.getCategory().getProducts().clear();
+
+                for (Tag tag : p.getTags()) {
+                    tag.getProducts().clear();
+                }
+
+                if (p instanceof LuxuryProduct) {
+                    ((LuxuryProduct) p).getProductItems().clear();
+                }
+            }
+            return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(products)).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("retrieveAllDiscountedNormalProducts")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveAllDiscountedNormalProducts() {
+
+        try {
+            List<Product> discounted = productSessionBeanLocal.retrieveAllDiscountedProducts();
+            List<Product> discountedNormal = new ArrayList<>();
+
+            for (Product p : discounted) {
+                if (p.getCategory().getParentCategory() != null) {
+                    p.getCategory().getParentCategory().getSubCategories().clear();
+                }
+
+                p.getCategory().getProducts().clear();
+
+                for (Tag tag : p.getTags()) {
+                    tag.getProducts().clear();
+                }
+
+                if (p instanceof LuxuryProduct) {
+                    ((LuxuryProduct) p).getProductItems().clear();
+                } else {
+                    discountedNormal.add(p);
+                }
+            }
+
+            return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(discountedNormal)).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("retrieveAllDiscountedLuxuryProducts")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveAllDiscountedLuxuryProducts() {
+
+        try {
+            List<Product> discounted = productSessionBeanLocal.retrieveAllDiscountedProducts();
+            List<Product> discountedLuxury = new ArrayList<>();
+
+            for (Product p : discounted) {
+                if (p.getCategory().getParentCategory() != null) {
+                    p.getCategory().getParentCategory().getSubCategories().clear();
+                }
+
+                p.getCategory().getProducts().clear();
+
+                for (Tag tag : p.getTags()) {
+                    tag.getProducts().clear();
+                }
+
+                if (p instanceof LuxuryProduct) {
+                    ((LuxuryProduct) p).getProductItems().clear();
+                    discountedLuxury.add(p);
+                } 
+            }
+            System.out.println("size " + discountedLuxury.size());
+            System.out.println("name " + discountedLuxury.get(0).getName());
+
+            return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(discountedLuxury)).build();
         } catch (Exception ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();

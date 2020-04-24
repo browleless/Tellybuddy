@@ -229,6 +229,8 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
     
     @Override
     public List<Product> filterProductsByCategory(Long categoryId) throws CategoryNotFoundException {
+        System.out.println("entered here");
+        System.out.println("id: " + categoryId);
         List<Product> products = new ArrayList<>();
         Category category = categorySessionBeanLocal.retrieveCategoryByCategoryId(categoryId);
         
@@ -252,6 +254,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
             }
         });
         
+        System.out.println("num of products: " + products.size());
         return products;
     }
 
