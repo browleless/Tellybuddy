@@ -15,6 +15,7 @@ import entity.Customer;
 import entity.Employee;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.primefaces.model.charts.bar.BarChartDataSet;
 import org.primefaces.model.charts.bar.BarChartModel;
 import org.primefaces.model.charts.bar.BarChartOptions;
 import org.primefaces.model.charts.line.LineChartDataSet;
+import org.primefaces.model.charts.line.LineChartOptions;
 import org.primefaces.model.charts.optionconfig.legend.Legend;
 import org.primefaces.model.charts.optionconfig.legend.LegendLabel;
 import org.primefaces.model.charts.optionconfig.title.Title;
@@ -130,39 +132,47 @@ public class DashboardManagedBean implements Serializable {
         return subscriptionSessonBeanLocal.retrieveAllPendingSubscriptions().size();
     }
 
-    public BigDecimal retrieveMonthlyTransactions() {
+    public int retrieveMonthlyTransactions() {
+        return transactionSessionBeanLocal.retrieveAllMonthlyTransactions().size();
+    }
+
+    public BigDecimal retrieveMonthlySales() {
         return transactionSessionBeanLocal.retrieveAllMonthlyTransactions().stream().map(x -> x.getTotalPrice()).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public void createLineModel() {
+        LocalDate currentDate = LocalDate.now();
+
         ChartData data = new ChartData();
         this.subscriptionGrowthModel = new LineChartModel();
         LineChartDataSet dataSet = new LineChartDataSet();
         List<Number> values = new ArrayList<>();
-        values.add(65);
-        values.add(59);
-        values.add(80);
-        values.add(81);
-        values.add(56);
-        values.add(55);
-        values.add(40);
+        List<String> labels = new ArrayList<>();
+
+        for (int i = 6; i >= 0; i--) {
+            values.add(subscriptionSessonBeanLocal.retrieveActiveSubscriptionsByMonthAndYear(String.format("%02d", currentDate.minusMonths(i).getMonth().getValue()), Integer.toString(currentDate.minusMonths(i).getYear())).size());
+            labels.add(currentDate.minusMonths(i).getMonth().toString());
+        }
+
         dataSet.setData(values);
         dataSet.setFill(false);
         dataSet.setLabel("Subscription Growth");
         dataSet.setBorderColor("rgb(75, 192, 192)");
         dataSet.setLineTension(0.1);
-        data.addChartDataSet(dataSet);
 
-        List<String> labels = new ArrayList<>();
-        LocalDate currentDate = LocalDate.now();
-        labels.add(currentDate.minusMonths(6).getMonth().toString());
-        labels.add(currentDate.minusMonths(5).getMonth().toString());
-        labels.add(currentDate.minusMonths(4).getMonth().toString());
-        labels.add(currentDate.minusMonths(3).getMonth().toString());
-        labels.add(currentDate.minusMonths(2).getMonth().toString());
-        labels.add(currentDate.minusMonths(1).getMonth().toString());
-        labels.add(currentDate.getMonth().toString());
+        data.addChartDataSet(dataSet);
         data.setLabels(labels);
+
+        LineChartOptions options = new LineChartOptions();
+        CartesianScales cScales = new CartesianScales();
+        CartesianLinearAxes linearAxes = new CartesianLinearAxes();
+        CartesianLinearTicks ticks = new CartesianLinearTicks();
+        ticks.setBeginAtZero(true);
+        linearAxes.setTicks(ticks);
+        cScales.addYAxesData(linearAxes);
+        options.setScales(cScales);
+
+        this.subscriptionGrowthModel.setOptions(options);
         this.subscriptionGrowthModel.setData(data);
     }
 
@@ -207,54 +217,34 @@ public class DashboardManagedBean implements Serializable {
     }
 
     public void createBarModel() {
+        LocalDate currentDate = LocalDate.now();
+
         salesGrowthModel = new BarChartModel();
         ChartData data = new ChartData();
 
         BarChartDataSet barDataSet = new BarChartDataSet();
-        barDataSet.setLabel("$ (in Millions)");
+        barDataSet.setLabel("$ (in Thousands)");
 
         List<Number> values = new ArrayList<>();
-        values.add(65);
-        values.add(59);
-        values.add(80);
-        values.add(81);
-        values.add(56);
-        values.add(55);
-        values.add(40);
-        barDataSet.setData(values);
-
+        List<String> labels = new ArrayList<>();
         List<String> bgColor = new ArrayList<>();
-        bgColor.add("rgba(255, 159, 64, 0.2)");
-        bgColor.add("rgba(255, 159, 64, 0.2)");
-        bgColor.add("rgba(255, 159, 64, 0.2)");
-        bgColor.add("rgba(255, 159, 64, 0.2)");
-        bgColor.add("rgba(255, 159, 64, 0.2)");
-        bgColor.add("rgba(255, 159, 64, 0.2)");
-        bgColor.add("rgba(255, 159, 64, 0.2)");
-        barDataSet.setBackgroundColor(bgColor);
-
         List<String> borderColor = new ArrayList<>();
-        borderColor.add("rgb(255, 159, 64)");
-        borderColor.add("rgb(255, 159, 64)");
-        borderColor.add("rgb(255, 159, 64)");
-        borderColor.add("rgb(255, 159, 64)");
-        borderColor.add("rgb(255, 159, 64)");
-        borderColor.add("rgb(255, 159, 64)");
-        borderColor.add("rgb(255, 159, 64)");
+
+        for (int i = 6; i >= 0; i--) {
+            values.add(transactionSessionBeanLocal.retrieveTransactionsByMonthAndYear(String.format("%02d", currentDate.minusMonths(i).getMonth().getValue()), Integer.toString(currentDate.minusMonths(i).getYear())).stream().map(x -> x.getTotalPrice()).reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(1000), 2, RoundingMode.CEILING));
+            labels.add(currentDate.minusMonths(i).getMonth().toString());
+            bgColor.add("rgba(255, 159, 64, 0.2)");
+            borderColor.add("rgb(255, 159, 64)");
+        }
+
+        barDataSet.setData(values);
+        barDataSet.setBackgroundColor(bgColor);
         barDataSet.setBorderColor(borderColor);
         barDataSet.setBorderWidth(1);
 
         data.addChartDataSet(barDataSet);
-
-        List<String> labels = new ArrayList<>();
-        labels.add("January");
-        labels.add("February");
-        labels.add("March");
-        labels.add("April");
-        labels.add("May");
-        labels.add("June");
-        labels.add("July");
         data.setLabels(labels);
+
         salesGrowthModel.setData(data);
 
         //Options

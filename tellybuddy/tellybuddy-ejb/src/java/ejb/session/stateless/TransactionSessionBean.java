@@ -104,7 +104,7 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
                 }
 
                 for (TransactionLineItem transactionLineItemToAdd : transactionLineItemsToAdd) {
-                    if (((transactionLineItemToAdd.getProductItem() != null) && (transactionLineItemToAdd.getPrice().compareTo(BigDecimal.valueOf(500.0)) == 1) ) || transactionLineItemToAdd.getProduct() != null) {
+                    if (((transactionLineItemToAdd.getProductItem() != null) && (transactionLineItemToAdd.getPrice().compareTo(BigDecimal.valueOf(500.0)) == 1)) || transactionLineItemToAdd.getProduct() != null) {
                         if (transactionLineItemToAdd.getProductItem() != null && (transactionLineItemToAdd.getPrice().compareTo(BigDecimal.valueOf(500.0)) == 1)) { //luxury product
                             System.out.println("ENTERED HERE**********");
                             //System.out.println("ENTERED HERE**********: " + transactionLineItemToAdd.getProduct().getProductId());
@@ -226,6 +226,18 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         } else {
             throw new TransactionNotFoundException("Sale Transaction ID " + transactionId + " does not exist!");
         }
+    }
+
+    @Override
+    public List<Transaction> retrieveTransactionsByMonthAndYear(String month, String year) {
+
+        Query query = em.createQuery("SELECT t FROM Transaction t WHERE t.transactionStatusEnum <> :inStatus AND SUBSTRING(t.transactionDateTime, 6, 2) = :inMonth AND SUBSTRING(t.transactionDateTime, 1, 4) = :inYear");
+
+        query.setParameter("inStatus", TransactionStatusEnum.REFUNDED);
+        query.setParameter("inMonth", month);
+        query.setParameter("inYear", year);
+
+        return query.getResultList();
     }
 
     @Override

@@ -153,7 +153,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         subscriptionToApprove.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
         Calendar now = Calendar.getInstance();
         subscriptionToApprove.setSubscriptionStartDate(now.getTime());
-        
+
         if (subscriptionToApprove.getIsContract()) {
             now.add(Calendar.YEAR, 2);
             Date end = now.getTime();
@@ -192,12 +192,12 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
             // latest usage detail for the month
             UsageDetail currentUsageDetail = subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() - 1);
-            
+
             // store latest allowed quota as info will be lost in the next cycle
             currentUsageDetail.setAllowedDataUsage(BigDecimal.valueOf(subscriptionTotalAllowedData.doubleValue() / 1000));
             currentUsageDetail.setAllowedSmsUsage(subscriptionTotalAllowedSms);
             currentUsageDetail.setAllowedTalktimeUsage(subscriptionTotalAllowedTalktime);
-            
+
             BigDecimal totalExceedPenaltyPrice = BigDecimal.ZERO;
 
             if (currentUsageDetail.getDataUsage().multiply(BigDecimal.valueOf(1000)).intValue() > subscriptionTotalAllowedData) {
@@ -265,12 +265,12 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             ex.printStackTrace();
         }
     }
-    
-    @Schedule(second="*/10", minute="*", hour="*")
+
+    @Schedule(second = "*/10", minute = "*", hour = "*")
     public void incrementUsageDetail() {
-        for(Subscription s: this.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.ACTIVE)){
+        for (Subscription s : this.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.ACTIVE)) {
             UsageDetail currentUsageDetail = s.getUsageDetails().get(s.getUsageDetails().size() - 1);
-            
+
             currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(BigDecimal.valueOf(0.015)));
             currentUsageDetail.setSmsUsage(currentUsageDetail.getSmsUsage());
             currentUsageDetail.setTalktimeUsage(currentUsageDetail.getTalktimeUsage().add(BigDecimal.valueOf(0.010)));
@@ -388,20 +388,18 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     }
 
     @Override
-    public List<Subscription> retrieveAllActiveSubscriptionUnderCustomer(Customer customer){
-         Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer AND s.isActive = TRUE ");
+    public List<Subscription> retrieveAllActiveSubscriptionUnderCustomer(Customer customer) {
+        Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer AND s.isActive = TRUE ");
         q.setParameter("inCustomer", customer);
         return q.getResultList();
     }
 
-    
     @Override
     public List<Subscription> retrieveAllSubscriptionsWithBillsUnderCustomer(Customer customer) {
         Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer AND EXISTS (SELECT b FROM Bill b WHERE b.usageDetail.subscription = s)");
         q.setParameter("inCustomer", customer);
         return q.getResultList();
     }
-
 
     @Override
     public List<Subscription> retrieveAllSubscriptions() {
@@ -420,6 +418,15 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
     public List<Subscription> retrieveAllPendingSubscriptions() {
         Query q = em.createQuery("Select s FROM Subscription s WHERE s.subscriptionStatusEnum = :inStatus");
         q.setParameter("inStatus", SubscriptionStatusEnum.PENDING);
+        return q.getResultList();
+    }
+
+    @Override
+    public List<Subscription> retrieveActiveSubscriptionsByMonthAndYear(String month, String year) {
+        Query q = em.createQuery("Select s FROM Subscription s WHERE s.subscriptionStatusEnum = :inStatus AND SUBSTRING(s.subscriptionStartDate, 6, 2) = :inMonth AND SUBSTRING(s.subscriptionStartDate, 1, 4) = :inYear");
+        q.setParameter("inStatus", SubscriptionStatusEnum.ACTIVE);
+        q.setParameter("inMonth", month);
+        q.setParameter("inYear", year);
         return q.getResultList();
     }
 

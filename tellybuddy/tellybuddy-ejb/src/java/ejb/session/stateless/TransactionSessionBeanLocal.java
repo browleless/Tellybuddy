@@ -23,23 +23,25 @@ import util.exception.TransactionUnableToBeRefundedException;
 @Local
 public interface TransactionSessionBeanLocal {
 
-   public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName, String creditCardNo, String cvv) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException;
-    
+    public Transaction createNewTransaction(Long customerId, Transaction newTransaction, String discountCodeName, String creditCardNo, String cvv) throws CustomerNotFoundException, CreateNewSaleTransactionException, DiscountCodeNotFoundException;
+
     public List<Transaction> retrieveAllTransactions();
 
     public List<TransactionLineItem> retrieveTransactionLineItemsByProductId(Long productId);
 
     public Transaction retrieveTransactionByTransactionId(Long transactionId) throws TransactionNotFoundException;
-    
+
     public List<Transaction> retrieveTransactionsByCustomer(Customer customer);
 
     public void updateTransaction(Transaction transaction);
-    
+
     public void requestTransactionRefund(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException, TransactionUnableToBeRefundedException;
 
-    public void refundTransaction(Long saleTransactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException,TransactionUnableToBeRefundedException;
+    public void refundTransaction(Long saleTransactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException, TransactionUnableToBeRefundedException;
 
     public void deleteTransaction(Transaction transaction);
 
     public List<Transaction> retrieveAllMonthlyTransactions();
+
+    public List<Transaction> retrieveTransactionsByMonthAndYear(String month, String year);
 }
