@@ -155,7 +155,7 @@ public class SubscriptionResource {
                 List<UsageDetail> uds = new ArrayList<>();
                 uds = subscription.getUsageDetails();
                 for (UsageDetail ud : uds) {
-
+                    ud.setBill(null);
                     ud.setSubscription(null);
                 }
                 System.out.println("3");
