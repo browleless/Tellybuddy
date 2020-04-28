@@ -230,8 +230,8 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             subscriptionToUpdate.getSmsUnits().get("quizExtraUnits") 
                             - subscriptionToUpdate.getSmsUnits().get("donated")>= smsUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 units 
-                        if (familyGroupToUpdate.getDonatedUnits() + smsUnits > 1000) {
-                            throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
+                        if (familyGroupToUpdate.getDonatedUnits() + smsUnits > 50) {
+                            throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 50 "
                                     + "donated units, can no longer add donated units to the family group!");
                         } else {
                             //donated successfully
@@ -252,8 +252,8 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             + subscriptionToUpdate.getDataUnits().get("quizExtraUnits") 
                             - subscriptionToUpdate.getDataUnits().get("donated") >= dataUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 limits
-                        if (familyGroupToUpdate.getDonatedUnits() + dataUnits > 1000) {
-                            throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
+                        if (familyGroupToUpdate.getDonatedUnits() + dataUnits > 50) {
+                            throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 50 "
                                     + "donated units, can no longer add donated units to the family group!");
                         } else {
                             //donated successfully
@@ -274,8 +274,8 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             + subscriptionToUpdate.getTalkTimeUnits().get("quizExtraUnits") 
                             - subscriptionToUpdate.getTalkTimeUnits().get("donated") >= talktimeUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 limits
-                        if (familyGroupToUpdate.getDonatedUnits() + talktimeUnits > 1000) {
-                            throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 1000 "
+                        if (familyGroupToUpdate.getDonatedUnits() + talktimeUnits > 50) {
+                            throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 50 "
                                     + "donated units, can no longer add donated units to the family group!");
                         } else {
                             //donated successfully
