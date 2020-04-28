@@ -64,40 +64,44 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
     @Override
     public Long createCustomer(Customer newCustomer) throws CustomerExistException, CustomerUsernameExistException {
+        
+        Customer customer = new Customer(newCustomer.getUsername(),newCustomer.getPassword(),newCustomer.getFirstName(),newCustomer.getLastName(),newCustomer.getAge(),
+                newCustomer.getNewAddress(),newCustomer.getNewPostalCode(),newCustomer.getEmail(),newCustomer.getNewNric(),"",new Date(),"");
+       
 
         Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername");
-        query.setParameter("inUsername", newCustomer.getUsername());
+        query.setParameter("inUsername", customer.getUsername());
 
         if (query.getResultList().size() > 0) {
             throw new CustomerUsernameExistException("Customer with the same username already exists, please try another username.");
         }
 
         query = em.createQuery("SELECT c FROM Customer c WHERE c.email = :inEmail");
-        query.setParameter("inEmail", newCustomer.getEmail());
+        query.setParameter("inEmail", customer.getEmail());
 
         if (query.getResultList().size() > 0) {
             throw new CustomerExistException("A customer with the same email already exists! Try with another email or login with your account.");
         }
 
         query = em.createQuery("SELECT c FROM Customer c WHERE c.nric = :inNewNric OR c.newNric = :inNewNric");
-        query.setParameter("inNewNric", newCustomer.getNewNric());
+        query.setParameter("inNewNric", customer.getNewNric());
 
         if (query.getResultList().size() > 0) {
             throw new CustomerExistException("A customer with the same NRIC already exists! Try with another NRIC or login with your account.");
         }
 
         // never check unique file path since it should be unique with random string added behind if file name is the same
-        em.persist(newCustomer);
+        em.persist(customer);
         em.flush();
 
         try {
             // for now just hardcoded to send to own account, to change to customer.getEmail() when we want to
-            emailSessionBeanLocal.emailCustomerAccountCreationNotification(newCustomer, "Tellybuddy<tellybuddy3106@gmail.com>", "tellybuddy3106@gmail.com");
+            emailSessionBeanLocal.emailCustomerAccountCreationNotification(customer, "Tellybuddy<tellybuddy3106@gmail.com>", "tellybuddy3106@gmail.com");
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
 
-        return newCustomer.getCustomerId();
+        return customer.getCustomerId();
     }
 
     @Override
