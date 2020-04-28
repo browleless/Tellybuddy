@@ -74,7 +74,7 @@ public class PlanSessionBean implements PlanSessionBeanLocal {
 
     @Override
     public List<Plan> retrieveAllPlans() {
-        Query q = em.createQuery("SELECT p FROM Plan p");
+        Query q = em.createQuery("SELECT p FROM Plan p WHERE p.isDisabled = FALSE");
 
         return q.getResultList();
     }
@@ -83,6 +83,14 @@ public class PlanSessionBean implements PlanSessionBeanLocal {
     public List<Plan> retrieveAllValidPlans() {
         Query q = em.createQuery("SELECT p FROM Plan p WHERE p.isDisabled = FALSE"
                 + "ORDER BY p.startTime ASC, p.endTime ASC");
+
+        return q.getResultList();
+    }
+
+    @Override
+    public List<Plan> retrieveAllNormalPlans() {
+        Query q = em.createQuery("SELECT p FROM Plan p WHERE p.isDisabled = FALSE "
+                + "AND p.startTime IS NULL AND p.endTime IS NULL");
 
         return q.getResultList();
     }
@@ -146,17 +154,17 @@ public class PlanSessionBean implements PlanSessionBeanLocal {
 
     @Override
     public List<Plan> retrieveAllActiveFlashPlans() {
-        
+
         Query query = em.createQuery("SELECT p FROM Plan p WHERE CURRENT_TIMESTAMP BETWEEN p.startTime AND p.endTime ORDER BY p.endTime");
-        
+
         return query.getResultList();
     }
-    
+
     @Override
     public List<Plan> retrieveAllUpcomingFlashPlans() {
-        
+
         Query query = em.createQuery("SELECT p FROM Plan p WHERE CURRENT_TIMESTAMP < p.startTime ORDER BY p.startTime");
-        
+
         return query.getResultList();
     }
 }

@@ -12,6 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -21,6 +22,7 @@ import util.exception.ProductNotFoundException;
 import ws.datamodel.ErrorRsp;
 import ws.datamodel.RetrieveAllProductsRsp;
 import ws.datamodel.RetrieveProductRsp;
+import ws.datamodel.RetrieveProductsByTagsReq;
 
 /**
  * REST Web Service
@@ -235,7 +237,7 @@ public class ProductResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("filterProductsByCategory/{categoryId}")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -243,7 +245,7 @@ public class ProductResource {
     public Response filterProductsByCategory(@PathParam("categoryId") Long categoryId) {
         try {
             List<Product> products = productSessionBeanLocal.filterProductsByCategory(categoryId);
-            
+
             for (Product p : products) {
                 if (p.getCategory().getParentCategory() != null) {
                     p.getCategory().getParentCategory().getSubCategories().clear();
@@ -262,41 +264,50 @@ public class ProductResource {
             System.out.println("restful: " + products.size());
             return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(products)).build();
         } catch (Exception ex) {
+            ex.printStackTrace();
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("filterProductsByTags")
-    @GET
-    @Consumes(MediaType.TEXT_PLAIN)
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response filterProductsByTags(@QueryParam("tagIds") List<Long> tagIds, @QueryParam("condition") String condition) {
-        try {
-            List<Product> products = productSessionBeanLocal.filterProductsByTags(tagIds, condition);
+    public Response filterProductsByTags(RetrieveProductsByTagsReq retrieveProductsByTagsReq) {
 
-            for (Product p : products) {
-                if (p.getCategory().getParentCategory() != null) {
-                    p.getCategory().getParentCategory().getSubCategories().clear();
+        if (retrieveProductsByTagsReq != null) {
+            try {
+                List<Product> products = productSessionBeanLocal.filterProductsByTags(retrieveProductsByTagsReq.getTagIds(), retrieveProductsByTagsReq.getCondition());
+                System.out.println("{TAG} num of products retrieved: " + products.size());
+
+                for (Product p : products) {
+                    if (p.getCategory().getParentCategory() != null) {
+                        p.getCategory().getParentCategory().getSubCategories().clear();
+                    }
+
+                    p.getCategory().getProducts().clear();
+
+                    for (Tag tag : p.getTags()) {
+                        tag.getProducts().clear();
+                    }
+
+                    if (p instanceof LuxuryProduct) {
+                        ((LuxuryProduct) p).getProductItems().clear();
+                    }
                 }
-
-                p.getCategory().getProducts().clear();
-
-                for (Tag tag : p.getTags()) {
-                    tag.getProducts().clear();
-                }
-
-                if (p instanceof LuxuryProduct) {
-                    ((LuxuryProduct) p).getProductItems().clear();
-                }
+                return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(products)).build();
+            } catch (Exception ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
             }
-            return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(products)).build();
-        } catch (Exception ex) {
-            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        } else {
+            ErrorRsp errorRsp = new ErrorRsp("Invalid retrieve products by tags request");
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         }
+
     }
-    
+
     @Path("retrieveAllDiscountedNormalProducts")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -331,7 +342,7 @@ public class ProductResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("retrieveAllDiscountedLuxuryProducts")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -356,7 +367,7 @@ public class ProductResource {
                 if (p instanceof LuxuryProduct) {
                     ((LuxuryProduct) p).getProductItems().clear();
                     discountedLuxury.add(p);
-                } 
+                }
             }
             System.out.println("size " + discountedLuxury.size());
             System.out.println("name " + discountedLuxury.get(0).getName());

@@ -27,6 +27,8 @@ public interface PlanSessionBeanLocal {
 
     public List<Plan> retrieveAllValidPlans();
 
+    public List<Plan> retrieveAllNormalPlans();
+
     public Plan retrievePlanByPlanId(Long planID) throws PlanNotFoundException;
 
     public void updatePlan(Plan plan) throws PlanAlreadyDisabledException, PlanNotFoundException;
