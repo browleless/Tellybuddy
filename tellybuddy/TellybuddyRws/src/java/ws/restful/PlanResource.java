@@ -80,6 +80,21 @@ public class PlanResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
+    
+    @Path("retrieveAllNormalPlans")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveAllNormalPlans() {
+        try {
+            List<Plan> plans = planSessionBeanLocal.retrieveAllNormalPlans();
+
+            return Response.status(Response.Status.OK).entity(new RetrieveAllActiveFlashPlansRsp(plans)).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
 
     @Path("retrievePlan/{planId}")
     @GET
