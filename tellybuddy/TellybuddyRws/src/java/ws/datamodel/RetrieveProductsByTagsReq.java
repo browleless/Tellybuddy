@@ -12,12 +12,16 @@ import java.util.List;
  * @author ngjin
  */
 public class RetrieveProductsByTagsReq {
-    
+
     private List<Long> tagIds;
     private String condition;
 
-    public RetrieveProductsByTagsReq(List<Long> tagIds) {
+    public RetrieveProductsByTagsReq() {
+    }
+
+    public RetrieveProductsByTagsReq(List<Long> tagIds, String condition) {
         this.tagIds = tagIds;
+        this.condition = condition;
     }
 
     /**
@@ -47,7 +51,5 @@ public class RetrieveProductsByTagsReq {
     public void setCondition(String condition) {
         this.condition = condition;
     }
-    
-    
-    
+
 }
