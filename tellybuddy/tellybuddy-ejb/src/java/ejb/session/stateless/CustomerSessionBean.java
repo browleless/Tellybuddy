@@ -27,6 +27,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.enumeration.CustomerStatusEnum;
+import static util.enumeration.CustomerStatusEnum.UPDATING;
 import util.exception.CustomerExistException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerUsernameExistException;
@@ -64,10 +65,9 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
     @Override
     public Long createCustomer(Customer newCustomer) throws CustomerExistException, CustomerUsernameExistException {
-        
-        Customer customer = new Customer(newCustomer.getUsername(),newCustomer.getPassword(),newCustomer.getFirstName(),newCustomer.getLastName(),newCustomer.getAge(),
-                newCustomer.getNewAddress(),newCustomer.getNewPostalCode(),newCustomer.getEmail(),newCustomer.getNewNric(),"",new Date(),"");
-       
+
+        Customer customer = new Customer(newCustomer.getUsername(), newCustomer.getPassword(), newCustomer.getFirstName(), newCustomer.getLastName(), newCustomer.getAge(),
+                newCustomer.getNewAddress(), newCustomer.getNewPostalCode(), newCustomer.getEmail(), newCustomer.getNewNric(), "","", new Date(), "");
 
         Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername");
         query.setParameter("inUsername", customer.getUsername());
@@ -108,18 +108,25 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     public void updateCustomerDetailsForCustomer(Customer customer) throws CustomerNotFoundException {
         if (customer != null && customer.getCustomerId() != null) {
             Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
-//            String newSalt = CryptographicHelper.getInstance().generateRandomString(32);
-//            customerToUpdate.setSalt(newSalt);
-//            customerToUpdate.setPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(customer.getPassword() + newSalt)));
-            //  customerToUpdate.setUpdatedPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(customer.getPassword() + customerToUpdate.getSalt())));
             customerToUpdate.setFirstName(customer.getFirstName());
             customerToUpdate.setLastName(customer.getLastName());
             customerToUpdate.setAge(customer.getAge());
-            customerToUpdate.setNewAddress(customer.getNewAddress());
-            customerToUpdate.setNewPostalCode(customer.getNewPostalCode());
+            if (customer.getNewAddress() != null) {
+                customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.UPDATING);
+                customerToUpdate.setNewAddress(customer.getNewAddress());
+            }
+
+            if (customer.getNewPostalCode() != null) {
+                customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.UPDATING);
+                customerToUpdate.setNewPostalCode(customer.getNewPostalCode());
+            }
+            if(customer.getNewNric() != null){
+                customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.UPDATING);
             customerToUpdate.setNewNric(customer.getNewNric());
-            customerToUpdate.setNewNricImagePath(customer.getNewNricImagePath());
-           // em.flush();
+            }
+            
+            customerToUpdate.setNewNricBackImagePath(customer.getNewNricBackImagePath());
+            // em.flush();
         } else {
             throw new CustomerNotFoundException("Customer ID not provided");
         }
@@ -145,8 +152,10 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         customerToUpdate.setNewPostalCode(null);
         customerToUpdate.setNric(customer.getNewNric());
         customerToUpdate.setNewNric(null);
-        customerToUpdate.setNricImagePath(customer.getNewNricImagePath());
-        customerToUpdate.setNewNricImagePath(null);
+        customerToUpdate.setNricFrontImagePath(customer.getNewNricFrontImagePath());
+        customerToUpdate.setNricBackImagePath(customer.getNewNricBackImagePath());
+        customerToUpdate.setNewNricBackImagePath(null);
+        customerToUpdate.setNewNricFrontImagePath(null);
 
         customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.ACTIVE);
         customerToUpdate.setIsApproved(true);

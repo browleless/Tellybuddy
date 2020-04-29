@@ -48,7 +48,19 @@ public class FamilyGroup implements Serializable {
     @NotNull
     @Min(0)
     @Max(1000)
-    private Integer donatedUnits;
+    private Integer donatedDataUnits;
+    
+    @Column(nullable = false)
+    @NotNull
+    @Min(0)
+    @Max(1000)
+    private Integer donatedTalkTimeUnits;
+    
+    @Column(nullable = false)
+    @NotNull
+    @Min(0)
+    @Max(1000)
+    private Integer donatedSMSUnits;
 
     @Column(nullable = false)
     @NotNull
@@ -61,7 +73,9 @@ public class FamilyGroup implements Serializable {
 
     public FamilyGroup() {
         this.numberOfMembers = 1;
-        this.donatedUnits = 0;
+        this.donatedDataUnits = 0;
+        this.donatedSMSUnits = 0;
+        this.donatedTalkTimeUnits = 0;
         this.discountRate = 0;
         this.customers = new ArrayList<>();
     }
@@ -104,6 +118,22 @@ public class FamilyGroup implements Serializable {
         return "entity.FamilyGroup[ id=" + familyGroupId + " ]";
     }
 
+    public Integer getDonatedTalkTimeUnits() {
+        return donatedTalkTimeUnits;
+    }
+
+    public void setDonatedTalkTimeUnits(Integer donatedTalkTimeUnits) {
+        this.donatedTalkTimeUnits = donatedTalkTimeUnits;
+    }
+
+    public Integer getDonatedSMSUnits() {
+        return donatedSMSUnits;
+    }
+
+    public void setDonatedSMSUnits(Integer donatedSMSUnits) {
+        this.donatedSMSUnits = donatedSMSUnits;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -120,12 +150,12 @@ public class FamilyGroup implements Serializable {
         this.numberOfMembers = numberOfMembers;
     }
 
-    public Integer getDonatedUnits() {
-        return donatedUnits;
+    public Integer getDonatedDataUnits() {
+        return donatedDataUnits;
     }
 
-    public void setDonatedUnits(Integer donatedUnits) {
-        this.donatedUnits = donatedUnits;
+    public void setDonatedDataUnits(Integer donatedDataUnits) {
+        this.donatedDataUnits = donatedDataUnits;
     }
 
     public Integer getDiscountRate() {
