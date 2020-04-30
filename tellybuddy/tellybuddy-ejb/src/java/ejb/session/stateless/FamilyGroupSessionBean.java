@@ -231,7 +231,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             subscriptionToUpdate.getSmsUnits().get("familyGroup") +
                             subscriptionToUpdate.getSmsUnits().get("quizExtraUnits") 
                             - subscriptionToUpdate.getSmsUnits().get("donated")
-                            - Math.floor(subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getSmsUsage() / subscriptionToUpdate.getPlan().getSmsConversionRate())
+                            - Math.ceil(subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getSmsUsage() / subscriptionToUpdate.getPlan().getSmsConversionRate())
                             >= smsUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 units 
                         if (familyGroupToUpdate.getDonatedSMSUnits() + smsUnits > 50) {
@@ -255,7 +255,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             + subscriptionToUpdate.getDataUnits().get("familyGroup") 
                             + subscriptionToUpdate.getDataUnits().get("quizExtraUnits") 
                             - subscriptionToUpdate.getDataUnits().get("donated") 
-                            - Math.floor(subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getDataUsage().divide(BigDecimal.valueOf(subscriptionToUpdate.getPlan().getDataConversionRate())).setScale(0, RoundingMode.UP).intValue())
+                            - subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getDataUsage().divide(BigDecimal.valueOf(subscriptionToUpdate.getPlan().getDataConversionRate())).setScale(0, RoundingMode.UP).intValue()
                                     >= dataUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 limits
                         if (familyGroupToUpdate.getDonatedDataUnits() + dataUnits > 50) {
