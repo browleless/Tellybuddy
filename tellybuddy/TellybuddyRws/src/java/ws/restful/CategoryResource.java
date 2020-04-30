@@ -57,10 +57,6 @@ public class CategoryResource {
             List<Category> categories = categorySessionBeanLocal.retrieveAllCategories();
 
             for (Category category : categories) {
-                if (category.getParentCategory() != null) {
-                    category.getParentCategory().getSubCategories().clear();
-                }
-                category.getSubCategories().clear();
                 category.getProducts().clear();
             }
 

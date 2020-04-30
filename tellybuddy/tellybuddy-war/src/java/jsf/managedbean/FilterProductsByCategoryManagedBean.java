@@ -50,7 +50,7 @@ public class FilterProductsByCategoryManagedBean implements Serializable {
 
     @PostConstruct
     public void postConstruct() {
-        List<Category> categories = categorySessionBeanLocal.retrieveAllRootCategories();
+        List<Category> categories = categorySessionBeanLocal.retrieveAllCategories();
         treeNode = new DefaultTreeNode("Root", null);
 
         for (Category category : categories) {
@@ -99,9 +99,9 @@ public class FilterProductsByCategoryManagedBean implements Serializable {
     private void createTreeNode(Category category, TreeNode parentTreeNode) {
         TreeNode treeNode = new DefaultTreeNode(category, parentTreeNode);
 
-        for (Category c : category.getSubCategories()) {
-            createTreeNode(c, treeNode);
-        }
+//        for (Category c : category.getSubCategories()) {
+//            createTreeNode(c, treeNode);
+//        }
     }
 
     private TreeNode searchTreeNode(Long selectedCategoryId, TreeNode treeNode) {

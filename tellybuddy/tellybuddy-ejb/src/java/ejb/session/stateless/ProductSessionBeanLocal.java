@@ -38,6 +38,8 @@ public interface ProductSessionBeanLocal {
 
     public List<Product> filterProductsByCategory(Long categoryId) throws CategoryNotFoundException;
 
+    public List<Product> filterProductsByMultipleCategories(List<Long> categoryIds);
+
     public List<Product> filterProductsByTags(List<Long> tagIds, String condition);
 
     public Product retrieveProductByProductId(Long productId) throws ProductNotFoundException;
@@ -74,7 +76,4 @@ public interface ProductSessionBeanLocal {
 
     public void debitProductItem(Long luxuryId, ProductItem pi) throws ProductNotFoundException;
 
- 
-    
-    
 }

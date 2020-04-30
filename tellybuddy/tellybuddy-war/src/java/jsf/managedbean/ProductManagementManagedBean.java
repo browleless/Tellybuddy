@@ -100,7 +100,7 @@ public class ProductManagementManagedBean implements Serializable {
 
     @PostConstruct
     public void postConstruct() {
-        this.setAllCategories(categorySessionBeanLocal.retrieveAllLeafCategories());
+        this.setAllCategories(categorySessionBeanLocal.retrieveAllCategories());
         this.setAllTags(tagSessionBeanLocal.retrieveAllTags());
         this.setAllProducts(productSessionBeanLocal.retrieveAllProducts());
     }

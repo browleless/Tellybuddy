@@ -38,15 +38,15 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "category")
     private List<Product> products;
     
-    @OneToMany(mappedBy = "parentCategory")
-    private List<Category> subCategories;
+//    @OneToMany(mappedBy = "parentCategory")
+//    private List<Category> subCategories;
     
-    @ManyToOne
-    private Category parentCategory;
+//    @ManyToOne
+//    private Category parentCategory;
 
     public Category() {
         this.products = new ArrayList<>();
-        this.subCategories = new ArrayList<>();
+//        this.subCategories = new ArrayList<>();
     }
 
     public Category(String name, String description) {
@@ -112,20 +112,20 @@ public class Category implements Serializable {
         this.products = products;
     }
 
-    public List<Category> getSubCategories() {
-        return subCategories;
-    }
-
-    public void setSubCategories(List<Category> subCategories) {
-        this.subCategories = subCategories;
-    }
-
-    public Category getParentCategory() {
-        return parentCategory;
-    }
-
-    public void setParentCategory(Category parentCategory) {
-        this.parentCategory = parentCategory;
-    }
+//    public List<Category> getSubCategories() {
+//        return subCategories;
+//    }
+//
+//    public void setSubCategories(List<Category> subCategories) {
+//        this.subCategories = subCategories;
+//    }
+//
+//    public Category getParentCategory() {
+//        return parentCategory;
+//    }
+//
+//    public void setParentCategory(Category parentCategory) {
+//        this.parentCategory = parentCategory;
+//    }
     
 }
