@@ -71,6 +71,8 @@ public class EmailManager {
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.debug", "true");
+            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
             javax.mail.Authenticator auth = new SMTPAuthenticator(smtpAuthUser, smtpAuthPassword);
             Session session = Session.getInstance(props, auth);
             session.setDebug(true);
@@ -118,6 +120,8 @@ public class EmailManager {
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.debug", "true");
+            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
             javax.mail.Authenticator auth = new SMTPAuthenticator(smtpAuthUser, smtpAuthPassword);
             Session session = Session.getInstance(props, auth);
             session.setDebug(true);
@@ -166,6 +170,8 @@ public class EmailManager {
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.debug", "true");
+            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
             javax.mail.Authenticator auth = new SMTPAuthenticator(smtpAuthUser, smtpAuthPassword);
             Session session = Session.getInstance(props, auth);
             session.setDebug(true);

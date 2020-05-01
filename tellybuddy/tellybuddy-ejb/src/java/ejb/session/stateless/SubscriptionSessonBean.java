@@ -152,13 +152,16 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
         subscriptionToApprove.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
         Calendar now = Calendar.getInstance();
-        subscriptionToApprove.setSubscriptionStartDate(now.getTime());
+        now.setTime(new Date());
+        subscriptionToApprove.setSubscriptionStartDate(new Date());
 
         if (subscriptionToApprove.getIsContract()) {
             now.add(Calendar.YEAR, 2);
-            Date end = now.getTime();
-            subscriptionToApprove.setSubscriptionEndDate(end);
+            subscriptionToApprove.setContractEndDate(now.getTime());
+        } else {
+            subscriptionToApprove.setContractEndDate(new Date());
         }
+        System.out.println("New Subscription has been approved w End date: " + subscriptionToApprove.getSubscriptionEndDate());
         usageDetailSessionBeanLocal.createNewUsageDetail(subscriptionToApprove);
 
         Date dateInAMonthsTime = new Date();
@@ -177,6 +180,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         Subscription subscription = (Subscription) timer.getInfo();
 
         try {
+            System.out.println("SubscriptionTimeout");
             Subscription subscriptionToUpdate = retrieveSubscriptionBySubscriptionId(subscription.getSubscriptionId());
 
             BigDecimal addOnPrice = BigDecimal.ZERO;
@@ -221,19 +225,19 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 // family group discount rate applied
                 familyGroupDiscountRate = subscriptionToUpdate.getCustomer().getFamilyGroup().getDiscountRate();
             }
-
-            if (!subscription.getIsActive() && subscription.getIsContract()) {
-                BigDecimal earlyTerminationFee = subscription.getPlan().getPenalty();
-                Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice, earlyTerminationFee, familyGroupDiscountRate);
+            Bill bill;
+            //To all Early Termination penalty fee if the contract is terminated early
+            if (!subscriptionToUpdate.getIsActive() && subscription.getIsContract() && subscriptionToUpdate.getSubscriptionEndDate().before(subscriptionToUpdate.getContractEndDate())) {
+                BigDecimal earlyTerminationFee = subscriptionToUpdate.getPlan().getPenalty();
+                bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice, earlyTerminationFee, familyGroupDiscountRate);
+            } else {
+                bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice, null, familyGroupDiscountRate);
             }
-
-            Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice, null, familyGroupDiscountRate);
             bill = billSessionBeanLocal.createNewBill(bill, currentUsageDetail, subscriptionToUpdate.getCustomer());
 
             // send email asynchronously
             // currently send to ownself for debugging, ot replace with actual customer email
             emailSessionBeanLocal.emailBillNotificationAsync(bill, subscriptionTotalAllowedData, subscriptionTotalAllowedSms, subscriptionTotalAllowedTalktime, "Tellybuddy<tellybuddy3106@gmail.com>", "tellybuddy3106@gmail.com");
-
             // reset everything else
             // if customer got adjust for next month then update
             if (subscriptionToUpdate.getDataUnits().get("nextMonth") != 0 && subscriptionToUpdate.getSmsUnits().get("nextMonth") != 0 && subscriptionToUpdate.getTalkTimeUnits().get("nextMonth") != 0) {
@@ -255,6 +259,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             subscriptionToUpdate.getSmsUnits().put("familyGroup", 0);
             subscriptionToUpdate.getTalkTimeUnits().put("familyGroup", 0);
 
+            //create new timer if the subscription is still active
             if (subscription.getIsActive()) {
                 // create new usage detail tracking for next month
                 usageDetailSessionBeanLocal.createNewUsageDetail(subscriptionToUpdate);
@@ -262,9 +267,11 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 Date dateInAMonthsTime = new Date();
                 dateInAMonthsTime.setMonth((new Date().getMonth() + 1) % 12);
 
-                // for the next timer cycle
+                // for the next timer cycle (billing cycle 1 month later)
                 TimerService timerService = sessionContext.getTimerService();
                 timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
+                // for debugging (Express cycle)
+//                timerService.createSingleActionTimer(new Date(new Date().getTime() + 60000), new TimerConfig(subscriptionToUpdate, true));
             }
 
         } catch (SubscriptionNotFoundException | InputDataValidationException | CustomerNotFoundException | UsageDetailNotFoundException | InterruptedException ex) {

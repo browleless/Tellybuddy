@@ -57,6 +57,10 @@ public class Subscription implements Serializable {
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date subscriptionStartDate;
+    
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date contractEndDate;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
@@ -270,5 +274,13 @@ public class Subscription implements Serializable {
      */
     public void setIsContract(Boolean isContract) {
         this.isContract = isContract;
+    }
+
+    public Date getContractEndDate() {
+        return contractEndDate;
+    }
+
+    public void setContractEndDate(Date contractEndDate) {
+        this.contractEndDate = contractEndDate;
     }
 }

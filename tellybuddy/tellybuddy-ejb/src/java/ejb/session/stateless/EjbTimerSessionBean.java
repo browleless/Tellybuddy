@@ -45,11 +45,11 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanLocal {
 
     @Schedule(hour = "*", minute = "*/5", info = "addNewPhoneNumbersTimer")
     public void addNewPhoneNumbers() {
-
+        //generate list of random phone numbers to always be in the pool for new plans
         List<PhoneNumber> phoneNumbers = phoneNumberSessionBeanLocal.retrieveListOfAvailablePhoneNumbers();
 
-        if (phoneNumbers.size() < 15) {
-            int numberOfPhoneNumbersToCreate = 15 - phoneNumbers.size();
+        if (phoneNumbers.size() < 50) {
+            int numberOfPhoneNumbersToCreate = 50 - phoneNumbers.size();
             for (int i = 0; i < numberOfPhoneNumbersToCreate; i++) {
                 try {
                     Random random = new Random();
