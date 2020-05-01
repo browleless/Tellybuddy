@@ -8,6 +8,8 @@ package ejb.session.stateless;
 import entity.Customer;
 import entity.FamilyGroup;
 import entity.Subscription;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -228,14 +230,16 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                     if (subscriptionToUpdate.getSmsUnits().get("allocated") + subscriptionToUpdate.getSmsUnits().get("addOn") +
                             subscriptionToUpdate.getSmsUnits().get("familyGroup") +
                             subscriptionToUpdate.getSmsUnits().get("quizExtraUnits") 
-                            - subscriptionToUpdate.getSmsUnits().get("donated")>= smsUnits) {
+                            - subscriptionToUpdate.getSmsUnits().get("donated")
+                            - Math.ceil(subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getSmsUsage() / subscriptionToUpdate.getPlan().getSmsConversionRate())
+                            >= smsUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 units 
-                        if (familyGroupToUpdate.getDonatedUnits() + smsUnits > 50) {
+                        if (familyGroupToUpdate.getDonatedSMSUnits() + smsUnits > 50) {
                             throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 50 "
                                     + "donated units, can no longer add donated units to the family group!");
                         } else {
                             //donated successfully
-                            familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() + smsUnits);
+                            familyGroupToUpdate.setDonatedSMSUnits(familyGroupToUpdate.getDonatedSMSUnits() + smsUnits);
                             //add into the donated of the subscription 
                             subscriptionToUpdate.getSmsUnits().replace("donated", subscriptionToUpdate.getSmsUnits().get("donated") + smsUnits);
                         }
@@ -250,14 +254,16 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             + subscriptionToUpdate.getDataUnits().get("addOn") 
                             + subscriptionToUpdate.getDataUnits().get("familyGroup") 
                             + subscriptionToUpdate.getDataUnits().get("quizExtraUnits") 
-                            - subscriptionToUpdate.getDataUnits().get("donated") >= dataUnits) {
+                            - subscriptionToUpdate.getDataUnits().get("donated") 
+                            - subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getDataUsage().divide(BigDecimal.valueOf(subscriptionToUpdate.getPlan().getDataConversionRate())).setScale(0, RoundingMode.UP).intValue()
+                                    >= dataUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 limits
-                        if (familyGroupToUpdate.getDonatedUnits() + dataUnits > 50) {
+                        if (familyGroupToUpdate.getDonatedDataUnits() + dataUnits > 50) {
                             throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 50 "
                                     + "donated units, can no longer add donated units to the family group!");
                         } else {
                             //donated successfully
-                            familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() + dataUnits);
+                            familyGroupToUpdate.setDonatedDataUnits(familyGroupToUpdate.getDonatedDataUnits() + dataUnits);
                             //add into the donated of the subscription
                             subscriptionToUpdate.getDataUnits().replace("donated", subscriptionToUpdate.getDataUnits().get("donated") + dataUnits);
                         }
@@ -272,14 +278,16 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             + subscriptionToUpdate.getTalkTimeUnits().get("addOn") 
                             + subscriptionToUpdate.getTalkTimeUnits().get("familyGroup") 
                             + subscriptionToUpdate.getTalkTimeUnits().get("quizExtraUnits") 
-                            - subscriptionToUpdate.getTalkTimeUnits().get("donated") >= talktimeUnits) {
+                            - subscriptionToUpdate.getTalkTimeUnits().get("donated") 
+                            - subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getTalktimeUsage().divide(BigDecimal.valueOf(subscriptionToUpdate.getPlan().getTalktimeConversionRate())).setScale(0, RoundingMode.UP).intValue()
+                            >= talktimeUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 limits
-                        if (familyGroupToUpdate.getDonatedUnits() + talktimeUnits > 50) {
+                        if (familyGroupToUpdate.getDonatedTalkTimeUnits() + talktimeUnits > 50) {
                             throw new FamilyGroupDonatedUnitsExceededLimitException("Family Group has reached limit of 50 "
                                     + "donated units, can no longer add donated units to the family group!");
                         } else {
                             //donated successfully
-                            familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() + talktimeUnits);
+                            familyGroupToUpdate.setDonatedTalkTimeUnits(familyGroupToUpdate.getDonatedTalkTimeUnits() + talktimeUnits);
                             //add into the donated of the subscription
                             subscriptionToUpdate.getTalkTimeUnits().replace("donated", subscriptionToUpdate.getTalkTimeUnits().get("donated") + talktimeUnits);
                         }
@@ -312,10 +320,10 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
             if (familyGroupToUpdate.getCustomers().contains(familyMember)) {
                 //check if there is units for the fam member to use
                 if (smsUnits != 0) {
-                    if (familyGroupToUpdate.getDonatedUnits() >= smsUnits) {
+                    if (familyGroupToUpdate.getDonatedSMSUnits() >= smsUnits) {
                         // add the requested units to the subscription line of the family member
                         subscriptionToUpdate.getSmsUnits().replace("familyGroup", subscriptionToUpdate.getSmsUnits().get("familyGroup") + smsUnits);
-                        familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() - smsUnits);
+                        familyGroupToUpdate.setDonatedSMSUnits(familyGroupToUpdate.getDonatedSMSUnits() - smsUnits);
                     } else {
                         throw new InsufficientDonatedUnitsInFamilyGroupException("Family Group has insufficient units for "
                                 + "family member '" + familyMember.getFirstName() + " " + familyMember.getLastName() + "' to use!");
@@ -323,10 +331,10 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                 }
 
                 if (dataUnits != 0) {
-                    if (familyGroupToUpdate.getDonatedUnits() >= dataUnits) {
+                    if (familyGroupToUpdate.getDonatedDataUnits() >= dataUnits) {
                         // add the requested units to the subscription line of the family member
                         subscriptionToUpdate.getDataUnits().replace("familyGroup", subscriptionToUpdate.getDataUnits().get("familyGroup") + dataUnits);
-                        familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() - dataUnits);
+                        familyGroupToUpdate.setDonatedDataUnits(familyGroupToUpdate.getDonatedDataUnits() - dataUnits);
                     } else {
                         throw new InsufficientDonatedUnitsInFamilyGroupException("Family Group has insufficient units for "
                                 + "family member '" + familyMember.getFirstName() + " " + familyMember.getLastName() + "' to use!");
@@ -334,10 +342,10 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                 }
 
                 if (talktimeUnits != 0) {
-                    if (familyGroupToUpdate.getDonatedUnits() >= talktimeUnits) {
+                    if (familyGroupToUpdate.getDonatedTalkTimeUnits() >= talktimeUnits) {
                         // add the requested units to the subscription line of the family member
                         subscriptionToUpdate.getTalkTimeUnits().replace("familyGroup", subscriptionToUpdate.getTalkTimeUnits().get("familyGroup") + talktimeUnits);
-                        familyGroupToUpdate.setDonatedUnits(familyGroupToUpdate.getDonatedUnits() - talktimeUnits);
+                        familyGroupToUpdate.setDonatedTalkTimeUnits(familyGroupToUpdate.getDonatedTalkTimeUnits() - talktimeUnits);
                     } else {
                         throw new InsufficientDonatedUnitsInFamilyGroupException("Family Group has insufficient units for "
                                 + "family member '" + familyMember.getFirstName() + " " + familyMember.getLastName() + "' to use!");

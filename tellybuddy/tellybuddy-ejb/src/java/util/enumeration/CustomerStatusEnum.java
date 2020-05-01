@@ -11,5 +11,6 @@ package util.enumeration;
  */
 public enum CustomerStatusEnum {
     PENDING,
-    ACTIVE
+    ACTIVE,
+    UPDATING,
 }

@@ -27,9 +27,9 @@ public interface CategorySessionBeanLocal {
 
     public List<Category> retrieveAllCategories();
 
-    public List<Category> retrieveAllRootCategories();
+//    public List<Category> retrieveAllRootCategories();
 
-    public List<Category> retrieveAllLeafCategories();
+//    public List<Category> retrieveAllLeafCategories();
 
     public List<Category> retrieveAllCategoriesWithoutProduct();
 

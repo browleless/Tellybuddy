@@ -22,6 +22,7 @@ import util.exception.ProductNotFoundException;
 import ws.datamodel.ErrorRsp;
 import ws.datamodel.RetrieveAllProductsRsp;
 import ws.datamodel.RetrieveProductRsp;
+import ws.datamodel.RetrieveProductsByMultipleCategoriesReq;
 import ws.datamodel.RetrieveProductsByTagsReq;
 
 /**
@@ -58,9 +59,6 @@ public class ProductResource {
             List<Product> products = productSessionBeanLocal.retrieveAllProducts();
 
             for (Product product : products) {
-                if (product.getCategory().getParentCategory() != null) {
-                    product.getCategory().getParentCategory().getSubCategories().clear();
-                }
 
                 product.getCategory().getProducts().clear();
 
@@ -90,9 +88,6 @@ public class ProductResource {
             List<Product> products = productSessionBeanLocal.retrieveAllNormalProducts();
 
             for (Product product : products) {
-                if (product.getCategory().getParentCategory() != null) {
-                    product.getCategory().getParentCategory().getSubCategories().clear();
-                }
 
                 product.getCategory().getProducts().clear();
 
@@ -122,9 +117,6 @@ public class ProductResource {
             List<Product> luxuryProducts = productSessionBeanLocal.retrieveAllLuxuryProducts();
 
             for (Product lp : luxuryProducts) {
-                if (lp.getCategory().getParentCategory() != null) {
-                    lp.getCategory().getParentCategory().getSubCategories().clear();
-                }
 
                 lp.getCategory().getProducts().clear();
 
@@ -154,9 +146,6 @@ public class ProductResource {
             List<Product> discounted = productSessionBeanLocal.retrieveAllDiscountedProducts();
 
             for (Product p : discounted) {
-                if (p.getCategory().getParentCategory() != null) {
-                    p.getCategory().getParentCategory().getSubCategories().clear();
-                }
 
                 p.getCategory().getProducts().clear();
 
@@ -183,10 +172,6 @@ public class ProductResource {
     public Response retrieveProduct(@PathParam("productId") Long productId) {
         try {
             Product product = productSessionBeanLocal.retrieveProductByProductId(productId);
-
-            if (product.getCategory().getParentCategory() != null) {
-                product.getCategory().getParentCategory().getSubCategories().clear();
-            }
 
             product.getCategory().getProducts().clear();
 
@@ -217,9 +202,6 @@ public class ProductResource {
             List<Product> products = productSessionBeanLocal.searchProductsByName(searchString);
 
             for (Product p : products) {
-                if (p.getCategory().getParentCategory() != null) {
-                    p.getCategory().getParentCategory().getSubCategories().clear();
-                }
 
                 p.getCategory().getProducts().clear();
 
@@ -247,9 +229,6 @@ public class ProductResource {
             List<Product> products = productSessionBeanLocal.filterProductsByCategory(categoryId);
 
             for (Product p : products) {
-                if (p.getCategory().getParentCategory() != null) {
-                    p.getCategory().getParentCategory().getSubCategories().clear();
-                }
 
                 p.getCategory().getProducts().clear();
 
@@ -270,6 +249,41 @@ public class ProductResource {
         }
     }
 
+    @Path("filterProductsByMultipleCategories")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response filterProductsByMultipleCategories(RetrieveProductsByMultipleCategoriesReq retrieveProductsByMultipleCategoriesReq) {
+        if (retrieveProductsByMultipleCategoriesReq != null) {
+            System.out.println("entered here: filterProductsByMultipleCategories RESTFUL METHOD");
+            try {
+                List<Product> products = productSessionBeanLocal.filterProductsByMultipleCategories(retrieveProductsByMultipleCategoriesReq.getCategoryIds());
+                System.out.println("{Category} num of products retrieved: " + products.size());
+
+                for (Product p : products) {
+
+                    p.getCategory().getProducts().clear();
+
+                    for (Tag tag : p.getTags()) {
+                        tag.getProducts().clear();
+                    }
+
+                    if (p instanceof LuxuryProduct) {
+                        ((LuxuryProduct) p).getProductItems().clear();
+                    }
+                }
+                return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(products)).build();
+            } catch (Exception ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+            }
+        } else {
+            ErrorRsp errorRsp = new ErrorRsp("Invalid retrieve products by tags request");
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
+        }
+
+    }
+
     @Path("filterProductsByTags")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -282,9 +296,6 @@ public class ProductResource {
                 System.out.println("{TAG} num of products retrieved: " + products.size());
 
                 for (Product p : products) {
-                    if (p.getCategory().getParentCategory() != null) {
-                        p.getCategory().getParentCategory().getSubCategories().clear();
-                    }
 
                     p.getCategory().getProducts().clear();
 
@@ -319,9 +330,6 @@ public class ProductResource {
             List<Product> discountedNormal = new ArrayList<>();
 
             for (Product p : discounted) {
-                if (p.getCategory().getParentCategory() != null) {
-                    p.getCategory().getParentCategory().getSubCategories().clear();
-                }
 
                 p.getCategory().getProducts().clear();
 
@@ -354,9 +362,6 @@ public class ProductResource {
             List<Product> discountedLuxury = new ArrayList<>();
 
             for (Product p : discounted) {
-                if (p.getCategory().getParentCategory() != null) {
-                    p.getCategory().getParentCategory().getSubCategories().clear();
-                }
 
                 p.getCategory().getProducts().clear();
 

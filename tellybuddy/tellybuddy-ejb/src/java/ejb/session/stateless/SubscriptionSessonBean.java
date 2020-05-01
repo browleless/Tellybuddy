@@ -389,8 +389,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
     @Override
     public List<Subscription> retrieveAllActiveSubscriptionUnderCustomer(Customer customer) {
-        Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer AND s.isActive = TRUE ");
+        Query q = em.createQuery("SELECT s FROM Subscription s WHERE s.customer = :inCustomer AND s.subscriptionStatusEnum = :inSubscriptionStatus");
         q.setParameter("inCustomer", customer);
+        q.setParameter("inSubscriptionStatus", SubscriptionStatusEnum.ACTIVE);
         return q.getResultList();
     }
 

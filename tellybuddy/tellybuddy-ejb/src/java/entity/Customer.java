@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -104,11 +105,18 @@ public class Customer implements Serializable {
 
     @Column(nullable = true, unique = true)
 //    @Column(nullable = true)
-    private String nricImagePath;
+    private String nricFrontImagePath;
 
     @Column(nullable = true, unique = true)
 //    @Column(nullable = true)
-    private String newNricImagePath;
+    private String nricBackImagePath;
+    
+    @Column(nullable = true, unique = true)
+//    @Column(nullable = true)
+    private String newNricFrontImagePath;
+    @Column(nullable = true, unique = true)
+//    @Column(nullable = true)
+    private String newNricBackImagePath;
     
     @Column(nullable = true, unique = true)
     private String profilePhoto;
@@ -198,7 +206,7 @@ public class Customer implements Serializable {
         this.ownerOfFamilyGroup = false;
     }
 
-    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String email, String newNric, String newNricImagePath, Date joinDate, String profilePhoto) {
+    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String email, String newNric, String newNricFrontImagePath,String newNricBackImagePath, Date joinDate, String profilePhoto) {
         this();
         this.username = username;
         this.firstName = firstName;
@@ -208,7 +216,8 @@ public class Customer implements Serializable {
         this.newPostalCode = newPostalCode;
         this.email = email;
         this.newNric = newNric;
-        this.newNricImagePath = newNricImagePath;
+        this.newNricFrontImagePath = newNricFrontImagePath;
+        this.newNricBackImagePath = newNricBackImagePath;
         this.customerStatusEnum = CustomerStatusEnum.PENDING;
         this.joinDate = joinDate;
         this.profilePhoto = profilePhoto;
@@ -268,12 +277,12 @@ public class Customer implements Serializable {
         return password;
     }
 
-    public void setNewNricImagePath(String newNricImagePath) {
-        this.newNricImagePath = newNricImagePath;
+    public void setNewNricBackImagePath(String newNricBackImagePath) {
+        this.newNricBackImagePath = newNricBackImagePath;
     }
 
-    public String getNewNricImagePath() {
-        return newNricImagePath;
+    public String getNewNricBackImagePath() {
+        return newNricBackImagePath;
     }
     
     public void hashPassword(String password) {
@@ -416,12 +425,12 @@ public class Customer implements Serializable {
         this.familyGroup = familyGroup;
     }
 
-    public String getNricImagePath() {
-        return nricImagePath;
+    public String getNricFrontImagePath() {
+        return nricFrontImagePath;
     }
 
-    public void setNricImagePath(String nricImagePath) {
-        this.nricImagePath = nricImagePath;
+    public void setNricFrontImagePath(String nricFrontImagePath) {
+        this.nricFrontImagePath = nricFrontImagePath;
     }
 
     public List<Announcement> getAnnouncements() {
@@ -438,6 +447,22 @@ public class Customer implements Serializable {
 
     public void setNewAddress(String newAddress) {
         this.newAddress = newAddress;
+    }
+
+    public String getNricBackImagePath() {
+        return nricBackImagePath;
+    }
+
+    public void setNricBackImagePath(String nricBackImagePath) {
+        this.nricBackImagePath = nricBackImagePath;
+    }
+
+    public String getNewNricFrontImagePath() {
+        return newNricFrontImagePath;
+    }
+
+    public void setNewNricFrontImagePath(String newNricFrontImagePath) {
+        this.newNricFrontImagePath = newNricFrontImagePath;
     }
 
     public String getNewPostalCode() {

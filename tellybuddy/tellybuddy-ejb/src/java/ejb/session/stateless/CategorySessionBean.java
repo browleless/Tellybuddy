@@ -48,15 +48,15 @@ public class CategorySessionBean implements CategorySessionBeanLocal {
 
         if (constraintViolations.isEmpty()) {
             try {
-                if (parentCategoryId != null) {
-                    Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
-
-                    if (!parentCategoryEntity.getProducts().isEmpty()) {
-                        throw new CreateNewCategoryException("Parent category cannot be associated with any product");
-                    }
-
-                    newCategory.setParentCategory(parentCategoryEntity);
-                }
+//                if (parentCategoryId != null) {
+//                    Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
+//
+//                    if (!parentCategoryEntity.getProducts().isEmpty()) {
+//                        throw new CreateNewCategoryException("Parent category cannot be associated with any product");
+//                    }
+//
+//                    newCategory.setParentCategory(parentCategoryEntity);
+//                }
 
                 em.persist(newCategory);
                 em.flush();
@@ -84,39 +84,39 @@ public class CategorySessionBean implements CategorySessionBeanLocal {
         List<Category> categories = query.getResultList();
 
         for (Category category : categories) {
-            category.getParentCategory();
-            category.getSubCategories().size();
+//            category.getParentCategory();
+//            category.getSubCategories().size();
             category.getProducts().size();
         }
 
         return categories;
     }
 
-    @Override
-    public List<Category> retrieveAllRootCategories() {
-        Query query = em.createQuery("SELECT c FROM Category c WHERE c.parentCategory IS NULL ORDER BY c.name ASC");
-        List<Category> rootCategories = query.getResultList();
+//    @Override
+//    public List<Category> retrieveAllRootCategories() {
+//        Query query = em.createQuery("SELECT c FROM Category c WHERE c.parentCategory IS NULL ORDER BY c.name ASC");
+//        List<Category> rootCategories = query.getResultList();
+//
+//        for (Category rootCategory : rootCategories) {
+//            lazilyLoadSubCategories(rootCategory);
+//
+//            rootCategory.getProducts().size();
+//        }
+//
+//        return rootCategories;
+//    }
 
-        for (Category rootCategory : rootCategories) {
-            lazilyLoadSubCategories(rootCategory);
-
-            rootCategory.getProducts().size();
-        }
-
-        return rootCategories;
-    }
-
-    @Override
-    public List<Category> retrieveAllLeafCategories() {
-        Query query = em.createQuery("SELECT c FROM Category c WHERE c.subCategories IS EMPTY ORDER BY c.name ASC");
-        List<Category> leafCategories = query.getResultList();
-
-        for (Category leafCategory : leafCategories) {
-            leafCategory.getProducts().size();
-        }
-
-        return leafCategories;
-    }
+//    @Override
+//    public List<Category> retrieveAllLeafCategories() {
+//        Query query = em.createQuery("SELECT c FROM Category c WHERE c.subCategories IS EMPTY ORDER BY c.name ASC");
+//        List<Category> leafCategories = query.getResultList();
+//
+//        for (Category leafCategory : leafCategories) {
+//            leafCategory.getProducts().size();
+//        }
+//
+//        return leafCategories;
+//    }
 
     @Override
     public List<Category> retrieveAllCategoriesWithoutProduct() {
@@ -124,7 +124,7 @@ public class CategorySessionBean implements CategorySessionBeanLocal {
         List<Category> rootCategories = query.getResultList();
 
         for (Category rootCategory : rootCategories) {
-            rootCategory.getParentCategory();
+//            rootCategory.getParentCategory();
         }
 
         return rootCategories;
@@ -160,21 +160,21 @@ public class CategorySessionBean implements CategorySessionBeanLocal {
                 categoryEntityToUpdate.setName(category.getName());
                 categoryEntityToUpdate.setDescription(category.getDescription());
 
-                if (parentCategoryId != null) {
-                    if (categoryEntityToUpdate.getCategoryId().equals(parentCategoryId)) {
-                        throw new UpdateCategoryException("Category cannot be its own parent");
-                    } else if (categoryEntityToUpdate.getParentCategory() == null || (!categoryEntityToUpdate.getParentCategory().getCategoryId().equals(parentCategoryId))) {
-                        Category parentCategoryEntityToUpdate = retrieveCategoryByCategoryId(parentCategoryId);
-
-                        if (!parentCategoryEntityToUpdate.getProducts().isEmpty()) {
-                            throw new UpdateCategoryException("Parent category cannot have any product associated with it");
-                        }
-
-                        categoryEntityToUpdate.setParentCategory(parentCategoryEntityToUpdate);
-                    }
-                } else {
-                    categoryEntityToUpdate.setParentCategory(null);
-                }
+//                if (parentCategoryId != null) {
+//                    if (categoryEntityToUpdate.getCategoryId().equals(parentCategoryId)) {
+//                        throw new UpdateCategoryException("Category cannot be its own parent");
+//                    } else if (categoryEntityToUpdate.getParentCategory() == null || (!categoryEntityToUpdate.getParentCategory().getCategoryId().equals(parentCategoryId))) {
+//                        Category parentCategoryEntityToUpdate = retrieveCategoryByCategoryId(parentCategoryId);
+//
+//                        if (!parentCategoryEntityToUpdate.getProducts().isEmpty()) {
+//                            throw new UpdateCategoryException("Parent category cannot have any product associated with it");
+//                        }
+//
+//                        categoryEntityToUpdate.setParentCategory(parentCategoryEntityToUpdate);
+//                    }
+//                } else {
+//                    categoryEntityToUpdate.setParentCategory(null);
+//                }
             } else {
                 throw new CategoryNotFoundException("Category ID not provided for category to be updated");
             }
@@ -187,23 +187,18 @@ public class CategorySessionBean implements CategorySessionBeanLocal {
     public void deleteCategory(Long categoryId) throws CategoryNotFoundException, DeleteCategoryException {
         Category categoryToRemove = retrieveCategoryByCategoryId(categoryId);
 
-        if (!categoryToRemove.getSubCategories().isEmpty()) {
-            throw new DeleteCategoryException("Category ID " + categoryId + " is associated with existing sub-categories and cannot be deleted!");
-        } else if (!categoryToRemove.getProducts().isEmpty()) {
+        if (!categoryToRemove.getProducts().isEmpty()) {
             throw new DeleteCategoryException("Category ID " + categoryId + " is associated with existing products and cannot be deleted!");
         } else {
-            categoryToRemove.setParentCategory(null);
-
             em.remove(categoryToRemove);
         }
     }
 
-    private void lazilyLoadSubCategories(Category category) {
-        for (Category c : category.getSubCategories()) {
-            lazilyLoadSubCategories(c);
-        }
-    }
-
+//    private void lazilyLoadSubCategories(Category category) {
+//        for (Category c : category.getSubCategories()) {
+//            lazilyLoadSubCategories(c);
+//        }
+//    }
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<Category>> constraintViolations) {
         String msg = "Input data validation error!:";
 
