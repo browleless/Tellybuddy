@@ -77,10 +77,27 @@
                         <h:outputText value="#{member.subscriptions.size()}" />
                     </p:panelGrid>
                 </p:carousel>
-                <div class=" knob-container ui-corner-all" style="text-align: center; margin: 20px 20px;">
-                    <p:knob disabled="true" id="knobDonatedUnites" foregroundColor="#009999;" step="500" max="50" thickness="0.3" height="100" width="100" cursor="true"  value="#{familyGroupManagedBean.familyGroupToView.donatedDataUnits}"/>
+                 <div  style="width:100%; margin: 20px auto 0; text-align: center; font-weight: 700">
+                    Donated Units in Pool:
+                    </div>
                     <br/>
-                    <p:outputLabel for="knobDonatedUnites" value="Donated Units Available" />
+                <div class=" knob-container ui-corner-all" style="text-align: center; margin: 0% 5%; display: flex">
+
+                    <div  style="width:30%; margin: 0 auto; ">
+                        <p:knob disabled="true" id="knobDataUnites" foregroundColor="#009999;" step="500" max="50" thickness="0.3" height="100" width="100" cursor="true"  value="#{familyGroupManagedBean.familyGroupToView.donatedDataUnits}"/>
+                        <br/>
+                        <p:outputLabel for="knobDataUnites" value="Data Units" />
+                    </div>
+                    <div  style="width:30%; margin: 0 auto; ">
+                        <p:knob disabled="true" id="knobSmsUnits" foregroundColor="#009999;" step="500" max="50" thickness="0.3" height="100" width="100" cursor="true"  value="#{familyGroupManagedBean.familyGroupToView.donatedSMSUnits}"/>
+                        <br/>
+                        <p:outputLabel for="knobSmsUnits" value="SMS Units" />
+                    </div>
+                    <div  style="width:30%; margin: 0 auto; ">
+                        <p:knob disabled="true" id="knobTalktimeUnits" foregroundColor="#009999;" step="500" max="50" thickness="0.3" height="100" width="100" cursor="true"  value="#{familyGroupManagedBean.familyGroupToView.donatedTalkTimeUnits}"/>
+                        <br/>
+                        <p:outputLabel for="knobTalktimeUnits" value="Talktime Units" />
+                    </div>
                 </div>
 
             </h:form>

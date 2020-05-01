@@ -153,7 +153,9 @@
                                 <h:outputLabel value="Posted date: " />
                             </p:column>
                             <p:column>
-                                <h:outputText value="#{announcementManagedBean.announcementToView.postedDate}" />
+                                <h:outputText value="#{announcementManagedBean.announcementToView.postedDate}" >
+                                 <f:convertDateTime dateStyle="full" pattern="dd-MMM-yyyy  HH:mm:ss" timeZone="GMT+8" /> 
+                                </h:outputText>
                             </p:column>
                         </p:row>
                         <p:row>
@@ -161,7 +163,9 @@
                                 <h:outputLabel value="Expiry date: " />
                             </p:column>
                             <p:column>
-                                <h:outputText value="#{announcementManagedBean.announcementToView.expiryDate}" />
+                                <h:outputText value="#{announcementManagedBean.announcementToView.expiryDate}" >
+                                 <f:convertDateTime dateStyle="full" pattern="dd-MMM-yyyy  HH:mm:ss" timeZone="GMT+8" /> 
+                                </h:outputText>
                             </p:column>
                         </p:row>
                         <p:row>

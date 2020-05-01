@@ -64,11 +64,17 @@
                 </p:column>
 
                 <p:column headerText="DateTime" sortBy="#{transaction.transactionDateTime}" filterBy="#{transaction.transactionDateTime}" filterMatchMode="contains" style="text-align: center;">
-                    <h:outputText value="#{transaction.transactionDateTime} " />
+                            <h:outputText value="#{transaction.transactionDateTime}">
+                                <f:convertDateTime dateStyle="full" pattern="dd-MMM-yyyy  HH:mm:ss" timeZone="GMT+8" /> 
+                            </h:outputText>
                 </p:column>
 
                 <p:column headerText="Full Name" sortBy="#{transaction.customer.firstName}" filterBy="#{transaction.customer.firstName}" filterMatchMode="contains" style="text-align: center;">
                     <h:outputText value="#{transaction.customer.firstName} #{transaction.customer.lastName}"  style="text-align: right;"/>
+                </p:column>
+                
+                <p:column headerText="Transaction Status" sortBy="#{transaction.customer.firstName}" filterBy="#{transaction.customer.firstName}" filterMatchMode="contains" style="text-align: center;">
+                    <h:outputText value="#{transaction.transactionStatusEnum}"  style="text-align: right;"/>
                 </p:column>
 
                 <p:column headerText="Total Charge" sortBy="#{transaction.totalPrice}" filterBy="#{transaction.totalPrice}" filterMatchMode="contains" style="text-align: right;">
@@ -94,8 +100,7 @@
                             <h:outputText value="#{transaction.customer.lastName}" />
 
                             <h:outputText value="Transaction Status (void/refund):"  />
-                            <h:outputText value="#{transaction.transactionStatus}" />
-
+                            <h:outputText value="#{transaction.transactionStatusEnum}" />
                             <h:outputText value="Discount Code (if any):" />
                             <h:outputText value="#{transaction.discountCode != null ? transaction.discountCode.discountCode : '-'}" />
 
@@ -135,7 +140,8 @@
 
                         </h:form>
                     </div>
-
+                    <p:commandButton style="float:right; margin-right:7px" update="formAllTransactions:dataTableAllTransactions" rendered="#{transaction.transactionStatusEnum == 'REFUND_REQUESTED'}" action="#{transactionManagementManagedBean.approveRefundRequest(transaction.transactionId)}" value="Approve Refund Request">
+                    </p:commandButton>
                 </p:rowExpansion>
             </p:dataTable>
         </h:form>

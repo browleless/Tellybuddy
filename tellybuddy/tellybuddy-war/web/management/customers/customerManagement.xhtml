@@ -112,7 +112,7 @@
 
                                 <h:outputText value="Join Date:" />
                                 <h:outputText value="#{customer.joinDate}" style="font-weight: bold">
-                                    <f:convertDateTime pattern="dd/MM/yyyy | HH:mm:ss" timeZone="GMT+8" /> 
+                                    <f:convertDateTime pattern="dd-MM-yyyy | HH:mm:ss" timeZone="GMT+8" /> 
                                 </h:outputText>
                             </p:panelGrid>
                         </p:outputPanel>
@@ -126,17 +126,13 @@
                                 </p:commandButton>
                             </p:column>
 
-                            <p:column>
+                            <p:column rendered="#{!customer.isApproved}">
                                 <p:commandButton update="dialogVerifyCustomer" oncomplete="PF('dialogVerifyCustomer').show()" icon="fa fa-thumbs-o-up" title="Approve Customer Onboarding">
                                     <f:setPropertyActionListener value="#{customer}" target="#{customerManagementManagedBean.customerToUpdate}" />
                                 </p:commandButton>
                             </p:column>
-
-
                         </div>
-
                     </p:row>
-
 
                 </p:rowExpansion>
             </p:dataTable>
@@ -236,7 +232,7 @@
                 <p:growl id="message" showDetail="true" />
 
                 <div style="text-align: center; padding: 10px 0px 0px 0px">
-                    <p:commandButton value="Verify Customer" update="@form formAllCustomers:dataTableAllCustomers" actionListener="#{customerManagementManagedBean.verifyCustomer}" oncomplete="PF('dialogVerifyCustomer').hide();">
+                    <p:commandButton value="Verify Customer" process="@form" update="formAllCustomers:dataTableAllCustomers" actionListener="#{customerManagementManagedBean.verifyCustomer}" oncomplete="PF('dialogVerifyCustomer').hide();">
                         <p:confirm header="Confirmation" message="Have you confirmed that the customer's details match the provided image?" icon="pi pi-exclamation-triangle" />
                     </p:commandButton>
 
