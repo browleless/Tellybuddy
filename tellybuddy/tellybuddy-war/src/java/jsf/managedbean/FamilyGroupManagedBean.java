@@ -88,7 +88,7 @@ public class FamilyGroupManagedBean implements Serializable {
         intervals.add(120);
         intervals.add(220);
 
-        return new MeterGaugeChartModel(this.familyGroupToView.getDonatedDataUnits(), intervals);
+        return new MeterGaugeChartModel(this.familyGroupToView.getDonatedUnits(), intervals);
     }
 
     private void createMeterGaugeModels() {
