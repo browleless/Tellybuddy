@@ -12,7 +12,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import util.enumeration.AccessRightEnum;
+
 
 /**
  *
@@ -46,12 +46,12 @@ public class SecurityFilter implements Filter {
         if (!excludeLoginCheck(requestServletPath)) {
             if (isLogin == true) {
                 Employee currentEmployee = (Employee) httpSession.getAttribute("currentEmployee");
-
-                if (checkAccessRight(requestServletPath, currentEmployee.getAccessRightEnum())) {
-                    chain.doFilter(request, response);
-                } else {
-                    httpServletResponse.sendRedirect(CONTEXT_ROOT + "/accessRightError.xhtml");
-                }
+//
+//                if (checkAccessRight(requestServletPath, currentEmployee.getAccessRightEnum())) {
+                  chain.doFilter(request, response);
+//                } else {
+//                    httpServletResponse.sendRedirect(CONTEXT_ROOT + "/accessRightError.xhtml");
+//                }
             } else {
                 httpServletResponse.sendRedirect(CONTEXT_ROOT + "/accessRightError.xhtml");
             }
@@ -63,30 +63,30 @@ public class SecurityFilter implements Filter {
     public void destroy() {
 
     }
-
-    private Boolean checkAccessRight(String path, AccessRightEnum accessRight) {
-        if (accessRight.equals(AccessRightEnum.EMPLOYEE)) {
-            if (path.equals("/management/home.xhtml")
-                    || path.equals("/management/account/updateParticulars.html")
-                    || path.equals("/management/plans/main.xhtml")
-                    || path.equals("/management/products/main.xhtml")
-                    || path.equals("/management/customers/main.xhtml")
-                    || path.equals("/management/announcements/main.xhtml")
-                    || path.equals("/management/promotions/main.xhtml")
-                    || path.equals("/management/announcements/pastAnnouncement.xhtml")) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (accessRight.equals(AccessRightEnum.MANAGER)) {
-            if (path.contains("/management")) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
+//
+//    private Boolean checkAccessRight(String path, AccessRightEnum accessRight) {
+//        if (accessRight.equals(AccessRightEnum.EMPLOYEE)) {
+//            if (path.equals("/management/home.xhtml")
+//                    || path.equals("/management/account/updateParticulars.html")
+//                    || path.equals("/management/plans/main.xhtml")
+//                    || path.equals("/management/products/main.xhtml")
+//                    || path.equals("/management/customers/main.xhtml")
+//                    || path.equals("/management/announcements/main.xhtml")
+//                    || path.equals("/management/promotions/main.xhtml")
+//                    || path.equals("/management/announcements/pastAnnouncement.xhtml")) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else if (accessRight.equals(AccessRightEnum.MANAGER)) {
+//            if (path.contains("/management")) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }
+//        return false;
+//    }
 
     private Boolean excludeLoginCheck(String path) {
         if (path.equals("/index.xhtml")

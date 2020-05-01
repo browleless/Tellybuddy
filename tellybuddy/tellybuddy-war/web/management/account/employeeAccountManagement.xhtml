@@ -8,6 +8,35 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="content">
+        <style>
+            .ui-dialog {
+                border-radius: 15px;
+            }
+
+            .ui-dialog .ui-dialog-titlebar {
+                background-color: #1f89ce !important;
+                margin: 0px;
+                padding: 15px;
+            }
+
+            .ui-dialog .ui-dialog-title {
+                color: white;
+            }
+            
+            .white-button.ui-button.ui-state-default {
+                background-color: #f1f2f5;
+                color: #222222;
+                border-color: #d6d6d6;
+            }
+
+            .white-button.ui-button.ui-state-default:enabled:hover, 
+            
+            .white-button.ui-button.ui-state-default:focus {
+                background-color: #d5d5d5;
+                border-color: #ccc;
+                color: #373a3c;
+            }
+        </style>
 
         <div>
             <h3>Account Management for Employees</h3>
@@ -43,10 +72,6 @@
                         <h:outputText value="#{employee.username}" />
                     </p:column>
 
-
-                    <p:column headerText="Access" sortBy="#{employee.accessRightEnum}" filterBy="#{employee.accessRightEnum}" filterMatchMode="contains">
-                        <h:outputText value="#{employee.accessRightEnum}" />
-                    </p:column>
 
                     <p:column headerText="Action" >
                         <p:commandButton update="dialogUpdateEmployee" oncomplete="PF('dialogUpdateEmployee').show()" icon="ui-icon-pencil" title="Update">
@@ -106,17 +131,7 @@
                             </p:column>
                         </p:row>
 
-                        <p:row>
-                            <p:column>
-                                <p:outputLabel for="accessRight" value="Access right: " style="font-weight: bold;" />
-                            </p:column>
-                            <p:column>
-                                <p:selectOneRadio id="accessRight" value="#{employeeManagedBean.newEmployee.accessRightEnum}" required = "true" unselectable="true" requiredMessage="Access right is required">
-                                    <f:selectItem itemLabel="Manager" itemValue="MANAGER" />
-                                    <f:selectItem itemLabel="Employee" itemValue="EMPLOYEE" />
-                                </p:selectOneRadio>
-                            </p:column>
-                        </p:row>
+                       
 
                       <p:row  >
                           <p:fileUpload skinSimple="true" fileUploadListener="#{employeeManagedBean.upload}" previewWidth="150" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg" required="true" requiredMessage="Employee Profile Image is required!"/>
@@ -160,17 +175,7 @@
                                 <p:inputText id="username" value="#{employeeManagedBean.employeeToUpdate.username}" required="true" requiredMessage="Username is required" />
                             </p:column>
                         </p:row>
-                        <p:row>
-                            <p:column>
-                                <p:outputLabel for="acessLevel" value="Access level: " style="font-weight: bold;" />
-                            </p:column>
-                            <p:column>
-                                <p:selectOneRadio id="acessLevel" value="#{employeeManagedBean.employeeToUpdate.accessRightEnum}" required = "true" unselectable="true" requiredMessage="Access level is required">
-                                    <f:selectItem itemLabel="Employee" itemValue="EMPLOYEE" />
-                                    <f:selectItem itemLabel="Manager" itemValue="MANAGER" />
-                                </p:selectOneRadio>
-                            </p:column>
-                        </p:row>
+                 
                     </p:panelGrid>
 
                     <div style="text-align: center; margin-top: 20px">

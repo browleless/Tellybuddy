@@ -47,7 +47,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import util.enumeration.AccessRightEnum;
+
 import util.enumeration.AnnouncementRecipientEnum;
 import util.enumeration.SubscriptionStatusEnum;
 import util.enumeration.TransactionStatusEnum;
@@ -103,11 +103,11 @@ public class DataInitialization {
             this.createPhoneNumbers();
             this.createCustomers();
 
-            Employee newEmployee = new Employee("manager", "password", "Default", "Manager", AccessRightEnum.MANAGER, "path");
+            Employee newEmployee = new Employee("manager", "password", "Default", "Manager",  "path");
             em.persist(newEmployee);
             em.flush();
 
-            newEmployee = new Employee("employee", "password", "Default", "Employee", AccessRightEnum.EMPLOYEE, "path");
+            newEmployee = new Employee("employee", "password", "Default", "Employee",  "path");
             em.persist(newEmployee);
             em.flush();
 

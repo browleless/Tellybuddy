@@ -206,13 +206,13 @@
                                 </f:facet>
                             </p:textEditor>
                         </p:row>
-
+                        
                         <p:row>
                             <p:column>
                                 <p:outputLabel for="postDate" value="Posting date: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:datePicker id="postDate" value="#{announcementManagedBean.newAnnouncement.postedDate}" showTime="true" required = "true" requiredMessage="Posting date is required"/>
+                                <p:calendar id="postDate"  value="#{announcementManagedBean.newAnnouncement.postedDate}" pattern="dd/MM/yyyy HH:mm"/>
                             </p:column>
                         </p:row>
                         <p:row>
@@ -220,9 +220,11 @@
                                 <p:outputLabel for="expiryDate" value="Expiry date: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:datePicker id="expiryDate" value="#{announcementManagedBean.newAnnouncement.expiryDate}" showTime="true" required = "true"  requiredMessage="Expiry date is required"/>
+                                <p:calendar id="expiryDate" value="#{announcementManagedBean.newAnnouncement.expiryDate}" pattern="dd/MM/yyyy HH:mm"/>
                             </p:column>
-                        </p:row>
+                        </p:row>   
+                        
+                  
                         <p:row>
                             <p:column>
                                 <p:outputLabel for="audience" value="Announcement audience: " style="font-weight: bold;" />
@@ -278,10 +280,10 @@
                         </p:row>
                         <p:row>
                             <p:column>
-                                <p:outputLabel for="postDate" value="Post date: " style="font-weight: bold;" />
+                                <p:outputLabel for="postDate" value="Posting date: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:datePicker id="postDate" value="#{announcementManagedBean.ongoingToUpdate.postedDate}" showTime="true" required = "true"  requiredMessage="Posting date is required"/>
+                                <p:calendar id="postDate"  value="#{announcementManagedBean.ongoingToUpdate.postedDate}" pattern="dd/MM/yyyy HH:mm"/>
                             </p:column>
                         </p:row>
                         <p:row>
@@ -289,9 +291,9 @@
                                 <p:outputLabel for="expiryDate" value="Expiry date: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:datePicker id="expiryDate" value="#{announcementManagedBean.ongoingToUpdate.expiryDate}" showTime="true" required = "true"  requiredMessage="Expiry date is required"/>
+                                <p:calendar id="expiryDate" value="#{announcementManagedBean.ongoingToUpdate.expiryDate}" pattern="dd/MM/yyyy HH:mm"/>
                             </p:column>
-                        </p:row>
+                        </p:row>   
                         <p:row>
                             <p:column>
                                 <p:outputLabel for="audience" value="Announcement audience: " style="font-weight: bold;" />

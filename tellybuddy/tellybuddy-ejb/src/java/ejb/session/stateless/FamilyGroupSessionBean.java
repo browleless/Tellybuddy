@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Customer;
 import entity.FamilyGroup;
 import entity.Subscription;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import javax.ejb.EJB;
@@ -230,7 +231,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             subscriptionToUpdate.getSmsUnits().get("familyGroup") +
                             subscriptionToUpdate.getSmsUnits().get("quizExtraUnits") 
                             - subscriptionToUpdate.getSmsUnits().get("donated")
-                            - subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getSmsUsage()
+                            - Math.ceil(subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getSmsUsage() / subscriptionToUpdate.getPlan().getSmsConversionRate())
                             >= smsUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 units 
                         if (familyGroupToUpdate.getDonatedSMSUnits() + smsUnits > 50) {
@@ -254,7 +255,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             + subscriptionToUpdate.getDataUnits().get("familyGroup") 
                             + subscriptionToUpdate.getDataUnits().get("quizExtraUnits") 
                             - subscriptionToUpdate.getDataUnits().get("donated") 
-                            - subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getDataUsage().setScale(0, RoundingMode.UP).intValue()
+                            - subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getDataUsage().divide(BigDecimal.valueOf(subscriptionToUpdate.getPlan().getDataConversionRate())).setScale(0, RoundingMode.UP).intValue()
                                     >= dataUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 limits
                         if (familyGroupToUpdate.getDonatedDataUnits() + dataUnits > 50) {
@@ -278,7 +279,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
                             + subscriptionToUpdate.getTalkTimeUnits().get("familyGroup") 
                             + subscriptionToUpdate.getTalkTimeUnits().get("quizExtraUnits") 
                             - subscriptionToUpdate.getTalkTimeUnits().get("donated") 
-                            - subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getTalktimeUsage().setScale(0, RoundingMode.UP).intValue()
+                            - subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() -1).getTalktimeUsage().divide(BigDecimal.valueOf(subscriptionToUpdate.getPlan().getTalktimeConversionRate())).setScale(0, RoundingMode.UP).intValue()
                             >= talktimeUnits) {
                         //check if donatedUnits has already reached its upper limit of 1000 limits
                         if (familyGroupToUpdate.getDonatedTalkTimeUnits() + talktimeUnits > 50) {

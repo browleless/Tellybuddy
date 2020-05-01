@@ -145,10 +145,10 @@ public class EmployeeManagedBean implements Serializable {
     }
 
     public void setEmployeeToUpdate(Employee employeeToUpdate) {
-        if (this.saveUploadedImage() != null) {
-            String filePath = this.saveUploadedImage();
-            this.employeeToUpdate.setPhotoPath(filePath);
-        }
+//        if (this.saveUploadedImage() != null) {
+//            String filePath = this.saveUploadedImage();
+//            this.employeeToUpdate.setPhotoPath(filePath);
+//        }
         this.employeeToUpdate = employeeToUpdate;
     }
 
