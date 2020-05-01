@@ -178,7 +178,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
     
     @Override
     public List<Product> retrieveAllDiscountedProducts() {
-        Query query = em.createQuery("SELECT p FROM Product p WHERE ((p.discountPrice IS NOT NULL) AND (CURRENT_TIMESTAMP BETWEEN p.dealStartTime AND p.dealEndTime ORDER BY p.dealEndTime))");
+        Query query = em.createQuery("SELECT p FROM Product p WHERE (p.discountPrice IS NOT NULL) AND (CURRENT_TIMESTAMP BETWEEN p.dealStartTime AND p.dealEndTime) ORDER BY p.dealEndTime");
         
         List<Product> discountedProducts = query.getResultList();
         
