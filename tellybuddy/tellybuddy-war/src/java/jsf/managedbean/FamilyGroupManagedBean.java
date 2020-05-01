@@ -103,6 +103,7 @@ public class FamilyGroupManagedBean implements Serializable {
         temp.setGaugeLabel("/units");
         temp.setGaugeLabelPosition("bottom");
         return temp;
+
     }
 
     private void createMeterGaugeModels() {

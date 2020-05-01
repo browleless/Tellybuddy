@@ -103,22 +103,22 @@ public class Customer implements Serializable {
     @Pattern(regexp = "^[STFG]\\d{7}[A-JZ]$")
     private String newNric;
 
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true, unique = false)
 //    @Column(nullable = true)
     private String nricFrontImagePath;
 
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true, unique = false)
 //    @Column(nullable = true)
     private String nricBackImagePath;
     
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true, unique = false)
 //    @Column(nullable = true)
     private String newNricFrontImagePath;
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true, unique = false)
 //    @Column(nullable = true)
     private String newNricBackImagePath;
     
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true, unique = false)
     private String profilePhoto;
 
     @Column(nullable = false, unique = true, length = 64)

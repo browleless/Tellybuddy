@@ -17,7 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import util.enumeration.AccessRightEnum;
+
 import util.security.CryptographicHelper;
 
 /**
@@ -54,10 +54,10 @@ public class Employee implements Serializable {
     @Size(min = 2, max = 24)
     private String lastName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @NotNull
-    private AccessRightEnum accessRightEnum;
+//    @Enumerated(EnumType.STRING)
+//    @Column(nullable = false)
+//    @NotNull
+//    private AccessRightEnum accessRightEnum;
     
     @Column(nullable = false, length = 128)
     @NotNull
@@ -73,13 +73,13 @@ public class Employee implements Serializable {
     }
 
 
-    public Employee(String username, String password, String firstName, String lastName, AccessRightEnum accessRightEnum, String photoPath) {
+    public Employee(String username, String password, String firstName, String lastName, String photoPath) {
 
         this();
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.accessRightEnum = accessRightEnum;
+//        this.accessRightEnum = accessRightEnum;
         this.photoPath = photoPath;
         this.stickyNotes = new ArrayList<>();
         setPassword(password);
@@ -166,14 +166,14 @@ public class Employee implements Serializable {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-    public AccessRightEnum getAccessRightEnum() {
-        return accessRightEnum;
-    }
-
-    public void setAccessRightEnum(AccessRightEnum accessRightEnum) {
-        this.accessRightEnum = accessRightEnum;
-    }
+//
+//    public AccessRightEnum getAccessRightEnum() {
+//        return accessRightEnum;
+//    }
+//
+//    public void setAccessRightEnum(AccessRightEnum accessRightEnum) {
+//        this.accessRightEnum = accessRightEnum;
+//    }
 
     public String getSalt() {
         return salt;

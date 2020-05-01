@@ -129,7 +129,6 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
         if (employee != null && employee.getEmployeeId() != null) {
             Employee employeeToUpdate = retrieveEmployeeByEmployeeId(employee.getEmployeeId());
             if (employeeToUpdate.getUsername().equals(employee.getUsername())) {
-                employeeToUpdate.setAccessRightEnum(employee.getAccessRightEnum());
                 employeeToUpdate.setFirstName(employee.getFirstName());
                 employeeToUpdate.setLastName(employee.getLastName());
                 employeeToUpdate.setPhotoPath(employee.getPhotoPath());
