@@ -68,16 +68,16 @@ public class CustomerManagementManagedBean implements Serializable {
 //            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred creating new plan: " + ex.getMessage(), null));
 //        }
 //    }
-    public void updateCustomer(ActionEvent event) {
-        try {
-            customerSessionBeanLocal.updateCustomerDetailsForCustomer(getCustomerToUpdate());
-            setCustomerToUpdate(null);
-
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Plan updated successfully", null));
-        } catch (CustomerNotFoundException ex) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while updating seleted customer: " + ex.getMessage(), null));
-        }
-    }
+//    public void updateCustomer(ActionEvent event) {
+//        try {
+//            customerSessionBeanLocal.updateCustomerDetailsForCustomer(getCustomerToUpdate());
+//            setCustomerToUpdate(null);
+//
+//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Plan updated successfully", null));
+//        } catch (CustomerNotFoundException ex) {
+//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while updating seleted customer: " + ex.getMessage(), null));
+//        }
+//    }
 
     public CustomerSessionBeanLocal getCustomerSessionBeanLocal() {
         return customerSessionBeanLocal;

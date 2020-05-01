@@ -146,6 +146,17 @@
                                 </h:outputText>
                             </p:column>
                         </p:row>
+                        
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Penalty Price: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{planManagementManagedBean.planToView.penalty}">
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:row>
 
                         <p:row>
                             <p:column>
@@ -237,6 +248,14 @@
                             </p:column>
                             <p:column>                            
                                 <p:spinner id="planPrice" value="#{planManagementManagedBean.newPlan.price}" placeholder="20.00" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Plan Price is required" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="penaltyPrice" value="Penalty Price " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>                            
+                                <p:spinner id="penaltyPrice" value="#{planManagementManagedBean.newPlan.penalty}" placeholder="50.00" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Penalty Price is required" />
                             </p:column>
                         </p:row>
 

@@ -54,6 +54,10 @@ public class Bill implements Serializable {
     @Digits(integer = 3, fraction = 2)
     @DecimalMin("0.00")
     private BigDecimal exceedPenaltyPrice;
+    
+    @Column(nullable = true, precision = 5, scale = 2)
+    @Digits(integer = 3, fraction = 2)
+    private BigDecimal earlyTerminationFee;
 
     @Column(nullable = false)
     @NotNull
@@ -79,13 +83,14 @@ public class Bill implements Serializable {
         this.paid = false;
     }
 
-    public Bill(BigDecimal price, Date date, BigDecimal addOnPrice, BigDecimal exceedPenaltyPrice, Integer familyDiscountRate) {
+    public Bill(BigDecimal price, Date date, BigDecimal addOnPrice, BigDecimal exceedPenaltyPrice, BigDecimal earlyTerminationFee, Integer familyDiscountRate) {
         this();
         this.price = price;
         this.date = date;
         this.addOnPrice = addOnPrice;
         this.exceedPenaltyPrice = exceedPenaltyPrice;
         this.familyDiscountRate = familyDiscountRate;
+        this.earlyTerminationFee = earlyTerminationFee;
     }
 
     public Long getBillId() {
@@ -191,5 +196,13 @@ public class Bill implements Serializable {
 
     public void setFamilyDiscountRate(Integer familyDiscountRate) {
         this.familyDiscountRate = familyDiscountRate;
+    }
+
+    public BigDecimal getEarlyTerminationFee() {
+        return earlyTerminationFee;
+    }
+
+    public void setEarlyTerminationFee(BigDecimal earlyTerminationFee) {
+        this.earlyTerminationFee = earlyTerminationFee;
     }
 }

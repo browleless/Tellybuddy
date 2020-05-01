@@ -222,7 +222,12 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 familyGroupDiscountRate = subscriptionToUpdate.getCustomer().getFamilyGroup().getDiscountRate();
             }
 
-            Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice, familyGroupDiscountRate);
+            if (!subscription.getIsActive() && subscription.getIsContract()) {
+                BigDecimal earlyTerminationFee = subscription.getPlan().getPenalty();
+                Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice, earlyTerminationFee, familyGroupDiscountRate);
+            }
+
+            Bill bill = new Bill(subscriptionToUpdate.getPlan().getPrice(), new Date(), addOnPrice, totalExceedPenaltyPrice, null, familyGroupDiscountRate);
             bill = billSessionBeanLocal.createNewBill(bill, currentUsageDetail, subscriptionToUpdate.getCustomer());
 
             // send email asynchronously
@@ -250,15 +255,17 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             subscriptionToUpdate.getSmsUnits().put("familyGroup", 0);
             subscriptionToUpdate.getTalkTimeUnits().put("familyGroup", 0);
 
-            // create new usage detail tracking for next month
-            usageDetailSessionBeanLocal.createNewUsageDetail(subscriptionToUpdate);
+            if (subscription.getIsActive()) {
+                // create new usage detail tracking for next month
+                usageDetailSessionBeanLocal.createNewUsageDetail(subscriptionToUpdate);
 
-            Date dateInAMonthsTime = new Date();
-            dateInAMonthsTime.setMonth((new Date().getMonth() + 1) % 12);
+                Date dateInAMonthsTime = new Date();
+                dateInAMonthsTime.setMonth((new Date().getMonth() + 1) % 12);
 
-            // for the next timer cycle
-            TimerService timerService = sessionContext.getTimerService();
-            timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
+                // for the next timer cycle
+                TimerService timerService = sessionContext.getTimerService();
+                timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
+            }
 
         } catch (SubscriptionNotFoundException | InputDataValidationException | CustomerNotFoundException | UsageDetailNotFoundException | InterruptedException ex) {
             // won't happen

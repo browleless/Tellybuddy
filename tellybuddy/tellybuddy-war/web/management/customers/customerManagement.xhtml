@@ -82,38 +82,42 @@
                             <p:panelGrid  columns="4" columnClasses="ui-grid-col-2 logo, ui-grid-col-4 ,ui-grid-col-2 logo, ui-grid-col-4 ">
 
                                 <h:outputText value="First Name:" />
-                                <h:outputText value="#{customer.firstName}" style="font-weight: bold"/>
+                                <h:outputText value="#{customer.firstName}" style="font-weight: lighter"/>
 
                                 <h:outputText value="Last Name:" />
-                                <h:outputText value="#{customer.lastName}" style="font-weight: bold"/>
+                                <h:outputText value="#{customer.lastName}" style="font-weight: lighter" />
 
                                 <h:outputText value="Username:" />
-                                <h:outputText value="#{customer.username}" style="font-weight: bold"/>
+                                <h:outputText value="#{customer.username}" style="font-weight: lighter" />
 
                                 <h:outputText value="Age:" />
-                                <h:outputText value="#{customer.age}" style="font-weight: bold"/>
+                                <h:outputText value="#{customer.age}" style="font-weight: lighter" />
 
                                 <h:outputText value="Total Subscriptions:" />
-                                <h:outputText value="#{customer.subscriptions.size()}" style="font-weight: bold"/>
+                                <h:outputText value="#{customer.subscriptions.size()}" style="font-weight: lighter"/>
 
                                 <h:outputText value="Address:" />
-                                <h:outputText value="Customer not yet approved!" rendered="#{customer.address==null}" style="font-weight: lighter"/>
-                                <h:outputText value="#{customer.address} #{customer.postalCode}" rendered="#{customer.address!=null}" style="font-weight: bold"/>
+                                <h:outputText value="Customer not yet approved!" rendered="#{customer.address==null}"  style="font-weight: bold"/>
+                                <h:outputText value="#{customer.address} #{customer.postalCode}" rendered="#{customer.address!=null}" style="font-weight: lighter" />
 
                                 <h:outputText value="Loyalty Points:" />
-                                <h:outputText value="#{customer.loyaltyPoints}" style="font-weight: bold"/>
+                                <h:outputText value="#{customer.loyaltyPoints}" style="font-weight: lighter"/>
 
                                 <h:outputText value="NRIC:" />
-                                <h:outputText value="Customer not yet approved!" rendered="#{customer.nric==null}" style="font-weight: lighter"/>
-                                <h:outputText value="#{customer.nric}" rendered="#{customer.nric!=null}" style="font-weight: bold"/>
+                                <h:outputText value="Customer not yet approved!" rendered="#{customer.nric==null}" style="font-weight: bold"/>
+                                <h:outputText value="#{customer.nric}" rendered="#{customer.nric!=null}" style="font-weight: lighter"/>
 
                                 <h:outputText value="Approval Status:" />
-                                <h:outputText value="#{customer.isApproved}" style="font-weight: bold"/>
+                                <h:outputText value="#{customer.isApproved}" style="font-weight: lighter"/>
 
                                 <h:outputText value="Join Date:" />
-                                <h:outputText value="#{customer.joinDate}" style="font-weight: bold">
-                                    <f:convertDateTime pattern="dd-MM-yyyy | HH:mm:ss" timeZone="GMT+8" /> 
+                                <h:outputText value="#{customer.joinDate}" style="font-weight: lighter">
+                                    <f:convertDateTime pattern="dd-MMM-yyyy  HH:mm:ss" timeZone="GMT+8" /> 
                                 </h:outputText>
+                                
+                                <h:outputText value="New Address:" rendered="#{customer.newAddress!=null}"/>
+                                <h:outputText value="#{customer.newAddress}" rendered="#{customer.newAddress!=null}" style="font-weight: bold"/>
+                                
                             </p:panelGrid>
                         </p:outputPanel>
                     </p:panelGrid>
@@ -126,8 +130,8 @@
                                 </p:commandButton>
                             </p:column>
 
-                            <p:column rendered="#{!customer.isApproved}">
-                                <p:commandButton update="dialogVerifyCustomer" oncomplete="PF('dialogVerifyCustomer').show()" icon="fa fa-thumbs-o-up" title="Approve Customer Onboarding">
+                            <p:column rendered="#{customer.customerStatusEnum != 'ACTIVE'}">
+                                <p:commandButton update="dialogVerifyCustomer" oncomplete="PF('dialogVerifyCustomer').show()" icon="fa fa-thumbs-o-up" title="Approve Customer Details">
                                     <f:setPropertyActionListener value="#{customer}" target="#{customerManagementManagedBean.customerToUpdate}" />
                                 </p:commandButton>
                             </p:column>

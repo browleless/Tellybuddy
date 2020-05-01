@@ -67,7 +67,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     public Long createCustomer(Customer newCustomer) throws CustomerExistException, CustomerUsernameExistException {
 
         Customer customer = new Customer(newCustomer.getUsername(), newCustomer.getPassword(), newCustomer.getFirstName(), newCustomer.getLastName(), newCustomer.getAge(),
-                newCustomer.getNewAddress(), newCustomer.getNewPostalCode(), newCustomer.getEmail(), newCustomer.getNewNric(), "","", new Date(), "");
+                newCustomer.getNewAddress(), newCustomer.getNewPostalCode(), newCustomer.getEmail(), newCustomer.getNewNric(), "", "", new Date(), "");
 
         Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername");
         query.setParameter("inUsername", customer.getUsername());
@@ -106,7 +106,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
     @Override
     public void updateCustomerDetailsForCustomer(Customer customer) throws CustomerNotFoundException {
-        if (customer != null && customer.getCustomerId() != null) {
+        try {
             Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
             customerToUpdate.setFirstName(customer.getFirstName());
             customerToUpdate.setLastName(customer.getLastName());
@@ -120,15 +120,15 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
                 customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.UPDATING);
                 customerToUpdate.setNewPostalCode(customer.getNewPostalCode());
             }
-            if(customer.getNewNric() != null){
+            if (customer.getNewNric() != null) {
                 customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.UPDATING);
-            customerToUpdate.setNewNric(customer.getNewNric());
+                customerToUpdate.setNewNric(customer.getNewNric());
             }
-            
+
             customerToUpdate.setNewNricBackImagePath(customer.getNewNricBackImagePath());
             // em.flush();
-        } else {
-            throw new CustomerNotFoundException("Customer ID not provided");
+        } catch (Exception ex) {
+            throw new CustomerNotFoundException(ex.getMessage());
         }
     }
 
@@ -146,20 +146,31 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     @Override
     public void employeeApprovePendingCustomerAndUpdate(Customer customer) throws CustomerNotFoundException {
         Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
-        customerToUpdate.setAddress(customer.getNewAddress());
-        customerToUpdate.setNewAddress(null);
-        customerToUpdate.setPostalCode(customer.getNewPostalCode());
-        customerToUpdate.setNewPostalCode(null);
-        customerToUpdate.setNric(customer.getNewNric());
-        customerToUpdate.setNewNric(null);
-        customerToUpdate.setNricFrontImagePath(customer.getNewNricFrontImagePath());
-        customerToUpdate.setNricBackImagePath(customer.getNewNricBackImagePath());
-        customerToUpdate.setNewNricBackImagePath(null);
-        customerToUpdate.setNewNricFrontImagePath(null);
+
+        if (customerToUpdate.getNewAddress() != null) {
+            customerToUpdate.setAddress(customer.getNewAddress());
+            customerToUpdate.setNewAddress(null);
+        }
+        
+        if (customerToUpdate.getNewPostalCode()!= null) {
+            customerToUpdate.setPostalCode(customer.getNewPostalCode());
+            customerToUpdate.setNewPostalCode(null);
+        }
+        
+        if (customerToUpdate.getNewNric()!= null) {
+            customerToUpdate.setNric(customer.getNewNric());
+            customerToUpdate.setNewNric(null);
+        }
+        
+        if (customerToUpdate.getNricBackImagePath() != null) {
+            customerToUpdate.setNricFrontImagePath(customer.getNewNricFrontImagePath());
+            customerToUpdate.setNricBackImagePath(customer.getNewNricBackImagePath());
+            customerToUpdate.setNewNricBackImagePath(null);
+            customerToUpdate.setNewNricFrontImagePath(null);
+        }
 
         customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.ACTIVE);
         customerToUpdate.setIsApproved(true);
-
     }
 
 //    @RolesAllowed({"customer"})
