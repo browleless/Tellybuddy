@@ -23,7 +23,7 @@ public interface CategorySessionBeanLocal {
 
 
 
-    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException;
+    public Category createNewCategory(Category newCategory) throws InputDataValidationException, CreateNewCategoryException;
 
     public List<Category> retrieveAllCategories();
 

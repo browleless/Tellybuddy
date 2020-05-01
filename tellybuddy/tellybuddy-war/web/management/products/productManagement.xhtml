@@ -23,7 +23,7 @@
             .ui-dialog .ui-dialog-title {
                 color: white;
             }
-            
+
             .white-button.ui-button.ui-state-default {
                 background-color: #f1f2f5;
                 color: #222222;
@@ -31,7 +31,7 @@
             }
 
             .white-button.ui-button.ui-state-default:enabled:hover, 
-            
+
             .white-button.ui-button.ui-state-default:focus {
                 background-color: #d5d5d5;
                 border-color: #ccc;
@@ -44,6 +44,8 @@
             <h3>Product Management</h3>
 
             <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Product" oncomplete="PF('dialogCreateNewProduct').show()" />
+            <p:commandButton icon="fa fa-list-ul" style="margin-left: 10px; margin-bottom: 20px" value="Category Management" oncomplete="PF('dialogCategoryManagement').show()" />
+            <p:commandButton icon="fa fa-tags" style="margin-left: 10px; margin-bottom: 20px" value="Tags Management" oncomplete="PF('dialogTagManagement').show()" />
 
             <h:form id="searchForm">
                 <div class="ui-inputgroup">
@@ -74,9 +76,6 @@
                         <h:panelGrid columns="1" style="width:100%">
 
                             <p:outputPanel>
-
-
-
                                 <p:graphicImage width="100%" value="./productImages/#{product.productImagePath}"/> 
 
                                 <h:outputText value="#{product.name}" />
@@ -107,6 +106,8 @@
                     <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
                 </p:confirmDialog>
             </h:form>
+
+
 
             <ez:ViewProduct id="ccViewProduct" />
 
@@ -392,6 +393,165 @@
                 </p:dialog>
 
             </h:form>
+
+
+            <!--CATEGORY-->
+            <h:form id="formCategory">
+
+                <p:dialog id="dialogCategoryManagement" widgetVar="dialogCategoryManagement" header="Categories Management" closable="true" resizable="true" width="450" height="400">
+
+                    <p:messages id="messagesCategory" redisplay="false" />
+                    
+                    <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Category" oncomplete="PF('dialogCreateNewCategory').show()" />
+
+                    <p:dataTable id="dataTableAllCategories" widgetVar="dataTableAllCategories" value="#{productManagementManagedBean.allCategories}" var="cat" rowKey="#{cat.categoryId}" rowIndexVar="row"
+                                 filteredValue="#{productManagementManagedBean.allCategories}"
+                                 rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                        <p:column headerText="Category ID" sortBy="#{cat.categoryId}" filterBy="#{cat.categoryId}" filterMatchMode="contains">
+                            <h:outputText value="#{cat.categoryId}" />
+                        </p:column>
+
+                        <p:column headerText="Category Name" sortBy="#{cat.name}" filterBy="#{cat.name}" filterMatchMode="contains">
+                            <h:outputText value="#{cat.name}" />
+                        </p:column>
+
+                        <p:column headerText="Description" sortBy="#{cat.description}" filterBy="#{cat.description}" filterMatchMode="contains">
+                            <h:outputText value="#{cat.description}" />
+                        </p:column>
+
+                        <p:column headerText="Action" >
+                            <div align="center">
+                                <p:commandLink actionListener="#{productManagementManagedBean.deleteCategory}" update="@form formCategory:dataTableAllCategories formCategory:messagesCategory">
+                                    <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
+                                    <f:attribute name="categoryToDelete" value="#{cat}" />
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{cat.name}?" icon="ui-icon-alert" />
+                                </p:commandLink>
+                            </div>
+                        </p:column>
+
+                    </p:dataTable>
+
+                </p:dialog>
+            </h:form>
+
+            <h:form id="formCreateNewCategory">
+
+                <p:dialog id="dialogCreateNewCategory" widgetVar="dialogCreateNewCategory" header="Create New Category" closable="true" resizable="true" width="450" height="120">
+
+                    <p:messages id="messages" redisplay="false" />
+
+                    <p:panelGrid style="width: 410px">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="catName" value="Category Name" style="font-weight: bold;" /> 
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="catName" value="#{productManagementManagedBean.newCategory.name}" placeholder="Enter new category name here" required="true" requiredMessage="Category Name is required" /> 
+                            </p:column>
+                        </p:row>
+                        
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="catDescription" value="Category Description" style="font-weight: bold;" /> 
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="catDescription" value="#{productManagementManagedBean.newCategory.description}" placeholder="Enter description here" required="true" requiredMessage="Category description is required" /> 
+                            </p:column>
+                        </p:row>
+                        
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton type="reset" value="Clear" />&nbsp;
+                                <p:commandButton  value="Create" process="@form" update="@form formCategory:dataTableAllCategories" actionListener="#{productManagementManagedBean.createNewCategory}" oncomplete="PF('formCreateNewCategory').hide();" />
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+                </p:dialog>
+            </h:form>
+
+
+
+
+
+            <!--TAGS-->
+            <h:form id="formTags">
+
+                <p:dialog id="dialogTagManagement" widgetVar="dialogTagManagement" header="Tags Management" closable="true" resizable="true" width="450" height="400">
+
+                    <p:messages id="messagesTags" redisplay="false" />
+
+                    <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Tag" oncomplete="PF('dialogCreateNewTag').show()" />
+
+                    <p:dataTable id="dataTableAllTags" widgetVar="dataTableAllTags" value="#{productManagementManagedBean.allTags}" var="tag" rowKey="#{tag.tagId}" rowIndexVar="row"
+                                 filteredValue="#{productManagementManagedBean.allTags}"
+                                 rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                        <p:column headerText="Tag ID" sortBy="#{tag.tagId}" filterBy="#{tag.tagId}" filterMatchMode="contains">
+                            <h:outputText value="#{tag.tagId}" />
+                        </p:column>
+
+                        <p:column headerText="Tag Name" sortBy="#{tag.name}" filterBy="#{tag.name}" filterMatchMode="contains">
+                            <h:outputText value="#{tag.name}" />
+                        </p:column>
+
+                        <p:column headerText="Action" >
+                            <div align="center">
+                                <p:commandLink actionListener="#{productManagementManagedBean.deleteTag}" update="@form formTags:dataTableAllTags formTags:messagesTags">
+                                    <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
+                                    <f:attribute name="tagToDelete" value="#{tag}" />
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete #{tag.name}?" icon="ui-icon-alert" />
+                                </p:commandLink>
+                            </div>
+                        </p:column>
+
+                    </p:dataTable>
+
+                </p:dialog>
+            </h:form>
+
+
+            <h:form id="formCreateNewTag">
+
+                <p:dialog id="dialogCreateNewTag" widgetVar="dialogCreateNewTag" header="Create New Tag" closable="true" resizable="true" width="450" height="90">
+
+                    <p:messages id="messagesTags" redisplay="false" />
+
+                    <p:panelGrid style="width: 410px">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="tagName" value="Tag Name" style="font-weight: bold;" /> 
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="tagName" value="#{productManagementManagedBean.newTag.name}" placeholder="Enter new tag name here" required="true" requiredMessage="Tag Name is required" /> 
+                            </p:column>
+                        </p:row>
+
+                        <!--                        <p:row>
+                                                    <p:column>
+                                                        <p:outputLabel value="Associate with Products:" style="font-weight: bold;" />
+                                                    </p:column>
+                                                    <p:column>
+                        
+                                                        <p:selectManyMenu id="products" value="#{productManagementManagedBean.allProducts}" showCheckbox="true" scrollHeight="80">
+                                                            <f:selectItems value="#{filterProductsByTagsManagedBean.selectItems}" />
+                                                        </p:selectManyMenu> 
+                                                    </p:column>
+                                                </p:row>-->
+
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton type="reset" value="Clear" />&nbsp;
+                                <p:commandButton  value="Create" process="@form" update="@form formTags:dataTableAllTags" actionListener="#{productManagementManagedBean.createNewTag}" oncomplete="PF('dialogCreateNewTag').hide();" />
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+                </p:dialog>
+            </h:form>
+
+
 
         </div>
     </ui:define>
