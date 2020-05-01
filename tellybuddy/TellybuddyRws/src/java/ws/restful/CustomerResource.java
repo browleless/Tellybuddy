@@ -3,12 +3,20 @@ package ws.restful;
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.EmailSessionBeanLocal;
 import entity.Customer;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -236,18 +244,18 @@ public class CustomerResource {
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("retrieveCurrentCustomer")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retrieveCurrentCustomer(@QueryParam("username")String username, @QueryParam("password") String password){
-        try{
+    public Response retrieveCurrentCustomer(@QueryParam("username") String username, @QueryParam("password") String password) {
+        try {
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
             System.out.println("********** CustomerResource.retrieveCustomerByUsername(): Customer " + customer.getUsername() + " login remotely via web service");
             customer.setPassword(null);
@@ -258,9 +266,9 @@ public class CustomerResource {
             customer.getTransactions().clear();
             customer.setFamilyGroup(null);
             return Response.status(Response.Status.OK).entity(new RetrieveCurrentCustomerRsp(customer)).build();
-        }catch(InvalidLoginCredentialException ex){
-           ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
-            return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build(); 
+        } catch (InvalidLoginCredentialException ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
         } catch (Exception ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
@@ -291,5 +299,25 @@ public class CustomerResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(errorRsp).build();
         }
     }
+
+    @GET
+    @Path("retrieveProfilePicture")
+    @Produces("image/jpg")
+    public Response retrieveProfilePicture(@QueryParam("username") String username, @QueryParam("password") String password) throws SQLException {
+        try {
+            Customer customer = customerSessionBeanLocal.customerLogin(username, password);
+            File file = new File(CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().substring(1, CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().indexOf("/dist")).replace("/", "\\") + "\\tellybuddy-war\\web\\management\\customers\\profilePhotos\\" + customer.getProfilePhoto());
+            System.out.println("********** CustomerResource.retrieveProfilePicture(): Customer " + customer.getUsername() + " login remotely via web service");
+            System.out.println(file.getAbsolutePath());
+            return Response.ok(file, "image/jpg").build();
+        } catch (InvalidLoginCredentialException ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+
 
 }
