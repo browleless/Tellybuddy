@@ -142,7 +142,7 @@ public class CategorySessionBean implements CategorySessionBeanLocal {
     }
 
     @Override
-    public void updateCategory(Category category, Long parentCategoryId) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {
+    public void updateCategory(Category category) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {
         Set<ConstraintViolation<Category>> constraintViolations = validator.validate(category);
 
         if (constraintViolations.isEmpty()) {

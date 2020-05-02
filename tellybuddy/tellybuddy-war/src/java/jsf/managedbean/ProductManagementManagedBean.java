@@ -49,6 +49,8 @@ import util.exception.ProductNotFoundException;
 import util.exception.ProductSkuCodeExistException;
 import util.exception.TagNotFoundException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateCategoryException;
+import util.exception.UpdateTagException;
 
 /**
  *
@@ -83,8 +85,11 @@ public class ProductManagementManagedBean implements Serializable {
 
     private Product newProduct;
     private LuxuryProduct newLuxuryProduct;
+    //tag and category management
     private Tag newTag;
     private Category newCategory;
+    private Tag selectedTagToUpdate;
+    private Category selectedCategoryToUpdate;
 
     private Long categoryIdNew;
     private List<Long> tagIdsNew;
@@ -284,12 +289,28 @@ public class ProductManagementManagedBean implements Serializable {
     public void createNewCategory(ActionEvent ae) {
         try {
             Category createdCat = categorySessionBeanLocal.createNewCategory(newCategory);
-            
+
             this.allCategories.add(createdCat);
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Category created successfully", null));
         } catch (InputDataValidationException | CreateNewCategoryException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating new category: " + ex.getMessage(), null));
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
+        }
+    }
+
+    public void doUpdateCategory(ActionEvent ae) {
+        selectedCategoryToUpdate = (Category) ae.getComponent().getAttributes().get("categoryToUpdate");
+    }
+
+    public void updateCategory(ActionEvent ae) {
+        try {
+            categorySessionBeanLocal.updateCategory(selectedCategoryToUpdate);
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Category updated successfully", null));
+        } catch (InputDataValidationException | CategoryNotFoundException | UpdateCategoryException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while updating category: " + ex.getMessage(), null));
         } catch (Exception ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
         }
@@ -314,15 +335,31 @@ public class ProductManagementManagedBean implements Serializable {
     public void createNewTag(ActionEvent ae) {
         try {
             Long newTagId = tagSessionBeanLocal.createNewTag(newTag);
-            
+
             Tag newTagCreated = tagSessionBeanLocal.retrieveTagByTagId(newTagId);
-            
+
             this.allTags.add(newTagCreated);
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New tag created successfully", null));
 
         } catch (CreateNewTagException | UnknownPersistenceException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating new tag: " + ex.getMessage(), null));
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
+        }
+    }
+
+    public void doUpdateTag(ActionEvent ae) {
+        selectedTagToUpdate = (Tag) ae.getComponent().getAttributes().get("tagToUpdate");
+    }
+
+    public void updateTag(ActionEvent ae) {
+        try {
+            tagSessionBeanLocal.updateTag(selectedTagToUpdate);
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Tag updated successfully", null));
+        } catch (TagNotFoundException | UpdateTagException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while updating tag: " + ex.getMessage(), null));
         } catch (Exception ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
         }
@@ -546,5 +583,33 @@ public class ProductManagementManagedBean implements Serializable {
      */
     public void setNewCategory(Category newCategory) {
         this.newCategory = newCategory;
+    }
+
+    /**
+     * @return the selectedTagToUpdate
+     */
+    public Tag getSelectedTagToUpdate() {
+        return selectedTagToUpdate;
+    }
+
+    /**
+     * @param selectedTagToUpdate the selectedTagToUpdate to set
+     */
+    public void setSelectedTagToUpdate(Tag selectedTagToUpdate) {
+        this.selectedTagToUpdate = selectedTagToUpdate;
+    }
+
+    /**
+     * @return the selectedCategoryToUpdate
+     */
+    public Category getSelectedCategoryToUpdate() {
+        return selectedCategoryToUpdate;
+    }
+
+    /**
+     * @param selectedCategoryToUpdate the selectedCategoryToUpdate to set
+     */
+    public void setSelectedCategoryToUpdate(Category selectedCategoryToUpdate) {
+        this.selectedCategoryToUpdate = selectedCategoryToUpdate;
     }
 }

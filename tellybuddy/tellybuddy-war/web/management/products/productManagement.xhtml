@@ -401,7 +401,7 @@
                 <p:dialog id="dialogCategoryManagement" widgetVar="dialogCategoryManagement" header="Categories Management" closable="true" resizable="true" width="450" height="400">
 
                     <p:messages id="messagesCategory" redisplay="false" />
-                    
+
                     <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Category" oncomplete="PF('dialogCreateNewCategory').show()" />
 
                     <p:dataTable id="dataTableAllCategories" widgetVar="dataTableAllCategories" value="#{productManagementManagedBean.allCategories}" var="cat" rowKey="#{cat.categoryId}" rowIndexVar="row"
@@ -422,11 +422,17 @@
 
                         <p:column headerText="Action" >
                             <div align="center">
+                                <p:commandLink actionListener="#{productManagementManagedBean.doUpdateCategory}" update="formUpdateCategory" oncomplete="PF('dialogUpdateCategory').show()" title="Update">
+                                    <h:outputText styleClass="fa fa-edit" style="margin:0 auto;"/>
+                                    <f:attribute name="categoryToUpdate" value="#{cat}" />
+                                </p:commandLink>&nbsp;
+
                                 <p:commandLink actionListener="#{productManagementManagedBean.deleteCategory}" update="@form formCategory:dataTableAllCategories formCategory:messagesCategory">
                                     <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
                                     <f:attribute name="categoryToDelete" value="#{cat}" />
                                     <p:confirm header="Confirmation" message="Are you sure you want to delete #{cat.name}?" icon="ui-icon-alert" />
                                 </p:commandLink>
+
                             </div>
                         </p:column>
 
@@ -450,7 +456,7 @@
                                 <p:inputText id="catName" value="#{productManagementManagedBean.newCategory.name}" placeholder="Enter new category name here" required="true" requiredMessage="Category Name is required" /> 
                             </p:column>
                         </p:row>
-                        
+
                         <p:row>
                             <p:column>
                                 <p:outputLabel for="catDescription" value="Category Description" style="font-weight: bold;" /> 
@@ -459,11 +465,42 @@
                                 <p:inputText id="catDescription" value="#{productManagementManagedBean.newCategory.description}" placeholder="Enter description here" required="true" requiredMessage="Category description is required" /> 
                             </p:column>
                         </p:row>
-                        
+
                         <p:row>
                             <p:column colspan="2">
                                 <p:commandButton type="reset" value="Clear" />&nbsp;
                                 <p:commandButton  value="Create" process="@form" update="@form formCategory:dataTableAllCategories" actionListener="#{productManagementManagedBean.createNewCategory}" oncomplete="PF('formCreateNewCategory').hide();" />
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+                </p:dialog>
+            </h:form>
+
+            <h:form id="formUpdateCategory">
+
+                <p:dialog id="dialogUpdateCategory" widgetVar="dialogUpdateCategory" header="Update Category" closable="true" resizable="true" width="450" height="120">
+
+                    <p:messages id="messages" redisplay="false" />
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="name" value="Category Name: " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="name" value="#{productManagementManagedBean.selectedCategoryToUpdate.name}" placeholder="Category name" required="true" requiredMessage="Name is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="name" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:commandButton type="reset" value="Clear" />&nbsp;
+                                <p:commandButton  value="Update" process="@form" update="@form formCategory:dataTableAllCategories" actionListener="#{productManagementManagedBean.updateCategory}" oncomplete="PF('dialogUpdateCategory').hide();" />
                             </p:column>
                         </p:row>
 
@@ -498,6 +535,11 @@
 
                         <p:column headerText="Action" >
                             <div align="center">
+                                <p:commandLink actionListener="#{productManagementManagedBean.doUpdateTag}" update="formUpdateTag" oncomplete="PF('dialogUpdateTag').show()" title="Update">
+                                    <h:outputText styleClass="fa fa-edit" style="margin:0 auto;"/>
+                                    <f:attribute name="tagToUpdate" value="#{tag}" />
+                                </p:commandLink>
+
                                 <p:commandLink actionListener="#{productManagementManagedBean.deleteTag}" update="@form formTags:dataTableAllTags formTags:messagesTags">
                                     <h:outputText styleClass="pi pi-trash" style="margin:0 auto;"/>
                                     <f:attribute name="tagToDelete" value="#{tag}" />
@@ -528,18 +570,6 @@
                             </p:column>
                         </p:row>
 
-                        <!--                        <p:row>
-                                                    <p:column>
-                                                        <p:outputLabel value="Associate with Products:" style="font-weight: bold;" />
-                                                    </p:column>
-                                                    <p:column>
-                        
-                                                        <p:selectManyMenu id="products" value="#{productManagementManagedBean.allProducts}" showCheckbox="true" scrollHeight="80">
-                                                            <f:selectItems value="#{filterProductsByTagsManagedBean.selectItems}" />
-                                                        </p:selectManyMenu> 
-                                                    </p:column>
-                                                </p:row>-->
-
                         <p:row>
                             <p:column colspan="2">
                                 <p:commandButton type="reset" value="Clear" />&nbsp;
@@ -548,6 +578,37 @@
                         </p:row>
                     </p:panelGrid>
 
+                </p:dialog>
+            </h:form>
+
+            <h:form id="formUpdateTag">
+
+                <p:dialog id="dialogUpdateTag" widgetVar="dialogUpdateTag" header="Update Tag" closable="true" resizable="true" width="450" height="120">
+
+                    <p:messages id="messages" redisplay="false" />
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="name" value="Tag Name: " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="name" value="#{productManagementManagedBean.selectedTagToUpdate.name}" placeholder="Tag name" required="true" requiredMessage="Name is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="name" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:commandButton type="reset" value="Clear" />&nbsp;
+                                <p:commandButton  value="Update" process="@form" update="@form formTags:dataTableAllTags" actionListener="#{productManagementManagedBean.updateTag}" oncomplete="PF('dialogUpdateTag').hide();" />
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
                 </p:dialog>
             </h:form>
 
