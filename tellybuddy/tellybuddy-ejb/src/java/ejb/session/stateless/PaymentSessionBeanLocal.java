@@ -24,7 +24,7 @@ public interface PaymentSessionBeanLocal {
 
     public Payment createNewPayment(String creditCardNo, String cvv, BigDecimal amount);
 
-    public Long automateBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException;
+//    public Long automateBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException;
 
     public Payment retrievePaymentByPaymentId(Long paymentId) throws PaymentNotFoundException;
 

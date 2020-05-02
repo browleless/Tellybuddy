@@ -149,21 +149,6 @@ public class Customer implements Serializable {
     @Max(1000)
     private Integer counter;
 
-    @Column(length = 16)
-    @Size(min = 16, max = 16)
-    @Pattern(regexp = "^[0-9]{16}$")
-    private String creditCardNumber;
-
-    @Column(length = 3)
-    @Size(min = 3, max = 3)
-    @Pattern(regexp = "^[0-9]{3}$")
-    private String cvv;
-
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    @Future
-    private Date creditCardExpiryDate;
-
     @Column(nullable = false)
     @NotNull
     private Boolean isApproved;
@@ -359,30 +344,6 @@ public class Customer implements Serializable {
 
     public void setLoyaltyPoints(Integer loyaltyPoints) {
         this.loyaltyPoints = loyaltyPoints;
-    }
-
-    public String getCreditCardNumber() {
-        return creditCardNumber;
-    }
-
-    public void setCreditCardNumber(String creditCardNumber) {
-        this.creditCardNumber = creditCardNumber;
-    }
-
-    public String getCvv() {
-        return cvv;
-    }
-
-    public void setCvv(String cvv) {
-        this.cvv = cvv;
-    }
-
-    public Date getCreditCardExpiryDate() {
-        return creditCardExpiryDate;
-    }
-
-    public void setCreditCardExpiryDate(Date creditCardExpiryDate) {
-        this.creditCardExpiryDate = creditCardExpiryDate;
     }
 
     public List<Bill> getBills() {

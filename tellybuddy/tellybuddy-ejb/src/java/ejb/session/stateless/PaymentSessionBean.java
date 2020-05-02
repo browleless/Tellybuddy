@@ -61,29 +61,29 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
         return newPayment;
      }
 
-    @Override
-    public Long automateBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException {
-
-        if (bill.getPaid()) {
-            throw new BillAlreadyPaidException("Bill id " + bill.getBillId() + " has already been paid for");
-        } else {
-            Bill billToPay = billSessionBeanLocal.retrieveBillByBillId(bill.getBillId());
-            Customer customer = billToPay.getCustomer();
-
-            if ((customer.getCreditCardNumber() == null && customer.getCvv() == null && customer.getCreditCardExpiryDate() == null) || customer.getCreditCardExpiryDate().before(new Date())) {
-                throw new CustomerStoredCreditCardException("Customer either has no saved credit card or credit card has expired!");
-            }
-
-            Payment newPayment = new Payment(customer.getCreditCardNumber(), customer.getCvv(), new Date(), billToPay.getPrice().add(billToPay.getAddOnPrice()).add(billToPay.getExceedPenaltyPrice()));
-
-            entityManager.persist(newPayment);
-            entityManager.flush();
-            billToPay.setPayment(newPayment);
-            billToPay.setPaid(Boolean.TRUE);
-
-            return newPayment.getPaymentId();
-        }
-    }
+//    @Override
+//    public Long automateBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException {
+//
+//        if (bill.getPaid()) {
+//            throw new BillAlreadyPaidException("Bill id " + bill.getBillId() + " has already been paid for");
+//        } else {
+//            Bill billToPay = billSessionBeanLocal.retrieveBillByBillId(bill.getBillId());
+//            Customer customer = billToPay.getCustomer();
+//
+//            if ((customer.getCreditCardNumber() == null && customer.getCvv() == null && customer.getCreditCardExpiryDate() == null) || customer.getCreditCardExpiryDate().before(new Date())) {
+//                throw new CustomerStoredCreditCardException("Customer either has no saved credit card or credit card has expired!");
+//            }
+//
+//            Payment newPayment = new Payment(customer.getCreditCardNumber(), customer.getCvv(), new Date(), billToPay.getPrice().add(billToPay.getAddOnPrice()).add(billToPay.getExceedPenaltyPrice()));
+//
+//            entityManager.persist(newPayment);
+//            entityManager.flush();
+//            billToPay.setPayment(newPayment);
+//            billToPay.setPaid(Boolean.TRUE);
+//
+//            return newPayment.getPaymentId();
+//        }
+//    }
 
     @Override
     public Payment retrievePaymentByPaymentId(Long paymentId) throws PaymentNotFoundException {
