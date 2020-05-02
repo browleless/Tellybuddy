@@ -103,11 +103,11 @@ public class DataInitialization {
             this.createPhoneNumbers();
             this.createCustomers();
 
-            Employee newEmployee = new Employee("manager", "password", "Default", "Manager",  "path");
+            Employee newEmployee = new Employee("manager", "password", "Default", "Manager", "path");
             em.persist(newEmployee);
             em.flush();
 
-            newEmployee = new Employee("employee", "password", "Default", "Employee",  "path");
+            newEmployee = new Employee("employee", "password", "Default", "Employee", "path");
             em.persist(newEmployee);
             em.flush();
 
@@ -274,43 +274,43 @@ public class DataInitialization {
         Calendar timeNow = Calendar.getInstance();
         timeNow.add(Calendar.MONTH, -2);
 
-        Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "marktan@gmail.com", "S9702228A", "./nricPhoto.jpg", null,timeNow.getTime(), "mt.jpg");
+        Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "marktan@gmail.com", "S9702228A", "./nricPhoto.jpg", null, timeNow.getTime(), "mt.jpg");
 
         em.persist(customer);
         em.flush();
 
-        customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tayjl@gmail.com", "S9941179A", null, null,timeNow.getTime(), "tayjl.jpg");
+        customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tayjl@gmail.com", "S9941179A", null, null, timeNow.getTime(), "tayjl.jpg");
         em.persist(customer);
         //customer.setIsApproved(true);
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer3", "password3", "Jing Wen", "Ng", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ngJW@gmail.com", "S9841379A", null,null, timeNow.getTime(), "jw.jpg");
+        customer = new Customer("customer3", "password3", "Jing Wen", "Ng", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ngJW@gmail.com", "S9841379A", null, null, timeNow.getTime(), "jw.jpg");
         em.persist(customer);
         em.flush();
 
-        customer = new Customer("customer4", "password4", "Kai Xin", "Zhu", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "kathareverusa@gmail.com", "S9641179A", null,null, timeNow.getTime(), "kx.jpg");
-        em.persist(customer);
-        em.flush();
-
-        timeNow.add(Calendar.MONTH, 1);
-
-        customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tanwk@gmail.com", "S4041179A", null,null, timeNow.getTime(), "tanwk.jpg");
-        // customer.setIsApproved(true);
-        em.persist(customer);
-        em.flush();
-
-        customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ethank@gmail.com", "S4041889A", null, null,timeNow.getTime(), "ethan.jpg");
-        // customer.setIsApproved(true);
+        customer = new Customer("customer4", "password4", "Kai Xin", "Zhu", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "kathareverusa@gmail.com", "S9641179A", null, null, timeNow.getTime(), "kx.jpg");
         em.persist(customer);
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer7", "password7", "WK wife", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk2@gmail.com", "S4041178A", null,null, timeNow.getTime(), null);
+
+        customer = new Customer("customer5", "password5", "Wee Kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tester5@gmail.com", "S4041179A", null, null, timeNow.getTime(), "tanwk.jpg");
+        // customer.setIsApproved(true);
+        em.persist(customer);
+        em.flush();
+
+        customer = new Customer("customer6", "password6", "Ethan", "Pak", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tester6@gmail.com", "S4041889A", null, null, timeNow.getTime(), "ethan.jpg");
+        // customer.setIsApproved(true);
+        em.persist(customer);
+        em.flush();
+
+        timeNow.add(Calendar.MONTH, 1);
+        customer = new Customer("customer7", "password7", "Tester7", "7", Integer.valueOf(20), "This is my address", "117417", "tester7@gmail.com", "S4041178A", null, null, timeNow.getTime(), null);
 
         em.persist(customer);
         em.flush();
-        customer = new Customer("customer8", "password8", "WK son", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk3@gmail.com", "S4041177A", null,null, timeNow.getTime(), null);
+        customer = new Customer("customer8", "password8", "Tester8", "8", Integer.valueOf(20), "This is my address", "117417", "tester8@gmail.com", "S4041177A", null, null, timeNow.getTime(), null);
         em.persist(customer);
         em.flush();
 
@@ -814,6 +814,8 @@ public class DataInitialization {
             unique++;
             productItems.add(pi);
         }
+
+        initialisePromotionalDeals(oppoReno2, carMount);
     }
 
     private String uniqueSerialNum(int unique) {
@@ -824,6 +826,35 @@ public class DataInitialization {
         }
 
         return s;
+    }
+
+    public void initialisePromotionalDeals(Product oppo, Product carMount) {
+
+        //oppo - flash mobile device
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, -2);
+        Date start = calendar.getTime();
+
+        calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 20);
+        Date end = calendar.getTime();
+
+        oppo.setDealStartTime(start);
+        oppo.setDealEndTime(end);
+        oppo.setDiscountPrice(BigDecimal.valueOf(699.0));
+
+        //car mount - flash product
+        carMount.setDealStartTime(start);
+        carMount.setDealEndTime(end);
+        carMount.setDiscountPrice(BigDecimal.valueOf(9.0));
+
+        //create flash plan 
+        Plan newFlashPlan = new Plan("Limited 20", 20, BigDecimal.valueOf(15), BigDecimal.valueOf(200), BigDecimal.valueOf(3.0), Integer.valueOf(1500), Integer.valueOf(100), Integer.valueOf(100), start, end);
+        em.persist(newFlashPlan);
+        em.flush();
+
     }
 
 }

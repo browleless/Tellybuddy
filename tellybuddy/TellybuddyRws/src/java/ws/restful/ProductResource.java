@@ -5,6 +5,8 @@ import ejb.session.stateless.ProductSessionBeanLocal;
 import entity.LuxuryProduct;
 import entity.Product;
 import entity.Tag;
+import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.Consumes;
@@ -18,6 +20,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import util.exception.InvalidLoginCredentialException;
 import util.exception.ProductNotFoundException;
 import ws.datamodel.ErrorRsp;
 import ws.datamodel.RetrieveAllProductsRsp;
@@ -378,6 +381,22 @@ public class ProductResource {
             System.out.println("name " + discountedLuxury.get(0).getName());
 
             return Response.status(Response.Status.OK).entity(new RetrieveAllProductsRsp(discountedLuxury)).build();
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+
+    @GET
+    @Path("retrieveProductImage/{productId}")
+    @Produces("image/jpg")
+    public Response retrieveProductImage(@PathParam("productId") Long productId) throws SQLException {
+        try {
+            Product product = productSessionBeanLocal.retrieveProductByProductId(productId);
+            File file = new File(ProductResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().substring(1, ProductResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().indexOf("/dist")).replace("/", "\\") + "\\tellybuddy-war\\web\\management\\products\\productImages\\" + product.getProductImagePath());
+//            System.out.println("********** ProductResource.retrieveProductImage() for: " + product.getName());
+//            System.out.println(file.getAbsolutePath());
+            return Response.ok(file, "image/jpg").build();
         } catch (Exception ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();

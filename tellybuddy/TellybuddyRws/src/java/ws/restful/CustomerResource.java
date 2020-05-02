@@ -4,19 +4,11 @@ import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.EmailSessionBeanLocal;
 import entity.Customer;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -81,7 +73,7 @@ public class CustomerResource {
             customer.getQuizAttempts().clear();
             customer.getSubscriptions().clear();
             customer.getTransactions().clear();
-          //  customer.getAnnouncements().clear();
+
             customer.setFamilyGroup(null);
 
             return Response.status(Response.Status.OK).entity(new CustomerLoginRsp(customer)).build();
