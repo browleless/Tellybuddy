@@ -23,7 +23,7 @@ public interface CategorySessionBeanLocal {
 
 
 
-    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException;
+    public Category createNewCategory(Category newCategory) throws InputDataValidationException, CreateNewCategoryException;
 
     public List<Category> retrieveAllCategories();
 
@@ -35,7 +35,7 @@ public interface CategorySessionBeanLocal {
 
     public Category retrieveCategoryByCategoryId(Long categoryId) throws CategoryNotFoundException;
 
-    public void updateCategory(Category category, Long parentCategoryId) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException;
+    public void updateCategory(Category category) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException;
 
     public void deleteCategory(Long categoryId) throws CategoryNotFoundException, DeleteCategoryException;
     

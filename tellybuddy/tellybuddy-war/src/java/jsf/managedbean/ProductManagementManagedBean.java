@@ -14,12 +14,9 @@ import entity.LuxuryProduct;
 import entity.Product;
 import entity.ProductItem;
 import entity.Tag;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,18 +33,24 @@ import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
-import javax.management.Query;
-import javax.servlet.ServletContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 import org.primefaces.shaded.commons.io.FilenameUtils;
+import util.exception.CategoryNotFoundException;
+import util.exception.CreateNewCategoryException;
 import util.exception.CreateNewProductException;
+import util.exception.CreateNewTagException;
+import util.exception.DeleteCategoryException;
 import util.exception.DeleteProductException;
+import util.exception.DeleteTagException;
 import util.exception.InputDataValidationException;
 import util.exception.ProductItemExistException;
 import util.exception.ProductNotFoundException;
 import util.exception.ProductSkuCodeExistException;
+import util.exception.TagNotFoundException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateCategoryException;
+import util.exception.UpdateTagException;
 
 /**
  *
@@ -82,6 +85,11 @@ public class ProductManagementManagedBean implements Serializable {
 
     private Product newProduct;
     private LuxuryProduct newLuxuryProduct;
+    //tag and category management
+    private Tag newTag;
+    private Category newCategory;
+    private Tag selectedTagToUpdate;
+    private Category selectedCategoryToUpdate;
 
     private Long categoryIdNew;
     private List<Long> tagIdsNew;
@@ -96,6 +104,8 @@ public class ProductManagementManagedBean implements Serializable {
     public ProductManagementManagedBean() {
         this.newProduct = new Product();
         this.newLuxuryProduct = new LuxuryProduct();
+        this.newTag = new Tag();
+        this.newCategory = new Category();
     }
 
     @PostConstruct
@@ -276,6 +286,102 @@ public class ProductManagementManagedBean implements Serializable {
         }
     }
 
+    public void createNewCategory(ActionEvent ae) {
+        try {
+            Category createdCat = categorySessionBeanLocal.createNewCategory(newCategory);
+
+            this.allCategories.add(createdCat);
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Category created successfully", null));
+        } catch (InputDataValidationException | CreateNewCategoryException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating new category: " + ex.getMessage(), null));
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
+        }
+    }
+
+    public void doUpdateCategory(ActionEvent ae) {
+        selectedCategoryToUpdate = (Category) ae.getComponent().getAttributes().get("categoryToUpdate");
+    }
+
+    public void updateCategory(ActionEvent ae) {
+        try {
+            categorySessionBeanLocal.updateCategory(selectedCategoryToUpdate);
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Category updated successfully", null));
+        } catch (InputDataValidationException | CategoryNotFoundException | UpdateCategoryException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while updating category: " + ex.getMessage(), null));
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
+        }
+    }
+
+    public void deleteCategory(ActionEvent ae) {
+        try {
+            Category categoryToDelete = (Category) ae.getComponent().getAttributes().get("categoryToDelete");
+
+            categorySessionBeanLocal.deleteCategory(categoryToDelete.getCategoryId());
+
+            allCategories.remove(categoryToDelete);
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Category deleted successfully", null));
+        } catch (CategoryNotFoundException | DeleteCategoryException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while deleting category: " + ex.getMessage(), null));
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
+        }
+    }
+
+    public void createNewTag(ActionEvent ae) {
+        try {
+            Long newTagId = tagSessionBeanLocal.createNewTag(newTag);
+
+            Tag newTagCreated = tagSessionBeanLocal.retrieveTagByTagId(newTagId);
+
+            this.allTags.add(newTagCreated);
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New tag created successfully", null));
+
+        } catch (CreateNewTagException | UnknownPersistenceException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating new tag: " + ex.getMessage(), null));
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
+        }
+    }
+
+    public void doUpdateTag(ActionEvent ae) {
+        selectedTagToUpdate = (Tag) ae.getComponent().getAttributes().get("tagToUpdate");
+    }
+
+    public void updateTag(ActionEvent ae) {
+        try {
+            tagSessionBeanLocal.updateTag(selectedTagToUpdate);
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Tag updated successfully", null));
+        } catch (TagNotFoundException | UpdateTagException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while updating tag: " + ex.getMessage(), null));
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
+        }
+    }
+
+    public void deleteTag(ActionEvent ae) {
+        try {
+            Tag tagToDelete = (Tag) ae.getComponent().getAttributes().get("tagToDelete");
+
+            tagSessionBeanLocal.deleteTag(tagToDelete.getTagId());
+
+            allTags.remove(tagToDelete);
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Tag deleted successfully", null));
+        } catch (TagNotFoundException | DeleteTagException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while deleting tag: " + ex.getMessage(), null));
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected error has occurred: " + ex.getMessage(), null));
+        }
+
+    }
+
     public void upload(FileUploadEvent event) {
 
         System.out.println("********** STEP 1");
@@ -292,25 +398,25 @@ public class ProductManagementManagedBean implements Serializable {
 
     public String saveUploadedProductImage() {
 
-            String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\products\\productImages";
-            Path folder = Paths.get(absolutePathToProductImages);
-            System.out.println(absolutePathToProductImages);
+        String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\products\\productImages";
+        Path folder = Paths.get(absolutePathToProductImages);
+        System.out.println(absolutePathToProductImages);
 
-            try {
-                String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
-                String extension = FilenameUtils.getExtension(productImageFile.getFileName());
-                Path file = Files.createTempFile(folder, filename + "-", "." + extension);
-                InputStream input = productImageFile.getInputstream();
+        try {
+            String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
+            String extension = FilenameUtils.getExtension(productImageFile.getFileName());
+            Path file = Files.createTempFile(folder, filename + "-", "." + extension);
+            InputStream input = productImageFile.getInputstream();
 
-                Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
-                return filename + "-" + "." + extension;
+            Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
+            return filename + "-" + "." + extension;
 //                System.out.println(file.toString());
 //                String fullPath = folder + "\\" + file.getFileName().toString();
 //                return fullPath;
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-            return null;
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
 
 //            System.out.println("Uploaded file successfully saved in " + file);
     }
@@ -449,5 +555,61 @@ public class ProductManagementManagedBean implements Serializable {
 
     public void setSearchProductsByNameManagedBean(SearchProductsByNameManagedBean searchProductsByNameManagedBean) {
         this.searchProductsByNameManagedBean = searchProductsByNameManagedBean;
+    }
+
+    /**
+     * @return the newTag
+     */
+    public Tag getNewTag() {
+        return newTag;
+    }
+
+    /**
+     * @param newTag the newTag to set
+     */
+    public void setNewTag(Tag newTag) {
+        this.newTag = newTag;
+    }
+
+    /**
+     * @return the newCategory
+     */
+    public Category getNewCategory() {
+        return newCategory;
+    }
+
+    /**
+     * @param newCategory the newCategory to set
+     */
+    public void setNewCategory(Category newCategory) {
+        this.newCategory = newCategory;
+    }
+
+    /**
+     * @return the selectedTagToUpdate
+     */
+    public Tag getSelectedTagToUpdate() {
+        return selectedTagToUpdate;
+    }
+
+    /**
+     * @param selectedTagToUpdate the selectedTagToUpdate to set
+     */
+    public void setSelectedTagToUpdate(Tag selectedTagToUpdate) {
+        this.selectedTagToUpdate = selectedTagToUpdate;
+    }
+
+    /**
+     * @return the selectedCategoryToUpdate
+     */
+    public Category getSelectedCategoryToUpdate() {
+        return selectedCategoryToUpdate;
+    }
+
+    /**
+     * @param selectedCategoryToUpdate the selectedCategoryToUpdate to set
+     */
+    public void setSelectedCategoryToUpdate(Category selectedCategoryToUpdate) {
+        this.selectedCategoryToUpdate = selectedCategoryToUpdate;
     }
 }

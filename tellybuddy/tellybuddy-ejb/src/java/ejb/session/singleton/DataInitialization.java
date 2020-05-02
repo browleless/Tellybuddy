@@ -344,9 +344,6 @@ public class DataInitialization {
         em.persist(accessories);
         em.flush();
 
-//        Category handset = new Category("Handset", "Handsets");
-//        em.persist(handset);
-//        em.flush();
         Category apple = new Category("Apple", "Brand");
         em.persist(apple);
         em.flush();
@@ -388,12 +385,6 @@ public class DataInitialization {
         em.persist(appleTag);
         em.flush();
 
-//        Tag samsung = new Tag("Samsung");
-//        em.persist(samsung);
-//        em.flush();
-//        Tag google = new Tag("Google");
-//        em.persist(google);
-//        em.flush();
         Tag discount = new Tag("Discount");
         em.persist(discount);
         em.flush();
@@ -402,7 +393,7 @@ public class DataInitialization {
         em.persist(tagNew);
         em.flush();
 
-        Tag handset = new Tag("HandSset");
+        Tag handset = new Tag("Handset");
         em.persist(handset);
         em.flush();
 

@@ -110,14 +110,14 @@ public class Customer implements Serializable {
     @Column(nullable = true, unique = false)
 //    @Column(nullable = true)
     private String nricBackImagePath;
-    
+
     @Column(nullable = true, unique = false)
 //    @Column(nullable = true)
     private String newNricFrontImagePath;
     @Column(nullable = true, unique = false)
 //    @Column(nullable = true)
     private String newNricBackImagePath;
-    
+
     @Column(nullable = true, unique = false)
     private String profilePhoto;
 
@@ -136,7 +136,7 @@ public class Customer implements Serializable {
     @Column(nullable = false)
     @NotNull
     private CustomerStatusEnum customerStatusEnum;
-    
+
     @Column(nullable = false)
     @NotNull
     @Min(0)
@@ -167,7 +167,7 @@ public class Customer implements Serializable {
     @Column(nullable = false)
     @NotNull
     private Boolean isApproved;
-        
+
     @Column(columnDefinition = "CHAR(32) NOT NULL")
     private String salt;
 
@@ -183,13 +183,12 @@ public class Customer implements Serializable {
     @OneToMany(mappedBy = "customer")
     private List<Transaction> transactions;
 
-    @ManyToMany
-    @JoinColumn(nullable = false)
-    private List<Announcement> announcements;
-
+//    @ManyToMany
+//    @JoinColumn(nullable = false)
+//    private List<Announcement> announcements;
     @ManyToOne
     private FamilyGroup familyGroup;
-    
+
     private Boolean ownerOfFamilyGroup;
 
     public Customer() {
@@ -201,12 +200,13 @@ public class Customer implements Serializable {
         this.subscriptions = new ArrayList<>();
         this.quizAttempts = new ArrayList<>();
         this.transactions = new ArrayList<>();
-        this.announcements = new ArrayList<>();
         this.isApproved = false;
         this.ownerOfFamilyGroup = false;
+
+//        this.announcements = new ArrayList<>();
     }
 
-    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String email, String newNric, String newNricFrontImagePath,String newNricBackImagePath, Date joinDate, String profilePhoto) {
+    public Customer(String username, String password, String firstName, String lastName, Integer age, String newAddress, String newPostalCode, String email, String newNric, String newNricFrontImagePath, String newNricBackImagePath, Date joinDate, String profilePhoto) {
         this();
         this.username = username;
         this.firstName = firstName;
@@ -284,7 +284,7 @@ public class Customer implements Serializable {
     public String getNewNricBackImagePath() {
         return newNricBackImagePath;
     }
-    
+
     public void hashPassword(String password) {
         if (password != null) {
             this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
@@ -433,13 +433,13 @@ public class Customer implements Serializable {
         this.nricFrontImagePath = nricFrontImagePath;
     }
 
-    public List<Announcement> getAnnouncements() {
-        return announcements;
-    }
-
-    public void setAnnouncements(List<Announcement> announcements) {
-        this.announcements = announcements;
-    }
+//    public List<Announcement> getAnnouncements() {
+//        return announcements;
+//    }
+//
+//    public void setAnnouncements(List<Announcement> announcements) {
+//        this.announcements = announcements;
+//    }
 
     public String getNewAddress() {
         return newAddress;

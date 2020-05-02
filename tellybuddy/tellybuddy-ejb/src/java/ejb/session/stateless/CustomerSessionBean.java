@@ -273,7 +273,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         q.setParameter("inCustomer", customerId);
         Customer customer = (Customer) q.getSingleResult();
         if (customer != null) {
-            customer.getAnnouncements();
+//            customer.getAnnouncements();
             customer.getQuizAttempts();
             customer.getTransactions();
             customer.getSubscriptions();
