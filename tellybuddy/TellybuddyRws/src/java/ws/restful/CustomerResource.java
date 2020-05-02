@@ -81,7 +81,7 @@ public class CustomerResource {
             customer.getQuizAttempts().clear();
             customer.getSubscriptions().clear();
             customer.getTransactions().clear();
-            customer.getAnnouncements().clear();
+          //  customer.getAnnouncements().clear();
             customer.setFamilyGroup(null);
 
             return Response.status(Response.Status.OK).entity(new CustomerLoginRsp(customer)).build();

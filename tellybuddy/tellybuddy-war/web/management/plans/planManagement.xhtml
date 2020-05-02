@@ -354,6 +354,14 @@
                                 <p:spinner id="planAddOnPrice" value="#{planManagementManagedBean.planToUpdate.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
                             </p:column>
                         </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planPenalty" value="Penalty" />
+                            </p:column>
+                            <p:column>                            
+                                <p:spinner id="planPenalty" value="#{planManagementManagedBean.planToUpdate.penalty}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Penalty is required" />
+                            </p:column>
+                        </p:row>
 
                     </p:panelGrid>
 

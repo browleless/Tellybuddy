@@ -547,6 +547,14 @@
                                 <p:spinner id="planAddOnPrice" value="#{flashDealManagementManagedBean.newPlan.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
                             </p:column>
                         </p:row>
+                         <p:row>
+                            <p:column>
+                                <p:outputLabel for="planPenalty" value="Penalty" style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>                            
+                                <p:spinner id="planPenalty" value="#{flashDealManagementManagedBean.newPlan.penalty}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Penalty is required" />
+                            </p:column>
+                        </p:row>
 
                     </p:panelGrid>
 
@@ -651,7 +659,16 @@
                                 </h:outputText>
                             </p:column>
                         </p:row>
-
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Penalty: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{flashDealManagementManagedBean.planToView.penalty}">
+                                    <f:convertNumber type="currency" currencySymbol="$" maxIntegerDigits="5" maxFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:row>
                         <p:row rendered="#{flashDealManagementManagedBean.planToView.startTime} != null">
                             <p:column>
                                 <h:outputLabel value="Start Date/Time " />
@@ -767,6 +784,14 @@
                             </p:column>
                             <p:column>                            
                                 <p:spinner id="planAddOnPrice" value="#{flashDealManagementManagedBean.planToUpdate.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="planPenalty" value="Penalty" />
+                            </p:column>
+                            <p:column>                            
+                                <p:spinner id="planPenalty" value="#{flashDealManagementManagedBean.planToUpdate.penalty}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Penalty is required" />
                             </p:column>
                         </p:row>
 

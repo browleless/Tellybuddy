@@ -76,4 +76,5 @@ public interface ProductSessionBeanLocal {
 
     public void debitProductItem(Long luxuryId, ProductItem pi) throws ProductNotFoundException;
 
+
 }
