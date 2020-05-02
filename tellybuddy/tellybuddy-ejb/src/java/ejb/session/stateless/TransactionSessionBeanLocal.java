@@ -10,6 +10,7 @@ import entity.Transaction;
 import entity.TransactionLineItem;
 import java.util.List;
 import javax.ejb.Local;
+import util.enumeration.TransactionStatusEnum;
 import util.exception.CreateNewSaleTransactionException;
 import util.exception.CustomerNotFoundException;
 import util.exception.DiscountCodeNotFoundException;
@@ -40,6 +41,8 @@ public interface TransactionSessionBeanLocal {
     public void refundTransaction(Long saleTransactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException, TransactionUnableToBeRefundedException;
 
     public void deleteTransaction(Transaction transaction);
+    
+    public List<Transaction> retrieveAllTransactionsByStatus(TransactionStatusEnum transactionStatusEnum);
 
     public List<Transaction> retrieveAllMonthlyTransactions();
 

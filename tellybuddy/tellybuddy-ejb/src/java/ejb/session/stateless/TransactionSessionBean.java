@@ -12,6 +12,7 @@ import entity.ProductItem;
 import entity.Subscription;
 import entity.Transaction;
 import entity.TransactionLineItem;
+import entity.UsageDetail;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -22,10 +23,12 @@ import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.Local;
+import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.SubscriptionStatusEnum;
 import util.enumeration.TransactionStatusEnum;
 import util.exception.CreateNewSaleTransactionException;
 import util.exception.CreateNewSubscriptionException;
@@ -250,7 +253,7 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         Transaction transactionToRefund = retrieveTransactionByTransactionId(transactionId);
 
         if (transactionToRefund.getTransactionStatusEnum() == TransactionStatusEnum.RECEIVED) {
-        transactionToRefund.setTransactionStatusEnum(TransactionStatusEnum.REFUND_REQUESTED);
+            transactionToRefund.setTransactionStatusEnum(TransactionStatusEnum.REFUND_REQUESTED);
         } else if (transactionToRefund.getTransactionStatusEnum() == TransactionStatusEnum.REFUNDED) {
             throw new TransactionAlreadyVoidedRefundedException("The sale transaction has already been refunded!");
         } else {
@@ -263,22 +266,40 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         Transaction transaction = retrieveTransactionByTransactionId(transactionId);
 
         if (transaction.getTransactionStatusEnum() == TransactionStatusEnum.REFUND_REQUESTED) {
-        for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
-            try {
-                if (transactionLineItem.getProduct() != null) {
+            for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
+                try {
+                    if (transactionLineItem.getProduct() != null) {
 
-                    productSessionBeanLocal.creditQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
+                        productSessionBeanLocal.creditQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
+                    }
+                } catch (ProductNotFoundException ex) {
+                    ex.printStackTrace(); // Ignore exception since this should not happen
                 }
-            } catch (ProductNotFoundException ex) {
-                ex.printStackTrace(); // Ignore exception since this should not happen
             }
-        }
 
-        transaction.setTransactionStatusEnum(TransactionStatusEnum.REFUNDED);
+            transaction.setTransactionStatusEnum(TransactionStatusEnum.REFUNDED);
         } else if (transaction.getTransactionStatusEnum() == TransactionStatusEnum.REFUNDED) {
             throw new TransactionAlreadyVoidedRefundedException("The sale transaction has already been refunded!");
         } else {
             throw new TransactionUnableToBeRefundedException("An error has occurred! Plesae check that the correct sale transaction has selected");
+        }
+    }
+    @Override
+    public List<Transaction> retrieveAllTransactionsByStatus(TransactionStatusEnum transactionStatusEnum){
+        Query query = em.createQuery("Select t FROM Transaction t WHERE t.transactionStatusEnum = :status");
+        query.setParameter("status", transactionStatusEnum);
+        return query.getResultList();
+    }
+    
+    //As we do not have a logistics partner, this method simply updates the shipping status every 20 seconds for testing and demo purposes
+    @Schedule(second = "*/20", minute = "*", hour = "*")
+    public void updateTransactionStatus() {
+        System.out.println("Transaction status updated!");
+        for (Transaction t : this.retrieveAllTransactionsByStatus(TransactionStatusEnum.PROCESSING)) {
+            t.setTransactionStatusEnum(TransactionStatusEnum.SHIPPED);
+        }
+        for (Transaction t : this.retrieveAllTransactionsByStatus(TransactionStatusEnum.SHIPPED)) {
+            t.setTransactionStatusEnum(TransactionStatusEnum.RECEIVED);
         }
     }
 
