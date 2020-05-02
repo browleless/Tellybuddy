@@ -145,9 +145,6 @@
                                     <h:outputText value="Quiz Name: " />
                                     <p:inputText value="#{quizManagementManagedBean.quizName}" placeholder="Quiz 1" required="true" requiredMessage="Quiz Name is required" label="quizName"/>
 
-                                    <h:outputText value="Units Worth: " />
-                                    <p:spinner value="#{quizManagementManagedBean.quizUnitsWorth}" placeholder="5" max="10" required="true" requiredMessage="Units Worth is required" label="quizUnits"/>
-
                                     <h:outputText value="Start Date/Time: " />
                                     <p:calendar value="#{quizManagementManagedBean.quizStartDateTime}" mindate="#{quizManagementManagedBean.dateToday}" required="true" requiredMessage="Start Date Time is required" pattern="dd/MM/yyyy HH:mm"/>
 
@@ -220,7 +217,7 @@
                                     <h:outputText value="#{quizManagementManagedBean.questions.size()}" styleClass="outputLabel"/>
 
                                     <h:outputText value="Units Worth: " />
-                                    <h:outputText value="#{quizManagementManagedBean.quizUnitsWorth}" styleClass="outputLabel"/>
+                                    <h:outputText value="#{quizManagementManagedBean.questions.size()}" styleClass="outputLabel"/>
 
                                     <h:outputText value="Start Date/Time: " />
                                     <h:outputText value="#{quizManagementManagedBean.quizStartDateTime}">
@@ -428,15 +425,6 @@
                                     </p:column>
                                     <p:column>
                                         <p:inputText id="name" value="#{quizManagementManagedBean.quizToUpdate.name}" />
-                                    </p:column>
-                                </p:row>
-
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="unitsWorth" value="Units Worth: " />
-                                    </p:column>
-                                    <p:column>
-                                        <p:spinner id="unitsWorth" value="#{quizManagementManagedBean.quizToUpdate.unitsWorth}" />
                                     </p:column>
                                 </p:row>
 

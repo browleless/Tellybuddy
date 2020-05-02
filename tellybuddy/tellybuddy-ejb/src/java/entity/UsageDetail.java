@@ -49,7 +49,7 @@ public class UsageDetail implements Serializable {
     
     @Column
     @Min(0)
-    private Integer allowedTalktimeUsage;
+    private BigDecimal allowedTalktimeUsage;
 
     @Column
     @Min(0)
@@ -179,11 +179,11 @@ public class UsageDetail implements Serializable {
         this.subscription = subscription;
     }
 
-    public Integer getAllowedTalktimeUsage() {
+    public BigDecimal getAllowedTalktimeUsage() {
         return allowedTalktimeUsage;
     }
 
-    public void setAllowedTalktimeUsage(Integer allowedTalktimeUsage) {
+    public void setAllowedTalktimeUsage(BigDecimal allowedTalktimeUsage) {
         this.allowedTalktimeUsage = allowedTalktimeUsage;
     }
 
