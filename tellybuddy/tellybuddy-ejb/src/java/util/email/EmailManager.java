@@ -4,6 +4,7 @@ import entity.Bill;
 import entity.Customer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -50,8 +51,13 @@ public class EmailManager {
             emailBody += "Family Group Discount (" + bill.getFamilyDiscountRate() + "%): -" + NumberFormat.getCurrencyInstance().format(discountPrice) + "\n";
         }
         emailBody += "Add On Additional Price: " + NumberFormat.getCurrencyInstance().format(bill.getAddOnPrice()) + "\n";
-        emailBody += "Exceeded Additional Price: " + NumberFormat.getCurrencyInstance().format(bill.getExceedPenaltyPrice()) + "\n\n";
-        emailBody += "Total Payable Price: " + NumberFormat.getCurrencyInstance().format(bill.getPrice().add(bill.getAddOnPrice()).add(bill.getExceedPenaltyPrice()).subtract(discountPrice)) + "\n\n\n";
+        emailBody += "Exceeded Additional Price: " + NumberFormat.getCurrencyInstance().format(bill.getExceedPenaltyPrice()) + "\n";
+        if (bill.getEarlyTerminationFee() != null) {
+            emailBody += "Early Contract Termination Penalty: $" + bill.getEarlyTerminationFee() + "\n\n";
+            emailBody += "Total Payable Price: " + NumberFormat.getCurrencyInstance().format(bill.getPrice().add(bill.getAddOnPrice()).add(bill.getExceedPenaltyPrice()).add(bill.getEarlyTerminationFee()).subtract(discountPrice)) + "\n\n\n";
+        } else {
+            emailBody += "Total Payable Price: " + NumberFormat.getCurrencyInstance().format(bill.getPrice().add(bill.getAddOnPrice()).add(bill.getExceedPenaltyPrice()).subtract(discountPrice)) + "\n\n\n";
+        }
 
         emailBody += "BREAKDOWN OF USAGE DETAIL:\n";
         emailBody += "Data Usage: " + bill.getUsageDetail().getDataUsage() + " / " + ((double) subscriptionTotalAllowedData / 1000) + " (GB)\n";

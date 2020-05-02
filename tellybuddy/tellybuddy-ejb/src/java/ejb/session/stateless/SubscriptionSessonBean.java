@@ -260,7 +260,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             subscriptionToUpdate.getTalkTimeUnits().put("familyGroup", 0);
 
             //create new timer if the subscription is still active
-            if (subscription.getIsActive()) {
+            if (subscriptionToUpdate.getIsActive()) {
                 // create new usage detail tracking for next month
                 usageDetailSessionBeanLocal.createNewUsageDetail(subscriptionToUpdate);
 
@@ -269,9 +269,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
                 // for the next timer cycle (billing cycle 1 month later)
                 TimerService timerService = sessionContext.getTimerService();
-                timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
+//                timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
                 // for debugging (Express cycle)
-//                timerService.createSingleActionTimer(new Date(new Date().getTime() + 60000), new TimerConfig(subscriptionToUpdate, true));
+                timerService.createSingleActionTimer(new Date(new Date().getTime() + 60000), new TimerConfig(subscriptionToUpdate, true));
             }
 
         } catch (SubscriptionNotFoundException | InputDataValidationException | CustomerNotFoundException | UsageDetailNotFoundException | InterruptedException ex) {
@@ -285,9 +285,15 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         for (Subscription s : this.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.ACTIVE)) {
             UsageDetail currentUsageDetail = s.getUsageDetails().get(s.getUsageDetails().size() - 1);
 
-            currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(BigDecimal.valueOf(0.015)));
-            currentUsageDetail.setSmsUsage(currentUsageDetail.getSmsUsage());
-            currentUsageDetail.setTalktimeUsage(currentUsageDetail.getTalktimeUsage().add(BigDecimal.valueOf(0.010)));
+            if (s.getAllocatedData() != 0) {
+                currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(BigDecimal.valueOf(0.015)));
+            }
+            if (s.getAllocatedSms() != 0) {
+                currentUsageDetail.setSmsUsage(currentUsageDetail.getSmsUsage() +1);
+            }
+            if (s.getAllocatedTalkTime() != 0) {
+                currentUsageDetail.setTalktimeUsage(currentUsageDetail.getTalktimeUsage().add(BigDecimal.valueOf(0.010)));
+            }
         }
     }
 

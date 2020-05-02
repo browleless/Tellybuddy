@@ -249,20 +249,20 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     public void requestTransactionRefund(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException, TransactionUnableToBeRefundedException {
         Transaction transactionToRefund = retrieveTransactionByTransactionId(transactionId);
 
-//        if (transactionToRefund.getTransactionStatusEnum() == TransactionStatusEnum.RECEIVED) {
+        if (transactionToRefund.getTransactionStatusEnum() == TransactionStatusEnum.RECEIVED) {
         transactionToRefund.setTransactionStatusEnum(TransactionStatusEnum.REFUND_REQUESTED);
-//        } else if (transactionToRefund.getTransactionStatusEnum() == TransactionStatusEnum.REFUNDED) {
-//            throw new TransactionAlreadyVoidedRefundedException("The sale transaction has already been refunded!");
-//        } else {
-//            throw new TransactionUnableToBeRefundedException("Please wait till you have received the product before requesting a refund!");
-//        }
+        } else if (transactionToRefund.getTransactionStatusEnum() == TransactionStatusEnum.REFUNDED) {
+            throw new TransactionAlreadyVoidedRefundedException("The sale transaction has already been refunded!");
+        } else {
+            throw new TransactionUnableToBeRefundedException("Please wait till you have received the product before requesting a refund!");
+        }
     }
 
     @Override
     public void refundTransaction(Long transactionId) throws TransactionNotFoundException, TransactionAlreadyVoidedRefundedException, TransactionUnableToBeRefundedException {
         Transaction transaction = retrieveTransactionByTransactionId(transactionId);
 
-//        if (transaction.getTransactionStatusEnum() == TransactionStatusEnum.REFUND_REQUESTED) {
+        if (transaction.getTransactionStatusEnum() == TransactionStatusEnum.REFUND_REQUESTED) {
         for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
             try {
                 if (transactionLineItem.getProduct() != null) {
@@ -275,11 +275,11 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         }
 
         transaction.setTransactionStatusEnum(TransactionStatusEnum.REFUNDED);
-//        } else if (transaction.getTransactionStatusEnum() == TransactionStatusEnum.REFUNDED) {
-//            throw new TransactionAlreadyVoidedRefundedException("The sale transaction has already been refunded!");
-//        } else {
-//            throw new TransactionUnableToBeRefundedException("An error has occurred! Plesae check that the correct sale transaction has selected");
-//        }
+        } else if (transaction.getTransactionStatusEnum() == TransactionStatusEnum.REFUNDED) {
+            throw new TransactionAlreadyVoidedRefundedException("The sale transaction has already been refunded!");
+        } else {
+            throw new TransactionUnableToBeRefundedException("An error has occurred! Plesae check that the correct sale transaction has selected");
+        }
     }
 
     @Override

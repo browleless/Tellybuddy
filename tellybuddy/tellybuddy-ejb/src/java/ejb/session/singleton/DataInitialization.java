@@ -114,6 +114,12 @@ public class DataInitialization {
             Plan newPlan = new Plan("Saver 15", 15, BigDecimal.valueOf(25), BigDecimal.valueOf(200), BigDecimal.valueOf(2.5), Integer.valueOf(1500), Integer.valueOf(100), Integer.valueOf(100), null, null);
             em.persist(newPlan);
             em.flush();
+            newPlan = new Plan("Silver 30", 30, BigDecimal.valueOf(40), BigDecimal.valueOf(200), BigDecimal.valueOf(2.0), Integer.valueOf(1500), Integer.valueOf(100), Integer.valueOf(100), null, null);
+            em.persist(newPlan);
+            em.flush();
+            newPlan = new Plan("Freedom 75", 75, BigDecimal.valueOf(60), BigDecimal.valueOf(200), BigDecimal.valueOf(1.5), Integer.valueOf(1500), Integer.valueOf(100), Integer.valueOf(100), null, null);
+            em.persist(newPlan);
+            em.flush();
             try {
                 Subscription subscription = new Subscription(10, 10, 10, false);
                 Calendar cal = Calendar.getInstance();
