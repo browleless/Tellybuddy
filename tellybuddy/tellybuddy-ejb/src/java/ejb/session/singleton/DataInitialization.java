@@ -295,22 +295,22 @@ public class DataInitialization {
 
         timeNow.add(Calendar.MONTH, 1);
 
-        customer = new Customer("customer5", "password5", "Wee kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tanwk@gmail.com", "S4041179A", null, null, timeNow.getTime(), "tanwk.jpg");
+        customer = new Customer("customer5", "password5", "Wee Kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tester5@gmail.com", "S4041179A", null, null, timeNow.getTime(), "tanwk.jpg");
         // customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
 
-        customer = new Customer("customer6", "password6", "Ethan", "Project Manager", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ethank@gmail.com", "S4041889A", null, null, timeNow.getTime(), "ethan.jpg");
+        customer = new Customer("customer6", "password6", "Ethan", "Pak", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tester6@gmail.com", "S4041889A", null, null, timeNow.getTime(), "ethan.jpg");
         // customer.setIsApproved(true);
         em.persist(customer);
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer7", "password7", "WK wife", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk2@gmail.com", "S4041178A", null, null, timeNow.getTime(), null);
+        customer = new Customer("customer7", "password7", "Tester7", "7", Integer.valueOf(20), "This is my address", "117417", "tester7@gmail.com", "S4041178A", null, null, timeNow.getTime(), null);
 
         em.persist(customer);
         em.flush();
-        customer = new Customer("customer8", "password8", "WK son", "Tan", Integer.valueOf(20), "This is my address", "117417", "tanwk3@gmail.com", "S4041177A", null, null, timeNow.getTime(), null);
+        customer = new Customer("customer8", "password8", "Tester8", "8", Integer.valueOf(20), "This is my address", "117417", "tester8@gmail.com", "S4041177A", null, null, timeNow.getTime(), null);
         em.persist(customer);
         em.flush();
 

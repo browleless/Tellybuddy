@@ -185,6 +185,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
         return discountedProducts;
     }
 
+
     @Override
     public String retrieveLatestSerialNum() {
         Query q = em.createQuery("SELECT p FROM LuxuryProduct p ORDER BY p.serialNumber desc");
