@@ -68,6 +68,7 @@ public class Customer implements Serializable {
     @Column(nullable = false)
     @NotNull
     private Date joinDate;
+    
     @Column(nullable = false)
     @NotNull
     @Positive

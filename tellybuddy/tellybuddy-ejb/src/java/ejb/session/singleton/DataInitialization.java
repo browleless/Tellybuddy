@@ -306,11 +306,11 @@ public class DataInitialization {
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer7", "password7", "Tester7", "7", Integer.valueOf(20), "This is my address", "117417", "tester7@gmail.com", "S4041178A", null, null, timeNow.getTime(), null);
+        customer = new Customer("customer7", "password7", "Tester7", "Test", Integer.valueOf(20), "This is my address", "117417", "tester7@gmail.com", "S4041178A", null, null, timeNow.getTime(), null);
 
         em.persist(customer);
         em.flush();
-        customer = new Customer("customer8", "password8", "Tester8", "8", Integer.valueOf(20), "This is my address", "117417", "tester8@gmail.com", "S4041177A", null, null, timeNow.getTime(), null);
+        customer = new Customer("customer8", "password8", "Tester8", "Test", Integer.valueOf(20), "This is my address", "117417", "tester8@gmail.com", "S4041177A", null, null, timeNow.getTime(), null);
         em.persist(customer);
         em.flush();
 
