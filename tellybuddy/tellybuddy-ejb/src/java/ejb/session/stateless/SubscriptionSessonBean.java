@@ -269,9 +269,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
                 // for the next timer cycle (billing cycle 1 month later)
                 TimerService timerService = sessionContext.getTimerService();
-//                timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
+                timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
                 // for debugging (Express cycle)
-                timerService.createSingleActionTimer(new Date(new Date().getTime() + 60000), new TimerConfig(subscriptionToUpdate, true));
+//                timerService.createSingleActionTimer(new Date(new Date().getTime() + 60000), new TimerConfig(subscriptionToUpdate, true));
             }
 
         } catch (SubscriptionNotFoundException | InputDataValidationException | CustomerNotFoundException | UsageDetailNotFoundException | InterruptedException ex) {
