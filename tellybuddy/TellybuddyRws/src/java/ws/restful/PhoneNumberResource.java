@@ -31,14 +31,12 @@ public class PhoneNumberResource {
 
     private final SessionBeanLookup sessionBeanLookup;
 
-    private final CustomerSessionBeanLocal customerSessionBeanLocal;
     private final PhoneNumberSessionBeanLocal phoneNumberSessionBeanLocal;
 
     public PhoneNumberResource() {
 
         sessionBeanLookup = new SessionBeanLookup();
 
-        customerSessionBeanLocal = sessionBeanLookup.lookupCustomerSessionBeanLocal();
         phoneNumberSessionBeanLocal = sessionBeanLookup.lookupPhoneNumberSessionBeanLocal();
     }
 

@@ -42,14 +42,12 @@ public class ProductResource {
     private final SessionBeanLookup sessionBeanLookup;
 
     private final ProductSessionBeanLocal productSessionBeanLocal;
-    private final CustomerSessionBeanLocal customerSessionBeanLocal;
 
     public ProductResource() {
 
         sessionBeanLookup = new SessionBeanLookup();
 
         productSessionBeanLocal = sessionBeanLookup.lookupProductSessionBeanLocal();
-        customerSessionBeanLocal = sessionBeanLookup.lookupCustomerSessionBeanLocal();
     }
 
     @Path("retrieveAllProducts")

@@ -32,7 +32,6 @@ public class PlanResource {
 
     private final SessionBeanLookup sessionBeanLookup;
 
-    private final CustomerSessionBeanLocal customerSessionBeanLocal;
     private final PlanSessionBeanLocal planSessionBeanLocal;
 
     /**
@@ -42,7 +41,6 @@ public class PlanResource {
 
         sessionBeanLookup = new SessionBeanLookup();
 
-        customerSessionBeanLocal = sessionBeanLookup.lookupCustomerSessionBeanLocal();
         planSessionBeanLocal = sessionBeanLookup.lookupPlanSessionBeanLocal();
     }
 
@@ -80,7 +78,7 @@ public class PlanResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("retrieveAllNormalPlans")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)

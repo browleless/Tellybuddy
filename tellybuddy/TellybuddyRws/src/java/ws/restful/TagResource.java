@@ -30,7 +30,6 @@ public class TagResource {
     private final SessionBeanLookup sessionBeanLookup;
 
     private final TagSessionBeanLocal tagSessionBeanLocal;
-    private final CustomerSessionBeanLocal customerSessionBeanLocal;
 
     /**
      * Creates a new instance of TagResource
@@ -40,7 +39,6 @@ public class TagResource {
         sessionBeanLookup = new SessionBeanLookup();
 
         tagSessionBeanLocal = sessionBeanLookup.lookupTagSessionBeanLocal();
-        customerSessionBeanLocal = sessionBeanLookup.lookupCustomerSessionBeanLocal();
     }
 
     /**

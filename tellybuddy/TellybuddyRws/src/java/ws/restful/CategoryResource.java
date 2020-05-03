@@ -30,7 +30,6 @@ public class CategoryResource {
     private final SessionBeanLookup sessionBeanLookup;
 
     private final CategorySessionBeanLocal categorySessionBeanLocal;
-    private final CustomerSessionBeanLocal customerSessionBeanLocal;
 
     /**
      * Creates a new instance of CategoryResource
@@ -40,7 +39,6 @@ public class CategoryResource {
         sessionBeanLookup = new SessionBeanLookup();
 
         categorySessionBeanLocal = sessionBeanLookup.lookupCategorySessionBeanLocal();
-        customerSessionBeanLocal = sessionBeanLookup.lookupCustomerSessionBeanLocal();
     }
 
     /**
