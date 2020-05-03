@@ -114,10 +114,10 @@
                                 <h:outputText value="#{customer.joinDate}" style="font-weight: lighter">
                                     <f:convertDateTime pattern="dd-MMM-yyyy  HH:mm:ss" timeZone="GMT+8" /> 
                                 </h:outputText>
-                                
+
                                 <h:outputText value="New Address:" rendered="#{customer.newAddress!=null}"/>
                                 <h:outputText value="#{customer.newAddress}" rendered="#{customer.newAddress!=null}" style="font-weight: bold"/>
-                                
+
                             </p:panelGrid>
                         </p:outputPanel>
                     </p:panelGrid>
@@ -205,7 +205,10 @@
                         <h:outputLabel value="Address: " />
                     </p:column>
                     <p:column>
-                        <h:outputText value="#{customerManagementManagedBean.customerToUpdate.newAddress} #{customerManagementManagedBean.customerToUpdate.newPostalCode}" />
+                        <h:outputText rendered="#{customerManagementManagedBean.customerToUpdate.newAddress != null &amp;&amp; customerManagementManagedBean.customerToUpdate.newPostalCode != null}" value="#{customerManagementManagedBean.customerToUpdate.newAddress} #{customerManagementManagedBean.customerToUpdate.newPostalCode}" />
+                        <h:outputText rendered="#{customerManagementManagedBean.customerToUpdate.newAddress != null &amp;&amp; customerManagementManagedBean.customerToUpdate.newPostalCode == null}" value="#{customerManagementManagedBean.customerToUpdate.newAddress} #{customerManagementManagedBean.customerToUpdate.postalCode}" />
+                        <h:outputText rendered="#{customerManagementManagedBean.customerToUpdate.newAddress == null &amp;&amp; customerManagementManagedBean.customerToUpdate.newPostalCode != null}" value="#{customerManagementManagedBean.customerToUpdate.address} #{customerManagementManagedBean.customerToUpdate.newPostalCode}" />
+                        <h:outputText rendered="#{customerManagementManagedBean.customerToUpdate.newAddress == null &amp;&amp; customerManagementManagedBean.customerToUpdate.newPostalCode == null}" value="#{customerManagementManagedBean.customerToUpdate.address} #{customerManagementManagedBean.customerToUpdate.postalCode}" />
                     </p:column>
                 </p:row>
 
@@ -213,8 +216,9 @@
                     <p:column>
                         <h:outputLabel value="NRIC: " />
                     </p:column>
-                    <p:column>
-                        <h:outputText value="#{customerManagementManagedBean.customerToUpdate.newNric}" />
+                    <p:column >
+                        <h:outputText rendered="#{customerManagementManagedBean.customerToUpdate.newNric != null}" value="#{customerManagementManagedBean.customerToUpdate.newNric}" />
+                        <h:outputText rendered="#{customerManagementManagedBean.customerToUpdate.newNric == null}" value="#{customerManagementManagedBean.customerToUpdate.nric}" />
                     </p:column>
                 </p:row>
 
@@ -224,7 +228,7 @@
                     </p:column>
                     <p:column>
                         <p:graphicImage style="width:100%" value="#{customerManagementManagedBean.customerToUpdate.newNricFrontImagePath}"/> 
-                         <p:graphicImage style="width:100%" value="#{customerManagementManagedBean.customerToUpdate.newNricBackImagePath}"/> 
+                        <p:graphicImage style="width:100%" value="#{customerManagementManagedBean.customerToUpdate.newNricBackImagePath}"/> 
                     </p:column>
                 </p:row>
             </p:panelGrid>

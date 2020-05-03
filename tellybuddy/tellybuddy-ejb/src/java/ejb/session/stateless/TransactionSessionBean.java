@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -185,7 +186,7 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     public List<Transaction> retrieveAllMonthlyTransactions() {
 
         Query query = em.createQuery("SELECT st FROM Transaction st WHERE st.transactionStatusEnum <> :inTransactionStatusEnum AND (st.transactionDateTime BETWEEN :inputMonthStart AND :inputMonthEnd)");
-        
+
         LocalDateTime monthBegin = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
         LocalDateTime monthEnd = LocalDateTime.now().withDayOfMonth(1).plusMonths(1).minusDays(-1).withHour(23).withMinute(59).withSecond(59);
         Date inputMonthStart = Date.from(monthBegin.atZone(ZoneId.systemDefault()).toInstant());
@@ -251,6 +252,11 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
         Transaction transactionToRefund = retrieveTransactionByTransactionId(transactionId);
 
         if (transactionToRefund.getTransactionStatusEnum() == TransactionStatusEnum.RECEIVED) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MONTH, -1);
+            if (cal.getTime().after(transactionToRefund.getTransactionDateTime())) {
+                throw new TransactionUnableToBeRefundedException("Transaction is beyond 30 days old, refund period is over!");
+            }
             transactionToRefund.setTransactionStatusEnum(TransactionStatusEnum.REFUND_REQUESTED);
         } else if (transactionToRefund.getTransactionStatusEnum() == TransactionStatusEnum.REFUNDED) {
             throw new TransactionAlreadyVoidedRefundedException("The sale transaction has already been refunded!");
@@ -270,6 +276,9 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
 
                         productSessionBeanLocal.creditQuantityOnHand(transactionLineItem.getProduct().getProductId(), transactionLineItem.getQuantity());
                     }
+                    if (transactionLineItem.getSubscription() != null) {
+                        subscriptionSessonBeanLocal.terminateSubscription(transaction.getCustomer().getCustomerId(), transactionLineItem.getSubscription().getSubscriptionId());
+                    }
                 } catch (ProductNotFoundException ex) {
                     ex.printStackTrace(); // Ignore exception since this should not happen
                 }
@@ -282,13 +291,14 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
             throw new TransactionUnableToBeRefundedException("An error has occurred! Plesae check that the correct sale transaction has selected");
         }
     }
+
     @Override
-    public List<Transaction> retrieveAllTransactionsByStatus(TransactionStatusEnum transactionStatusEnum){
+    public List<Transaction> retrieveAllTransactionsByStatus(TransactionStatusEnum transactionStatusEnum) {
         Query query = em.createQuery("Select t FROM Transaction t WHERE t.transactionStatusEnum = :status");
         query.setParameter("status", transactionStatusEnum);
         return query.getResultList();
     }
-    
+
     //As we do not have a logistics partner, this method simply updates the shipping status every 20 seconds for testing and demo purposes
     @Schedule(second = "*/20", minute = "*", hour = "*")
     public void updateTransactionStatus() {

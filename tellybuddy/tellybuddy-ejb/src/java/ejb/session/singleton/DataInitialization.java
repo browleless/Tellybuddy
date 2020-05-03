@@ -418,7 +418,7 @@ public class DataInitialization {
     }
 
     private void createPhoneNumbers() {
-        PhoneNumber phoneno = new PhoneNumber("96820119");
+        PhoneNumber phoneno = new PhoneNumber("93123745");
         em.persist(phoneno);
         em.flush();
         phoneno = new PhoneNumber("84322345");
