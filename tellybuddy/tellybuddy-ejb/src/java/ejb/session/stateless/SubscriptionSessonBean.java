@@ -280,7 +280,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         }
     }
 
-    @Schedule(second = "*/10", minute = "*", hour = "*")
+    @Schedule(second = "*/20", minute = "*", hour = "*")
     public void incrementUsageDetail() {
         for (Subscription s : this.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.ACTIVE)) {
             UsageDetail currentUsageDetail = s.getUsageDetails().get(s.getUsageDetails().size() - 1);

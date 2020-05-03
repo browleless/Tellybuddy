@@ -39,6 +39,7 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanLocal {
         for (Product product : products) {
             if (product.getQuantityOnHand().compareTo(product.getReorderQuantity()) <= 0) {
                 System.out.println("********** Product " + product.getSkuCode() + " requires reordering: QOH = " + product.getQuantityOnHand() + "; RQ = " + product.getReorderQuantity());
+                product.setQuantityOnHand(product.getReorderQuantity());
             }
         }
     }

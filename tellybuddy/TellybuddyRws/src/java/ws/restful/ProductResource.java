@@ -394,8 +394,8 @@ public class ProductResource {
         try {
             Product product = productSessionBeanLocal.retrieveProductByProductId(productId);
             File file = new File(ProductResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().substring(1, ProductResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().indexOf("/dist")).replace("/", "\\") + "\\tellybuddy-war\\web\\management\\products\\productImages\\" + product.getProductImagePath());
-//            System.out.println("********** ProductResource.retrieveProductImage() for: " + product.getName());
-//            System.out.println(file.getAbsolutePath());
+            System.out.println("********** ProductResource.retrieveProductImage() for: " + product.getName());
+            System.out.println(file.getAbsolutePath());
             return Response.ok(file, "image/jpg").build();
         } catch (Exception ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
