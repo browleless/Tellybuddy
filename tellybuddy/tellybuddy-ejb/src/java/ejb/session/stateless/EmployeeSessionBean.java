@@ -118,21 +118,24 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     }
 
     @Override
-    public void updateStickyNotes(List<String> newNote, Employee employee) throws EmployeeNotFoundException{
+    public void updateStickyNotes(List<String> newNote, Employee employee) throws EmployeeNotFoundException {
         Employee employeeToUpdate = retrieveEmployeeByEmployeeId(employee.getEmployeeId());
         employeeToUpdate.setStickyNotes(newNote);
     }
-    
+
     @Override
     public void updateEmployee(Employee employee) throws EmployeeNotFoundException {
 
         if (employee != null && employee.getEmployeeId() != null) {
             Employee employeeToUpdate = retrieveEmployeeByEmployeeId(employee.getEmployeeId());
-            if (employeeToUpdate.getUsername().equals(employee.getUsername())) {
+            if (employeeToUpdate.getEmployeeId().equals(employee.getEmployeeId())) {
+                employeeToUpdate.setUsername(employee.getUsername());
                 employeeToUpdate.setFirstName(employee.getFirstName());
                 employeeToUpdate.setLastName(employee.getLastName());
                 employeeToUpdate.setPhotoPath(employee.getPhotoPath());
-                employeeToUpdate.setUpdatedPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(employee.getPassword() + employeeToUpdate.getSalt())));
+                if (employee.getPassword().length() != 32) {
+                    employeeToUpdate.setUpdatedPassword(CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(employee.getPassword() + employeeToUpdate.getSalt())));
+                }
                 entityManager.flush();
 
             }

@@ -308,7 +308,7 @@
                                 <p:outputLabel for="basicUnits" value="Basic Units " />
                             </p:column>
                             <p:column>
-                                <p:spinner id="basicUnits" value="#{planManagementManagedBean.planToUpdate.totalBasicUnits}" placeholder="10" min="0" max="1000000" required="true" requiredMessage="Basic Units is required" />
+                                <p:spinner disabled="#{planManagementManagedBean.planToUpdate.isInUse}" id="basicUnits" value="#{planManagementManagedBean.planToUpdate.totalBasicUnits}" placeholder="10" min="0" max="1000000" required="true" requiredMessage="Basic Units is required" />
                             </p:column>
                         </p:row>
 
@@ -319,17 +319,17 @@
                             <p:column>
                                 <div class="ui-g">
                                     <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
-                                        <p:knob id="dataConversionRate" foregroundColor="#AB47BC" step="500" max="10000" thickness="0.3" height="100" width="100" cursor="true"  value="#{planManagementManagedBean.planToUpdate.dataConversionRate}"/>
+                                        <p:knob disabled="#{planManagementManagedBean.planToUpdate.isInUse}" id="dataConversionRate" foregroundColor="#AB47BC" step="500" max="10000" thickness="0.3" height="100" width="100" cursor="true"  value="#{planManagementManagedBean.planToUpdate.dataConversionRate}"/>
                                         <br/>
                                         <p:outputLabel style="color: #AB47BC;" for="dataConversionRate" value="Data" />
                                     </div>
                                     <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
-                                        <p:knob id="smsConversionRate" foregroundColor="#FFCA28" step="50" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.planToUpdate.smsConversionRate}"/>
+                                        <p:knob disabled="#{planManagementManagedBean.planToUpdate.isInUse}" id="smsConversionRate" foregroundColor="#FFCA28" step="50" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.planToUpdate.smsConversionRate}"/>
                                         <br/>
                                         <p:outputLabel style="color: #FFCA28;" for="smsConversionRate" value="SMS" />
                                     </div>
                                     <div class="ui-g-4 knob-container ui-corner-all" style="text-align: center;">
-                                        <p:knob id="talktimeConversionRate" foregroundColor="#2399e5" step="100" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.planToUpdate.talktimeConversionRate}"/>
+                                        <p:knob disabled="#{planManagementManagedBean.planToUpdate.isInUse}" id="talktimeConversionRate" foregroundColor="#2399e5" step="100" max="1000" thickness="0.3" height="100" width="100" cursor="true" value="#{planManagementManagedBean.planToUpdate.talktimeConversionRate}"/>
                                         <br/>
                                         <p:outputLabel style="color: #2399e5;" for="talktimeConversionRate" value="Talktime" />
                                     </div>
@@ -342,7 +342,7 @@
                                 <p:outputLabel for="planPrice" value="Plan Price " />
                             </p:column>
                             <p:column>
-                                <p:spinner id="planPrice" value="#{planManagementManagedBean.planToUpdate.price}" placeholder="10.00" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Plan Price is required" />
+                                <p:spinner disabled="#{planManagementManagedBean.planToUpdate.isInUse}" id="planPrice" value="#{planManagementManagedBean.planToUpdate.price}" placeholder="10.00" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Plan Price is required" />
                             </p:column>
                         </p:row>
 
@@ -351,7 +351,7 @@
                                 <p:outputLabel for="planAddOnPrice" value="Add On Price" />
                             </p:column>
                             <p:column>                            
-                                <p:spinner id="planAddOnPrice" value="#{planManagementManagedBean.planToUpdate.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
+                                <p:spinner disabled="#{planManagementManagedBean.planToUpdate.isInUse}" id="planAddOnPrice" value="#{planManagementManagedBean.planToUpdate.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
                             </p:column>
                         </p:row>
                         <p:row>
@@ -359,7 +359,7 @@
                                 <p:outputLabel for="planPenalty" value="Penalty" />
                             </p:column>
                             <p:column>                            
-                                <p:spinner id="planPenalty" value="#{planManagementManagedBean.planToUpdate.penalty}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Penalty is required" />
+                                <p:spinner disabled="#{planManagementManagedBean.planToUpdate.isInUse}" id="planPenalty" value="#{planManagementManagedBean.planToUpdate.penalty}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Penalty is required" />
                             </p:column>
                         </p:row>
 

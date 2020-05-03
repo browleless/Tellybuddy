@@ -84,6 +84,7 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
         });
         return activeAnnouncements;
     }
+
     public List<Announcement> retrieveAllActiveAnnouncementsForCustomers() {
 
         Query query = em.createQuery("SELECT a FROM Announcement a WHERE a.expiryDate > CURRENT_TIMESTAMP AND a.announcementRecipientEnum = :inAnnouncementRecipientEnum");
@@ -114,7 +115,9 @@ public class AnnouncementSessionBean implements AnnouncementSessionBeanLocal {
             } else {
                 announcementToUpdate.setTitle(a.getTitle());
                 announcementToUpdate.setContent(a.getContent());
+                announcementToUpdate.setPostedDate(a.getPostedDate());
                 announcementToUpdate.setExpiryDate(a.getExpiryDate());
+                announcementToUpdate.setAnnouncementRecipientEnum(a.getAnnouncementRecipientEnum());
             }
         } else {
             throw new AnnouncementNotFoundException("Announcement Id " + a.getAnnouncementId() + " does not exist!");

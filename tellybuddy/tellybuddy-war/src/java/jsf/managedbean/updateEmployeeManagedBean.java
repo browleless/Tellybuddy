@@ -72,7 +72,6 @@ public class updateEmployeeManagedBean implements Serializable {
             if (employeeProfileImageFile != null) {
                 String filePath = this.saveUploadedImage();
                 employeeToUpdate.setPhotoPath(filePath);
-                System.out.println("HI THEREEEEEE_------------------------------");
             }
             
             setCurrentEmployee(employeeToUpdate);

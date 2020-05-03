@@ -22,7 +22,7 @@
             .ui-dialog .ui-dialog-title {
                 color: white;
             }
-            
+
             .white-button.ui-button.ui-state-default {
                 background-color: #f1f2f5;
                 color: #222222;
@@ -30,7 +30,7 @@
             }
 
             .white-button.ui-button.ui-state-default:enabled:hover, 
-            
+
             .white-button.ui-button.ui-state-default:focus {
                 background-color: #d5d5d5;
                 border-color: #ccc;
@@ -131,10 +131,10 @@
                             </p:column>
                         </p:row>
 
-                       
 
-                      <p:row  >
-                          <p:fileUpload skinSimple="true" fileUploadListener="#{employeeManagedBean.upload}" previewWidth="150" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg" required="true" requiredMessage="Employee Profile Image is required!"/>
+
+                        <p:row  >
+                            <p:fileUpload skinSimple="true" fileUploadListener="#{employeeManagedBean.upload}" previewWidth="150" allowTypes=" /(\.|\/)(jpe?g|png)$/" invalidFileMessage="Please upload an image of type:.png or .jpg" required="true" requiredMessage="Employee Profile Image is required!"/>
                         </p:row>
                     </p:panelGrid>
 
@@ -175,7 +175,15 @@
                                 <p:inputText id="username" value="#{employeeManagedBean.employeeToUpdate.username}" required="true" requiredMessage="Username is required" />
                             </p:column>
                         </p:row>
-                 
+                        <p:row>
+                            <p:column>  
+                                <h:outputLabel value="Password " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="password" value="#{employeeManagedBean.newPassword}" />
+                            </p:column>
+                        </p:row>
+
                     </p:panelGrid>
 
                     <div style="text-align: center; margin-top: 20px">

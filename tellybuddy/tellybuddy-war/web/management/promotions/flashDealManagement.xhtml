@@ -130,7 +130,7 @@
                 </p:tab>
 
                 <p:tab title="Product Flash Discount">
-           
+
                     <p:commandButton icon="fa fa-plus" style="margin-bottom: 20px" value="Create New Product Flash Discount" oncomplete="PF('dialogCreateNewProductDiscount').show()" />
 
                     <h:form id="formAllDiscountedProducts">
@@ -187,12 +187,12 @@
                         </p:confirmDialog>
 
                     </h:form>
-                   
+
                 </p:tab>
 
             </p:tabView>
             <!--create new product flash deal-->
-            <p:dialog id="dialogCreateNewProductDiscount" widgetVar="dialogCreateNewProductDiscount" header="Create Product flash deal" closable="true">
+            <p:dialog width="750" height="500" id="dialogCreateNewProductDiscount" widgetVar="dialogCreateNewProductDiscount" header="Create Product flash deal" closable="true">
 
                 <h:form id="formViewAllProducts">
 
@@ -222,9 +222,11 @@
                         </p:column>
 
                         <p:column headerText="Action" >
-                            <p:commandButton update="dialogCreateForm" oncomplete="PF('dialogCreateForm').show(), PF('dialogCreateNewProductDiscount').hide()" icon="ui-icon-check" title="Create" >
-                                <f:setPropertyActionListener value="#{product}" target="#{productFlashDiscountManagedBean.discountedProduct}" />
-                            </p:commandButton>
+                            <div style="text-align: center">
+                                <p:commandButton update="dialogCreateForm" oncomplete="PF('dialogCreateForm').show(), PF('dialogCreateNewProductDiscount').hide()" icon="ui-icon-check" title="Create" >
+                                    <f:setPropertyActionListener value="#{product}" target="#{productFlashDiscountManagedBean.discountedProduct}" />
+                                </p:commandButton>
+                            </div>
                         </p:column>
                     </p:dataTable>
                 </h:form>
@@ -241,7 +243,7 @@
                                 <p:outputLabel for="discountPrice" value="Discount price: " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:inputText id="discountPrice" value="#{productFlashDiscountManagedBean.discountedProduct.discountPrice}" required="true" requiredMessage="Discount price is required" />
+                                <p:spinner stepFactor="0.01" id="discountPrice" placeholder="#{productFlashDiscountManagedBean.discountedProduct.price}" value="#{productFlashDiscountManagedBean.discountedProduct.discountPrice}" required="true" requiredMessage="Discount price is required" />
                             </p:column>
                         </p:row>
 
@@ -547,7 +549,7 @@
                                 <p:spinner id="planAddOnPrice" value="#{flashDealManagementManagedBean.newPlan.addOnPrice}" placeholder="2.50" min="0" max="1000000" stepFactor="0.05" required="true" requiredMessage="Add On Price is required" />
                             </p:column>
                         </p:row>
-                         <p:row>
+                        <p:row>
                             <p:column>
                                 <p:outputLabel for="planPenalty" value="Penalty" style="font-weight: bold;" />
                             </p:column>

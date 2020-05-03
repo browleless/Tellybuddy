@@ -53,6 +53,7 @@ public class EmployeeManagedBean implements Serializable {
     private Employee newEmployee;
     private Employee employeeToUpdate;
     private UploadedFile employeeProfileImageFile;
+    private String newPassword;
 
     public EmployeeManagedBean() {
         newEmployee = new Employee();
@@ -66,8 +67,8 @@ public class EmployeeManagedBean implements Serializable {
         List<Employee> temp = employeeSessionBeanLocal.retrieveAllEmployees();
         temp.remove(currentEmployee);
         setEmployees(temp);
+        this.newPassword = null;
     }
-
 
     public void createNewEmployee(ActionEvent event) {
 
@@ -85,11 +86,17 @@ public class EmployeeManagedBean implements Serializable {
             Logger.getLogger(EmployeeManagedBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     public void updateEmployee(ActionEvent event) {
 
         try {
+            if (newPassword != null && newPassword.length() != 0) {
+                this.employeeToUpdate.setUpdatedPassword(newPassword);
+                System.out.println(this.employeeToUpdate.getPassword());
+            }
             employeeSessionBeanLocal.updateEmployee(getEmployeeToUpdate());
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Employee updated successfully", null));
+            this.newPassword = null;
         } catch (EmployeeNotFoundException ex) {
             Logger.getLogger(updateEmployeeManagedBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -121,7 +128,7 @@ public class EmployeeManagedBean implements Serializable {
             File newFile = new File(absolutePathToImages, filename + '.' + extension);
             Files.copy(input, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             System.out.println(newFile.toString());
-            
+
             return filename + "." + extension;
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -193,6 +200,14 @@ public class EmployeeManagedBean implements Serializable {
 
     public void setEmployeeProfileImageFile(UploadedFile employeeProfileImageFile) {
         this.employeeProfileImageFile = employeeProfileImageFile;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
     }
 
 }

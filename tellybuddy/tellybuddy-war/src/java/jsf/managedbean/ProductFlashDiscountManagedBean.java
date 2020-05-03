@@ -48,7 +48,7 @@ public class ProductFlashDiscountManagedBean implements Serializable {
     public void setViewProductManagedBean(ViewProductManagedBean viewProductManagedBean) {
         this.viewProductManagedBean = viewProductManagedBean;
     }
-    
+
     @EJB(name = "ProductSessionBeanLocal")
     private ProductSessionBeanLocal productSessionBeanLocal;
     private List<Product> discountedProducts;
@@ -77,16 +77,19 @@ public class ProductFlashDiscountManagedBean implements Serializable {
     public void createNewProductFlashDeal(ActionEvent event) {
         productSessionBeanLocal.activatePromotion(discountedProduct);
         discountedProducts.add(discountedProduct);
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New flash discount created successfully", null));
     }
 
     public void updateDiscountedProduct(ActionEvent event) {
-            productSessionBeanLocal.updateProduct(discountedProductToUpdate);
+        productSessionBeanLocal.updateProduct(discountedProductToUpdate);
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New flash discount updated successfully", null));
     }
 
     public void deleteDiscountedProduct(ActionEvent event) {
         Product discountedProductToDelete = (Product) event.getComponent().getAttributes().get("discountedProductToDelete");
         productSessionBeanLocal.deactivatePromotion(discountedProductToDelete);
         getDiscountedProducts().remove(discountedProductToDelete);
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New flash discount removed successfully", null));
     }
 
     public Date getDateTimeNow() {

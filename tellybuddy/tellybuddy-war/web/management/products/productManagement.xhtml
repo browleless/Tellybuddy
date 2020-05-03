@@ -498,6 +498,18 @@
                         </p:row>
 
                         <p:row>
+                            <p:column>
+                                <p:outputLabel for="description" value="Description " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="description" value="#{productManagementManagedBean.selectedCategoryToUpdate.description}" placeholder="Description" required="true" requiredMessage="Description is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="description" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
                             <p:column colspan="3">
                                 <p:commandButton type="reset" value="Clear" />&nbsp;
                                 <p:commandButton  value="Update" process="@form" update="@form formCategory:dataTableAllCategories" actionListener="#{productManagementManagedBean.updateCategory}" oncomplete="PF('dialogUpdateCategory').hide();" />
