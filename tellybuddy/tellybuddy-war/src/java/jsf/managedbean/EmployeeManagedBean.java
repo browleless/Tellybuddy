@@ -7,6 +7,7 @@ package jsf.managedbean;
 
 import ejb.session.stateless.EmployeeSessionBeanLocal;
 import entity.Employee;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -112,14 +113,16 @@ public class EmployeeManagedBean implements Serializable {
 
         try {
             String filename = FilenameUtils.getBaseName(employeeProfileImageFile.getFileName());
-//            String extension = FilenameUtils.getExtension(employeeProfileImageFile.getFileName());
-            Path file = Files.createTempFile(folder, filename + "", "");
+            String extension = FilenameUtils.getExtension(employeeProfileImageFile.getFileName());
             InputStream input = employeeProfileImageFile.getInputstream();
+//            Path file = Files.createTempFile(folder, filename + "-", "." + extension);
+//            Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
 
-            Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
-
-            System.out.println(file.toString());
-            return file.getFileName().toString();
+            File newFile = new File(absolutePathToImages, filename + '.' + extension);
+            Files.copy(input, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println(newFile.toString());
+            
+            return filename + "." + extension;
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }

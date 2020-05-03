@@ -280,13 +280,13 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         }
     }
 
-    @Schedule(second = "*/10", minute = "*", hour = "*")
+    @Schedule(second = "*/20", minute = "*", hour = "*")
     public void incrementUsageDetail() {
         for (Subscription s : this.retrieveSubscriptionsByFilter(SubscriptionStatusEnum.ACTIVE)) {
             UsageDetail currentUsageDetail = s.getUsageDetails().get(s.getUsageDetails().size() - 1);
 
             if (s.getAllocatedData() != 0) {
-                currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(BigDecimal.valueOf(2.015)));
+                currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(BigDecimal.valueOf(0.015)));
             }
             if (s.getAllocatedSms() != 0) {
                 currentUsageDetail.setSmsUsage(currentUsageDetail.getSmsUsage() +1);

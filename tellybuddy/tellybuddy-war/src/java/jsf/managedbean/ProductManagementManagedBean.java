@@ -14,6 +14,7 @@ import entity.LuxuryProduct;
 import entity.Product;
 import entity.ProductItem;
 import entity.Tag;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -96,6 +97,7 @@ public class ProductManagementManagedBean implements Serializable {
     private List<Category> allCategories;
     private List<Tag> allTags;
     private UploadedFile productImageFile;
+    private UploadedFile productImageFileAngular;
 
     private Product selectedProductToUpdate;
     private Long categoryIdUpdate;
@@ -387,6 +389,7 @@ public class ProductManagementManagedBean implements Serializable {
         System.out.println("********** STEP 1");
 
         this.productImageFile = event.getFile();
+        this.productImageFileAngular = event.getFile();
         if (productImageFile != null) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully uploaded file: " + productImageFile.getFileName(), null));
 //            System.out.println(filePath);
@@ -398,22 +401,40 @@ public class ProductManagementManagedBean implements Serializable {
 
     public String saveUploadedProductImage() {
 
-        String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\products\\productImages";
-        Path folder = Paths.get(absolutePathToProductImages);
-        System.out.println(absolutePathToProductImages);
-
         try {
-            String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
-//            String extension = FilenameUtils.getExtension(productImageFile.getFileName());
-            Path file = Files.createTempFile(folder, filename + "", "");
             InputStream input = productImageFile.getInputstream();
+            InputStream inputAngular = productImageFileAngular.getInputstream();
+            String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
+            String extension = FilenameUtils.getExtension(productImageFile.getFileName());
+            
+            String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\products\\productImages";
+            File newFile = new File(absolutePathToProductImages, filename + '.' + extension);
+            Files.copy(input, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            
+            System.out.println(absolutePathToProductImages);
+            
+            String angularPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\Tellybuddy")) + "\\tellybuddyangular\\TellybuddyAngular\\src\\assets\\productImages";
+            File newFile2 = new File(angularPath, filename + '.' + extension);
+            Files.copy(inputAngular, newFile2.toPath());
+            
 
-            Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
-//            return filename + "-" + "." + extension;
-            return filename;
+
+            return filename + '.' + extension;
+
+//                    String absolutePathToImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\account\\employeeProfilePicture";
+//            Path folder = Paths.get(absolutePathToImages);
+//            System.out.println(absolutePathToImages);
+//
+//            try {
+//                String filename = FilenameUtils.getBaseName(employeeProfileImageFile.getFileName());
+//                String extension = FilenameUtils.getExtension(employeeProfileImageFile.getFileName());
+//                Path file = Files.createTempFile(folder, filename + "-", "." + extension);
+//                InputStream input = employeeProfileImageFile.getInputstream();
+//
+//                Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
+//
 //                System.out.println(file.toString());
-//                String fullPath = folder + "\\" + file.getFileName().toString();
-//                return fullPath;
+//                return file.getFileName().toString();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
