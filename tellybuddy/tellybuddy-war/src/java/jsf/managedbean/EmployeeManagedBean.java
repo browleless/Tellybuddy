@@ -112,8 +112,8 @@ public class EmployeeManagedBean implements Serializable {
 
         try {
             String filename = FilenameUtils.getBaseName(employeeProfileImageFile.getFileName());
-            String extension = FilenameUtils.getExtension(employeeProfileImageFile.getFileName());
-            Path file = Files.createTempFile(folder, filename + "-", "." + extension);
+//            String extension = FilenameUtils.getExtension(employeeProfileImageFile.getFileName());
+            Path file = Files.createTempFile(folder, filename + "", "");
             InputStream input = employeeProfileImageFile.getInputstream();
 
             Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);

@@ -54,11 +54,6 @@ public class Employee implements Serializable {
     @Size(min = 2, max = 24)
     private String lastName;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    @NotNull
-//    private AccessRightEnum accessRightEnum;
-    
     @Column(nullable = false, length = 128)
     @NotNull
     @Size(max = 128)

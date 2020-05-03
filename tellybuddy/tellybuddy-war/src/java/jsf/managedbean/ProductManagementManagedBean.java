@@ -404,12 +404,13 @@ public class ProductManagementManagedBean implements Serializable {
 
         try {
             String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
-            String extension = FilenameUtils.getExtension(productImageFile.getFileName());
-            Path file = Files.createTempFile(folder, filename + "-", "." + extension);
+//            String extension = FilenameUtils.getExtension(productImageFile.getFileName());
+            Path file = Files.createTempFile(folder, filename + "", "");
             InputStream input = productImageFile.getInputstream();
 
             Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
-            return filename + "-" + "." + extension;
+//            return filename + "-" + "." + extension;
+            return filename;
 //                System.out.println(file.toString());
 //                String fullPath = folder + "\\" + file.getFileName().toString();
 //                return fullPath;
