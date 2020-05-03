@@ -413,7 +413,7 @@ public class ProductManagementManagedBean implements Serializable {
             
             System.out.println(absolutePathToProductImages);
             
-            String angularPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\Tellybuddy")) + "\\tellybuddyangular\\TellybuddyAngular\\src\\assets\\productImages";
+            String angularPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\Tellybuddy")) + "\\TellybuddyAngular\\src\\assets\\productImages";
             File newFile2 = new File(angularPath, filename + '.' + extension);
             Files.copy(inputAngular, newFile2.toPath());
             

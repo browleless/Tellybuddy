@@ -333,7 +333,7 @@ public class DataInitialization {
 
             timeNow.add(Calendar.MONTH, 1);
 
-            customer = new Customer("customer5", "password5", "Wee Kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tester5@gmail.com", "S4041179A", null, null, timeNow.getTime(), "tanwk.jpg");
+            customer = new Customer("customer5", "password5", "Hsiang Hui", "Lek", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tester5@gmail.com", "S4041179A", null, null, timeNow.getTime(), "lekhh.jpg");
             em.persist(customer);
             em.flush();
             customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
