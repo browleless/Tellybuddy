@@ -187,14 +187,15 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     @Override
     public List<Transaction> retrieveAllMonthlyTransactions() {
 
-        Query query = em.createQuery("SELECT st FROM Transaction st WHERE st.transactionDateTime BETWEEN :inputMonthStart AND :inputMonthEnd");
-
+        Query query = em.createQuery("SELECT st FROM Transaction st WHERE st.transactionStatusEnum <> :inTransactionStatusEnum AND (st.transactionDateTime BETWEEN :inputMonthStart AND :inputMonthEnd)");
+        
         LocalDateTime monthBegin = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
         LocalDateTime monthEnd = LocalDateTime.now().withDayOfMonth(1).plusMonths(1).minusDays(-1).withHour(23).withMinute(59).withSecond(59);
         Date inputMonthStart = Date.from(monthBegin.atZone(ZoneId.systemDefault()).toInstant());
         Date inputMonthEnd = Date.from(monthEnd.atZone(ZoneId.systemDefault()).toInstant());
         query.setParameter("inputMonthStart", inputMonthStart);
         query.setParameter("inputMonthEnd", inputMonthEnd);
+        query.setParameter("inTransactionStatusEnum", TransactionStatusEnum.REFUNDED);
         return query.getResultList();
     }
 
