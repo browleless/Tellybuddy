@@ -173,25 +173,11 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         customerToUpdate.setIsApproved(true);
     }
 
-//    @RolesAllowed({"customer"})
-//    @Override
-//    public void customerChangeSubscriptionToAPlan(Long customerId, Subscription newSubscription) {
-//        //check
-//        Customer customer = retrieveCustomerByCustomerId(customerId);
-//        List<Subscription> subscriptions = customer.getSubscriptions();
-//        Subscription latestSubscription = subscriptions.get(subscriptions.size() - 1);
-//        if (latestSubscription.getIsActive() == true) {
-//            terminateCustomerSubscriptionToAPlan(customerId);
-//        }
-//        //front end create subscription object and call createNewSubscriptionMethod in subscriptionSessionBean
-//        newSubscription.setIsActive(true);
-//        newSubscription.setSubscriptionStartDate(Calendar.getInstance().getTime());
-//        customer.getSubscriptions().add(newSubscription);
-//        newSubscription.setCustomer(customer);
-//    }
-    //updateCustomerBill is written in the bill sessionbean, take in billId and customerId
+
     @Override
-    @Schedule(hour = "6", minute = "0", second = "0", persistent = false)
+    //hour = "6", minute = "0", second = "0", persistent = false
+    //for testing:
+    @Schedule(second = "*/1", minute = "*", hour = "*")
     public void updateCustomerLoyaltyPoint() {
         //check it at the beginning of every day
         List<Customer> customers = retrieveAllCustomer();
@@ -199,16 +185,16 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             Integer months = c.getConsecutiveMonths();
             if (months % 12 == 0 && (months != 0)) {
                 //calculation eg.
-                //12 months 1000*(12/12)
-                //24 months 1000*(24/12)
-                c.setLoyaltyPoints(c.getLoyaltyPoints() + (1000 * (months / 12)));
+                //12 months 10*(12/12)
+                //24 months 10*(24/12)
+                c.setLoyaltyPoints(c.getLoyaltyPoints() + (10 * (months / 12)));
             }
         }
 
     }
 
     @Override
-    @Schedule(hour = "6", minute = "0", second = "0", persistent = false)
+    @Schedule(second = "*/1", minute = "*", hour = "*")
     public void updateCustomerConsecutiveMonths() {
         //check it at the beginning of everyday
         List<Customer> customers = retrieveAllCustomer();

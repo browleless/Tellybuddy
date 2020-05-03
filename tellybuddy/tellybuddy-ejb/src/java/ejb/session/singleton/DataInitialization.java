@@ -55,6 +55,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import util.enumeration.AnnouncementRecipientEnum;
+import util.enumeration.CustomerStatusEnum;
 import util.enumeration.SubscriptionStatusEnum;
 import util.exception.CreateNewQuizException;
 import util.exception.CreateNewSubscriptionException;
@@ -132,25 +133,22 @@ public class DataInitialization {
             em.persist(newPlan);
             em.flush();
             try {
+                Date dateInAMonthsTime = new Date();
+                dateInAMonthsTime.setMonth((new Date().getMonth() + 1) % 12);
+
                 Subscription subscription = new Subscription(5, 5, 5, false);
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -2);
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 1l, 1l);
                 subscription.setIsActive(true);
-                subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.TERMINATING);
+                subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
 
-                UsageDetail u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
+                UsageDetail u1 = new UsageDetail(new Date(), dateInAMonthsTime);
                 subscription.getUsageDetails().add(u1);
                 u1.setSubscription(subscription);
                 u1.setBill(null);
                 em.persist(u1);
-                em.flush();
-                UsageDetail u2 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/03/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/04/2020"));
-                subscription.getUsageDetails().add(u2);
-                u2.setSubscription(subscription);
-                u2.setBill(null);
-                em.persist(u2);
                 em.flush();
 
                 subscription = new Subscription(10, 3, 2, false);
@@ -159,44 +157,43 @@ public class DataInitialization {
                 subscription.setSubscriptionStartDate(cal.getTime());
                 subscriptionSessonBean.createNewSubscription(subscription, 1l, 2l, 2l);
                 subscription.setIsActive(true);
+                subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
 
-                u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
+                u1 = new UsageDetail(new Date(), dateInAMonthsTime);
                 subscription.getUsageDetails().add(u1);
                 u1.setSubscription(subscription);
                 u1.setBill(null);
                 em.persist(u1);
-                em.flush();
-                u2 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/03/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/04/2020"));
-                subscription.getUsageDetails().add(u2);
-                u2.setSubscription(subscription);
-                u2.setBill(null);
-                em.persist(u2);
                 em.flush();
 
                 subscription = new Subscription(8, 1, 6, false);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -1);
                 subscription.setSubscriptionStartDate(cal.getTime());
-                subscriptionSessonBean.createNewSubscription(subscription, 1l, 2l, 3l);
+                subscriptionSessonBean.createNewSubscription(subscription, 1l, 3l, 3l);
                 subscription.setIsActive(true);
-                u1 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/02/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/03/2020"));
+                subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
+                u1 = new UsageDetail(new Date(), dateInAMonthsTime);
                 subscription.getUsageDetails().add(u1);
                 u1.setSubscription(subscription);
                 u1.setBill(null);
                 em.persist(u1);
                 em.flush();
-                u2 = new UsageDetail(new SimpleDateFormat("dd/MM/yyyy").parse("20/03/2020"), new SimpleDateFormat("dd/MM/yyyy").parse("19/04/2020"));
-                subscription.getUsageDetails().add(u2);
-                u2.setSubscription(subscription);
-                u2.setBill(null);
-                em.persist(u2);
-                em.flush();
 
-                subscription = new Subscription(15, 5, 10, false);
+                subscription = new Subscription(3, 2, 10, false);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -1);
                 subscription.setSubscriptionStartDate(cal.getTime());
-                subscriptionSessonBean.createNewSubscription(subscription, 1l, 3l, 4l);
+                subscriptionSessonBean.createNewSubscription(subscription, 1l, 4l, 4l);
+                subscription.setIsActive(true);
+                subscription.setSubscriptionStatusEnum(SubscriptionStatusEnum.ACTIVE);
+                u1 = new UsageDetail(new Date(), dateInAMonthsTime);
+                subscription.getUsageDetails().add(u1);
+                u1.setSubscription(subscription);
+                u1.setBill(null);
+                em.persist(u1);
+                em.flush();
+
             } catch (InputDataValidationException ex) {
                 Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
             } catch (UnknownPersistenceException ex) {
@@ -232,31 +229,37 @@ public class DataInitialization {
             Customer customer4 = em.find(Customer.class, 4l);
             Customer customer5 = em.find(Customer.class, 5l);
             Customer customer6 = em.find(Customer.class, 6l);
+            Customer customer7 = em.find(Customer.class, 7l);
+            Customer customer8 = em.find(Customer.class, 8l);
 
             FamilyGroup fg1 = new FamilyGroup("IS3106 Warriors");
             fg1.getCustomers().add(customer1);
             customer1.setOwnerOfFamilyGroup(true);
             fg1.getCustomers().add(customer2);
+            fg1.getCustomers().add(customer3);
+            fg1.getCustomers().add(customer4);
             customer1.setFamilyGroup(fg1);
             customer2.setFamilyGroup(fg1);
-            fg1.setDiscountRate(10);
-            fg1.setNumberOfMembers(2);
+            customer3.setFamilyGroup(fg1);
+            customer4.setFamilyGroup(fg1);
+            fg1.setDiscountRate(20);
+            fg1.setNumberOfMembers(4);
             em.persist(fg1);
             em.flush();
+
             FamilyGroup fg2 = new FamilyGroup("I LOVE NUS");
-            fg2.getCustomers().add(customer3);
-            customer3.setOwnerOfFamilyGroup(true);
-            fg2.getCustomers().add(customer4);
-            //fg2.getCustomers().add(customer5);
-            //  fg2.getCustomers().add(customer6);
-            customer3.setFamilyGroup(fg2);
-            customer4.setFamilyGroup(fg2);
-            //   customer5.setFamilyGroup(fg2);
-            //    customer6.setFamilyGroup(fg2);
-            fg2.setDiscountRate(10);
-            fg2.setNumberOfMembers(2);
+            fg2.getCustomers().add(customer6);
+            fg2.getCustomers().add(customer7);
+            fg2.getCustomers().add(customer8);
+            customer6.setFamilyGroup(fg2);
+            customer6.setOwnerOfFamilyGroup(Boolean.TRUE);
+            customer7.setFamilyGroup(fg2);
+            customer8.setFamilyGroup(fg2);
+            fg2.setDiscountRate(15);
+            fg2.setNumberOfMembers(3);
             em.persist(fg2);
             em.flush();
+
             initialiseProducts();
 
             LocalDate currentDate = LocalDate.now();
@@ -302,49 +305,58 @@ public class DataInitialization {
     }
 
     private void createCustomers() {
-        Calendar timeNow = Calendar.getInstance();
-        timeNow.add(Calendar.MONTH, -3);
+        try {
+            Calendar timeNow = Calendar.getInstance();
+            timeNow.add(Calendar.MONTH, -3);
 
-        Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "marktan@gmail.com", "S9702228A", "./nricPhoto.jpg", null, timeNow.getTime(), "mt.jpg");
+            Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "marktan@gmail.com", "S9702228A", "./nricPhoto.jpg", null, timeNow.getTime(), "mt.jpg");
+            em.persist(customer);
+            em.flush();
+            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
 
-        em.persist(customer);
-        em.flush();
+            customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tayjl@gmail.com", "S9941179A", null, null, timeNow.getTime(), "tayjl.jpg");
+            em.persist(customer);
+            em.flush();
+            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
 
-        customer = new Customer("customer2", "password2", "Jun Le", "Tay", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tayjl@gmail.com", "S9941179A", null, null, timeNow.getTime(), "tayjl.jpg");
-        em.persist(customer);
-        //customer.setIsApproved(true);
-        em.flush();
+            timeNow.add(Calendar.MONTH, 1);
 
-        timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer3", "password3", "Jing Wen", "Ng", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ngJW@gmail.com", "S9841379A", null, null, timeNow.getTime(), "jw.jpg");
-        em.persist(customer);
-        em.flush();
+            customer = new Customer("customer3", "password3", "Jing Wen", "Ng", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "ngJW@gmail.com", "S9841379A", null, null, timeNow.getTime(), "jw.jpg");
+            em.persist(customer);
+            em.flush();
+            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
 
-        customer = new Customer("customer4", "password4", "Kai Xin", "Zhu", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "kathareverusa@gmail.com", "S9641179A", null, null, timeNow.getTime(), "kx.jpg");
-        em.persist(customer);
-        em.flush();
+            customer = new Customer("customer4", "password4", "Kai Xin", "Zhu", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "kathareverusa@gmail.com", "S9641179A", null, null, timeNow.getTime(), "kx.jpg");
+            em.persist(customer);
+            em.flush();
+            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
 
-        timeNow.add(Calendar.MONTH, 1);
+            timeNow.add(Calendar.MONTH, 1);
 
-        customer = new Customer("customer5", "password5", "Wee Kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tester5@gmail.com", "S4041179A", null, null, timeNow.getTime(), "tanwk.jpg");
-        // customer.setIsApproved(true);
-        em.persist(customer);
-        em.flush();
+            customer = new Customer("customer5", "password5", "Wee Kek", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tester5@gmail.com", "S4041179A", null, null, timeNow.getTime(), "tanwk.jpg");
+            em.persist(customer);
+            em.flush();
+            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
 
-        customer = new Customer("customer6", "password6", "Ethan", "Pak", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "tester6@gmail.com", "S4041889A", null, null, timeNow.getTime(), "ethan.jpg");
-        // customer.setIsApproved(true);
-        em.persist(customer);
-        em.flush();
+            customer = new Customer("customer6", "password6", "Chester", "Choo", Integer.valueOf(20), "This is my address", "117417", "tester6@gmail.com", "S4041889A", null, null, timeNow.getTime(), "noprofile.jpg");
+            em.persist(customer);
+            em.flush();
+            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
 
-        timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer7", "password7", "Justin", "Tan", Integer.valueOf(20), "This is my address", "117417", "tester7@gmail.com", "S4041178A", null, null, timeNow.getTime(), null);
-        em.persist(customer);
-        em.flush();
-        
-        customer = new Customer("customer8", "password8", "Phil", "Chee", Integer.valueOf(20), "This is my address", "117417", "tester8@gmail.com", "S4041177A", null, null, timeNow.getTime(), null);
-        em.persist(customer);
-        em.flush();
+            timeNow.add(Calendar.MONTH, 1);
 
+            customer = new Customer("customer7", "password7", "Justin", "Tan", Integer.valueOf(20), "This is my address", "117417", "tester7@gmail.com", "S4041178A", null, null, timeNow.getTime(), "noprofile.jpg");
+            em.persist(customer);
+            em.flush();
+            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
+
+            customer = new Customer("customer8", "password8", "Phil", "Chee", Integer.valueOf(20), "This is my address", "117417", "tester8@gmail.com", "S4041177A", null, null, timeNow.getTime(), "noprofile.jpg");
+            em.persist(customer);
+            em.flush();
+            customerSessionBeanLocal.employeeApprovePendingCustomerAndUpdate(customer);
+        } catch (CustomerNotFoundException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void createQuiz() {

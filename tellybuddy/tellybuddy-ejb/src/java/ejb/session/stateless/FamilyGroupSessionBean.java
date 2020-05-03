@@ -66,7 +66,7 @@ public class FamilyGroupSessionBean implements FamilyGroupSessionBeanLocal {
             
             customerToAssociateWith.setOwnerOfFamilyGroup(true);
             newFamilyGroup.getCustomers().add(customerToAssociateWith);
-
+            newFamilyGroup.setNumberOfMembers(1);
             em.persist(newFamilyGroup);
             em.flush();
 
