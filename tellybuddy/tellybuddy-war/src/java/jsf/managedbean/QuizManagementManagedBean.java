@@ -40,7 +40,6 @@ public class QuizManagementManagedBean implements Serializable {
     private String quizName;
     private Date quizStartDateTime;
     private Date quizEndDateTime;
-    private Integer quizUnitsWorth;
 
     private List<Question> questions;
 
@@ -84,7 +83,6 @@ public class QuizManagementManagedBean implements Serializable {
         quizName = null;
         quizStartDateTime = null;
         quizEndDateTime = null;
-        quizUnitsWorth = null;
     }
 
     public void addNewQuestion(ActionEvent event) {
@@ -138,7 +136,7 @@ public class QuizManagementManagedBean implements Serializable {
     public void publishQuiz(ActionEvent event) {
 
         try {
-            Quiz newQuiz = new Quiz(quizName, quizStartDateTime, quizEndDateTime, quizUnitsWorth);
+            Quiz newQuiz = new Quiz(quizName, quizStartDateTime, quizEndDateTime, questions.size());
             newQuiz.setQuestions(questions);
             Long quizId = quizSessionBeanLocal.createNewQuiz(newQuiz);
             if ((newQuiz.getOpenDate().before(dateTimeNow) && selectedFilter.equals("Active")) || (newQuiz.getOpenDate().after(dateTimeNow) && selectedFilter.equals("Upcoming"))) {
@@ -174,6 +172,7 @@ public class QuizManagementManagedBean implements Serializable {
     public void updateQuiz(ActionEvent event) {
 
         try {
+            quizToUpdate.setUnitsWorth(quizToUpdate.getQuestions().size());
             quizSessionBeanLocal.updateQuiz(quizToUpdate);
             if ((quizToUpdate.getOpenDate().before(dateTimeNow) && selectedFilter.equals("Upcoming")) || (quizToUpdate.getOpenDate().after(dateTimeNow) && selectedFilter.equals("Active"))) {
                 quizzes.remove(quizToUpdate);
@@ -259,14 +258,6 @@ public class QuizManagementManagedBean implements Serializable {
 
     public void setQuizEndDateTime(Date quizEndDateTime) {
         this.quizEndDateTime = quizEndDateTime;
-    }
-
-    public Integer getQuizUnitsWorth() {
-        return quizUnitsWorth;
-    }
-
-    public void setQuizUnitsWorth(Integer quizUnitsWorth) {
-        this.quizUnitsWorth = quizUnitsWorth;
     }
 
     public List<Question> getQuestions() {

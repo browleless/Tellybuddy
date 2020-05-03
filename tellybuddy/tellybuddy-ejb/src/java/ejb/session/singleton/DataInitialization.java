@@ -8,10 +8,12 @@ package ejb.session.singleton;
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.FamilyGroupSessionBeanLocal;
 import ejb.session.stateless.ProductSessionBeanLocal;
+import ejb.session.stateless.QuizSessionBeanLocal;
 import ejb.session.stateless.SubscriptionSessonBeanLocal;
 import ejb.session.stateless.TransactionSessionBeanLocal;
 import entity.Customer;
 import entity.Announcement;
+import entity.Answer;
 
 import entity.Category;
 
@@ -25,6 +27,8 @@ import entity.Subscription;
 import java.util.Date;
 import entity.Product;
 import entity.ProductItem;
+import entity.Question;
+import entity.Quiz;
 import entity.Tag;
 import entity.Transaction;
 import entity.TransactionLineItem;
@@ -33,6 +37,8 @@ import java.math.BigDecimal;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,7 +56,7 @@ import javax.persistence.PersistenceContext;
 
 import util.enumeration.AnnouncementRecipientEnum;
 import util.enumeration.SubscriptionStatusEnum;
-import util.enumeration.TransactionStatusEnum;
+import util.exception.CreateNewQuizException;
 import util.exception.CreateNewSubscriptionException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerNotYetApproved;
@@ -58,6 +64,7 @@ import util.exception.InputDataValidationException;
 import util.exception.PhoneNumberInUseException;
 import util.exception.PlanAlreadyDisabledException;
 import util.exception.ProductNotFoundException;
+import util.exception.QuizNameExistException;
 import util.exception.SubscriptionExistException;
 import util.exception.UnknownPersistenceException;
 
@@ -69,6 +76,9 @@ import util.exception.UnknownPersistenceException;
 @LocalBean
 @Startup
 public class DataInitialization {
+
+    @EJB(name = "QuizSessionBeanLocal")
+    private QuizSessionBeanLocal quizSessionBeanLocal;
 
     @EJB(name = "ProductSessionBeanLocal")
     private ProductSessionBeanLocal productSessionBeanLocal;
@@ -102,6 +112,7 @@ public class DataInitialization {
 
             this.createPhoneNumbers();
             this.createCustomers();
+            this.createQuiz();
 
             Employee newEmployee = new Employee("manager", "password", "Default", "Manager", "path");
             em.persist(newEmployee);
@@ -121,7 +132,7 @@ public class DataInitialization {
             em.persist(newPlan);
             em.flush();
             try {
-                Subscription subscription = new Subscription(10, 10, 10, false);
+                Subscription subscription = new Subscription(5, 5, 5, false);
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -2);
                 subscription.setSubscriptionStartDate(cal.getTime());
@@ -142,7 +153,7 @@ public class DataInitialization {
                 em.persist(u2);
                 em.flush();
 
-                subscription = new Subscription(20, 5, 5, false);
+                subscription = new Subscription(10, 3, 2, false);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -2);
                 subscription.setSubscriptionStartDate(cal.getTime());
@@ -162,7 +173,7 @@ public class DataInitialization {
                 em.persist(u2);
                 em.flush();
 
-                subscription = new Subscription(30, 0, 0, false);
+                subscription = new Subscription(8, 1, 6, false);
                 cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -1);
                 subscription.setSubscriptionStartDate(cal.getTime());
@@ -228,9 +239,11 @@ public class DataInitialization {
             fg1.getCustomers().add(customer2);
             customer1.setFamilyGroup(fg1);
             customer2.setFamilyGroup(fg1);
+            fg1.setDiscountRate(10);
+            fg1.setNumberOfMembers(2);
             em.persist(fg1);
             em.flush();
-            FamilyGroup fg2 = new FamilyGroup("I lOVE NUS");
+            FamilyGroup fg2 = new FamilyGroup("I LOVE NUS");
             fg2.getCustomers().add(customer3);
             customer3.setOwnerOfFamilyGroup(true);
             fg2.getCustomers().add(customer4);
@@ -240,31 +253,49 @@ public class DataInitialization {
             customer4.setFamilyGroup(fg2);
             //   customer5.setFamilyGroup(fg2);
             //    customer6.setFamilyGroup(fg2);
+            fg2.setDiscountRate(10);
+            fg2.setNumberOfMembers(2);
             em.persist(fg2);
             em.flush();
             initialiseProducts();
 
-            Payment payment = new Payment("1234123412341234", "123", new Date(), new BigDecimal("12.12"));
-            em.persist(payment);
-            em.flush();
+            LocalDate currentDate = LocalDate.now();
 
-            Transaction testTransaction = new Transaction(new BigDecimal("12.12"), new Date());
-            testTransaction.setTransactionStatusEnum(TransactionStatusEnum.REFUNDED);
-            testTransaction.setCustomer(customer1);
-            testTransaction.setPayment(payment);
-            em.persist(testTransaction);
-            em.flush();
+            for (int i = 6; i >= 0; i--) {
+                Payment payment = new Payment("1234123412341234", "123", Date.from(currentDate.minusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant()), BigDecimal.ZERO);
+                em.persist(payment);
+                em.flush();
 
-            TransactionLineItem item = new TransactionLineItem(BigDecimal.ONE, 1, BigDecimal.ZERO);
-            item.setProduct(productSessionBeanLocal.retrieveProductByProductId(4l));
-            item.setTransaction(testTransaction);
-            em.persist(item);
-            em.flush();
-            testTransaction.getTransactionLineItems().add(item);
+                Transaction testTransaction = new Transaction(BigDecimal.ZERO, Date.from(currentDate.minusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                testTransaction.setCustomer(customerSessionBeanLocal.retrieveCustomerByCustomerId(Long.valueOf(i + 1)));
+                em.persist(testTransaction);
+                em.flush();
+
+                Product product = productSessionBeanLocal.retrieveProductByProductId(Long.valueOf(i + 1));
+                TransactionLineItem item = new TransactionLineItem(product.getPrice(), 1, product.getPrice());
+
+                if (product instanceof LuxuryProduct) {
+                    ProductItem pi = productSessionBeanLocal.retrieveAvailableProductItemFromLuxury(product.getProductId());
+                    productSessionBeanLocal.debitProductItem(product.getProductId(), pi);
+                    item.setProductItem(pi);
+                } else {
+                    item.setProduct(product);
+                }
+
+                payment.setAmount(product.getPrice());
+                testTransaction.setPayment(payment);
+                testTransaction.setTotalPrice(product.getPrice());
+                item.setTransaction(testTransaction);
+
+                em.persist(item);
+                em.flush();
+
+                testTransaction.getTransactionLineItems().add(item);
+            }
 
         } catch (ParseException ex) {
             Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ProductNotFoundException ex) {
+        } catch (ProductNotFoundException | CustomerNotFoundException ex) {
             Logger.getLogger(DataInitialization.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -272,7 +303,7 @@ public class DataInitialization {
 
     private void createCustomers() {
         Calendar timeNow = Calendar.getInstance();
-        timeNow.add(Calendar.MONTH, -2);
+        timeNow.add(Calendar.MONTH, -3);
 
         Customer customer = new Customer("customer1", "password1", "Mark", "Tan", Integer.valueOf(20), "27 Prince Georges Park Road", "118425", "marktan@gmail.com", "S9702228A", "./nricPhoto.jpg", null, timeNow.getTime(), "mt.jpg");
 
@@ -306,30 +337,88 @@ public class DataInitialization {
         em.flush();
 
         timeNow.add(Calendar.MONTH, 1);
-        customer = new Customer("customer7", "password7", "Tester7", "7", Integer.valueOf(20), "This is my address", "117417", "tester7@gmail.com", "S4041178A", null, null, timeNow.getTime(), null);
-
+        customer = new Customer("customer7", "password7", "Justin", "Tan", Integer.valueOf(20), "This is my address", "117417", "tester7@gmail.com", "S4041178A", null, null, timeNow.getTime(), null);
         em.persist(customer);
         em.flush();
-        customer = new Customer("customer8", "password8", "Tester8", "8", Integer.valueOf(20), "This is my address", "117417", "tester8@gmail.com", "S4041177A", null, null, timeNow.getTime(), null);
+        
+        customer = new Customer("customer8", "password8", "Phil", "Chee", Integer.valueOf(20), "This is my address", "117417", "tester8@gmail.com", "S4041177A", null, null, timeNow.getTime(), null);
         em.persist(customer);
         em.flush();
 
+    }
+
+    private void createQuiz() {
+        try {
+            LocalDate currentDate = LocalDate.now();
+
+            Quiz quiz = new Quiz("Tellybuddy Trivia", new Date(), Date.from(currentDate.plusDays(14).atStartOfDay(ZoneId.systemDefault()).toInstant()), 4);
+
+            List<Question> questions = new ArrayList<>();
+            questions.add(new Question("When was Tellybuddy created?"));
+            questions.add(new Question("How many founders are there for Tellybuddy?"));
+            questions.add(new Question("Who is the advisor for Tellybuddy?"));
+            questions.add(new Question("Is Tellybuddy the best Angular web application?"));
+
+            Answer answer = new Answer("<p>February 2020</p>");
+            questions.get(0).getAnswers().add(answer);
+            answer = new Answer("<p>March 2020</p>");
+            questions.get(0).getAnswers().add(answer);
+            answer = new Answer("<p>April 2020</p>");
+            questions.get(0).getAnswers().add(answer);
+            answer = new Answer("<p>May 2020</p>");
+            answer.setIsAnswer(Boolean.TRUE);
+            questions.get(0).getAnswers().add(answer);
+
+            answer = new Answer("<p>1</p>");
+            questions.get(1).getAnswers().add(answer);
+            answer = new Answer("<p>2</p>");
+            questions.get(1).getAnswers().add(answer);
+            answer = new Answer("<p>3</p>");
+            questions.get(1).getAnswers().add(answer);
+            answer = new Answer("<p>4</p>");
+            answer.setIsAnswer(Boolean.TRUE);
+            questions.get(1).getAnswers().add(answer);
+
+            answer = new Answer("<p>Dr. Lek Hsiang Hui</p>");
+            questions.get(2).getAnswers().add(answer);
+            answer = new Answer("<p>Dr. Tan Wee Kek</p>");
+            answer.setIsAnswer(Boolean.TRUE);
+            questions.get(2).getAnswers().add(answer);
+            answer = new Answer("<p>Dr. Zhou Lifeng</p>");
+            questions.get(2).getAnswers().add(answer);
+            answer = new Answer("<p>Dr. Chong Ket Fah</p>");
+            questions.get(2).getAnswers().add(answer);
+
+            answer = new Answer("<p>Yes</p>");
+            answer.setIsAnswer(Boolean.TRUE);
+            questions.get(3).getAnswers().add(answer);
+            answer = new Answer("<p>No</p>");
+            questions.get(3).getAnswers().add(answer);
+
+            for (Question question : questions) {
+                quiz.getQuestions().add(question);
+            }
+
+            quizSessionBeanLocal.createNewQuiz(quiz);
+        } catch (CreateNewQuizException | QuizNameExistException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void createPhoneNumbers() {
         PhoneNumber phoneno = new PhoneNumber("96820119");
         em.persist(phoneno);
         em.flush();
-        phoneno = new PhoneNumber("54322345");
+        phoneno = new PhoneNumber("84322345");
         em.persist(phoneno);
         em.flush();
-        phoneno = new PhoneNumber("07978291");
+        phoneno = new PhoneNumber("97978291");
         em.persist(phoneno);
         em.flush();
-        phoneno = new PhoneNumber("12345678");
+        phoneno = new PhoneNumber("82345678");
         em.persist(phoneno);
         em.flush();
-        phoneno = new PhoneNumber("43121234");
+        phoneno = new PhoneNumber("93121234");
         em.persist(phoneno);
         em.flush();
     }

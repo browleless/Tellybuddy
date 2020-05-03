@@ -200,7 +200,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
             // store latest allowed quota as info will be lost in the next cycle
             currentUsageDetail.setAllowedDataUsage(BigDecimal.valueOf(subscriptionTotalAllowedData.doubleValue() / 1000));
             currentUsageDetail.setAllowedSmsUsage(subscriptionTotalAllowedSms);
-            currentUsageDetail.setAllowedTalktimeUsage(subscriptionTotalAllowedTalktime);
+            currentUsageDetail.setAllowedTalktimeUsage(BigDecimal.valueOf(subscriptionTotalAllowedTalktime));
 
             BigDecimal totalExceedPenaltyPrice = BigDecimal.ZERO;
 
