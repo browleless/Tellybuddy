@@ -64,7 +64,7 @@ public class Product implements Serializable {
 
     @Column(nullable = false)
     @NotNull
-    @Positive
+//    @Positive
     protected Integer quantityOnHand;
     
     @Column(nullable = false)
