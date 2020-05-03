@@ -84,7 +84,10 @@ public class SubscriptionResource {
 
             for (Subscription subscription : subscriptions) {
                 subscription.setCustomer(null);
-                subscription.getUsageDetails().clear();
+                for (UsageDetail usageDetail : subscription.getUsageDetails()) {
+                    usageDetail.setSubscription(null);
+                    usageDetail.setBill(null);
+                }
                 subscription.getPhoneNumber().setSubscription(null);
             }
             //instantiate the rsp class
@@ -148,7 +151,6 @@ public class SubscriptionResource {
             System.out.println("********** SubscriptionResource.retrieveAllCustomerSubscriptions(): Customer " + customer.getUsername() + " login remotely via web service");
             Customer customerToRetrieve = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
             List<Subscription> subscriptions = subscriptionSessonBeanLocal.retrieveAllActiveSubscriptionUnderCustomer(customerToRetrieve);
-         
 
             for (Subscription subscription : subscriptions) {
                 subscription.setCustomer(null);
@@ -198,7 +200,7 @@ public class SubscriptionResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
-    
+
     @Path("retrieveAllCustomerSubscriptionsWithBills")
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -215,7 +217,7 @@ public class SubscriptionResource {
                 subscription.getUsageDetails().clear();
                 subscription.getPhoneNumber().setSubscription(null);
             }
-            
+
             return Response.status(Response.Status.OK).entity(new RetrieveAllCustomerSubscriptionsWithBillsRsp(subscriptions)).build();
         } catch (InvalidLoginCredentialException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
@@ -302,10 +304,10 @@ public class SubscriptionResource {
                 Customer customer = customerSessionBeanLocal.customerLogin(allocateAddOnUnitsForCurrentMonthReq.getUsername(), allocateAddOnUnitsForCurrentMonthReq.getPassword());
                 System.out.println("********** SubscriptionResource.allocateAddOnUnitsForCurrentMonth(): Customer " + customer.getUsername() + " login remotely via web service");
 
-                Subscription subscription = subscriptionSessonBeanLocal.allocateAddOnUnitsForCurrentMonth(allocateAddOnUnitsForCurrentMonthReq.getSubscription(),allocateAddOnUnitsForCurrentMonthReq.getDataUnits(),allocateAddOnUnitsForCurrentMonthReq.getSmsUnits(),allocateAddOnUnitsForCurrentMonthReq.getTalktimeUnits());
-                System.out.println("Customer: " + subscription.getSubscriptionId()+" purchased data add-ons"+ subscription.getDataUnits().get("addOn"));
-                System.out.println("Customer: " + subscription.getSubscriptionId()+" purchased Sms add-ons"+ subscription.getSmsUnits().get("addOn"));
-                System.out.println("Customer: " + subscription.getSubscriptionId()+" purchased talk time add-ons"+ subscription.getTalkTimeUnits().get("addOn"));
+                Subscription subscription = subscriptionSessonBeanLocal.allocateAddOnUnitsForCurrentMonth(allocateAddOnUnitsForCurrentMonthReq.getSubscription(), allocateAddOnUnitsForCurrentMonthReq.getDataUnits(), allocateAddOnUnitsForCurrentMonthReq.getSmsUnits(), allocateAddOnUnitsForCurrentMonthReq.getTalktimeUnits());
+                System.out.println("Customer: " + subscription.getSubscriptionId() + " purchased data add-ons" + subscription.getDataUnits().get("addOn"));
+                System.out.println("Customer: " + subscription.getSubscriptionId() + " purchased Sms add-ons" + subscription.getSmsUnits().get("addOn"));
+                System.out.println("Customer: " + subscription.getSubscriptionId() + " purchased talk time add-ons" + subscription.getTalkTimeUnits().get("addOn"));
 
                 AllocateAddOnUnitsForCurrentMonthRsp allocateAddOnUnitsForCurrentMonthRsp = new AllocateAddOnUnitsForCurrentMonthRsp(subscription.getSubscriptionId());
                 return Response.status(Response.Status.OK).entity(allocateAddOnUnitsForCurrentMonthRsp).build();

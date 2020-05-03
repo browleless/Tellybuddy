@@ -49,7 +49,7 @@ public class PlanManagementManagedBean implements Serializable {
     @PostConstruct
     public void postConstruct() {
 
-        setPlans(planSessionBeanLocal.retrieveAllPlans());
+        setPlans(planSessionBeanLocal.retrieveAllNormalPlans());
     }
 
     public void createNewPlan(ActionEvent event) {
