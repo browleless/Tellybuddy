@@ -44,9 +44,6 @@ import util.security.CryptographicHelper;
 
 public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
-    @EJB(name = "PhoneNumberSessionBeanLocal")
-    private PhoneNumberSessionBeanLocal phoneNumberSessionBeanLocal;
-
     @EJB(name = "EmailSessionBeanLocal")
     private EmailSessionBeanLocal emailSessionBeanLocal;
 

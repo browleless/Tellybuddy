@@ -57,9 +57,6 @@ public class TransactionSessionBean implements TransactionSessionBeanLocal {
     @EJB
     private SubscriptionSessonBeanLocal subscriptionSessonBeanLocal;
 
-    @EJB(name = "ProductItemSessionBeanLocal")
-    private ProductItemSessionBeanLocal productItemSessionBeanLocal;
-
     @EJB(name = "PaymentSessionBeanLocal")
     private PaymentSessionBeanLocal paymentSessionBeanLocal;
 
