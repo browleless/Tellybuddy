@@ -64,7 +64,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     public Long createCustomer(Customer newCustomer) throws CustomerExistException, CustomerUsernameExistException {
 
         Customer customer = new Customer(newCustomer.getUsername(), newCustomer.getPassword(), newCustomer.getFirstName(), newCustomer.getLastName(), newCustomer.getAge(),
-                newCustomer.getNewAddress(), newCustomer.getNewPostalCode(), newCustomer.getEmail(), newCustomer.getNewNric(), "", "", new Date(), "");
+                newCustomer.getNewAddress(), newCustomer.getNewPostalCode(), newCustomer.getEmail(), newCustomer.getNewNric(), newCustomer.getNewNricFrontImagePath(), newCustomer.getNewNricBackImagePath(), new Date(), newCustomer.getProfilePhoto());
 
         Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername");
         query.setParameter("inUsername", customer.getUsername());
@@ -122,7 +122,20 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
                 customerToUpdate.setNewNric(customer.getNewNric());
             }
 
-            customerToUpdate.setNewNricBackImagePath(customer.getNewNricBackImagePath());
+            if (customer.getNewNricFrontImagePath() != null) {
+                customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.UPDATING);
+                customerToUpdate.setNewNricFrontImagePath(customer.getNewNricFrontImagePath());
+            }
+
+            if (customer.getNewNricBackImagePath() != null) {
+                customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.UPDATING);
+                customerToUpdate.setNewNricBackImagePath(customer.getNewNricBackImagePath());
+            }
+
+            if (customer.getProfilePhoto() != null) {
+                customerToUpdate.setProfilePhoto(customer.getProfilePhoto());
+            }
+
             // em.flush();
         } catch (Exception ex) {
             throw new CustomerNotFoundException(ex.getMessage());
@@ -148,17 +161,17 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             customerToUpdate.setAddress(customer.getNewAddress());
             customerToUpdate.setNewAddress(null);
         }
-        
-        if (customerToUpdate.getNewPostalCode()!= null) {
+
+        if (customerToUpdate.getNewPostalCode() != null) {
             customerToUpdate.setPostalCode(customer.getNewPostalCode());
             customerToUpdate.setNewPostalCode(null);
         }
-        
-        if (customerToUpdate.getNewNric()!= null) {
+
+        if (customerToUpdate.getNewNric() != null) {
             customerToUpdate.setNric(customer.getNewNric());
             customerToUpdate.setNewNric(null);
         }
-        
+
         if (customerToUpdate.getNricBackImagePath() != null) {
             customerToUpdate.setNricFrontImagePath(customer.getNewNricFrontImagePath());
             customerToUpdate.setNricBackImagePath(customer.getNewNricBackImagePath());
@@ -169,7 +182,6 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         customerToUpdate.setCustomerStatusEnum(CustomerStatusEnum.ACTIVE);
         customerToUpdate.setIsApproved(true);
     }
-
 
     @Override
     //hour = "6", minute = "0", second = "0", persistent = false

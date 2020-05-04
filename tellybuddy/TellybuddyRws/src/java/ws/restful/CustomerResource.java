@@ -4,6 +4,9 @@ import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.EmailSessionBeanLocal;
 import entity.Customer;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 import javax.ws.rs.core.Context;
@@ -18,6 +21,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import util.exception.CustomerExistException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
@@ -310,5 +315,57 @@ public class CustomerResource {
         }
     }
 
+    @POST
+    @Path("/uploadToNricFolder")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+//    @Produces(MediaType.APPLICATION_JSON)
+    public Response uploadToNricFolder(
+            @FormDataParam("fileKey") InputStream uploadedInputStream,
+            @FormDataParam("fileKey") FormDataContentDisposition fileDetail) {
 
+        String absolutePathToNRICFolder = CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().substring(1, CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().indexOf("/dist")).replace("/", "\\") + "\\tellybuddy-war\\web\\management\\customers\\nricPhotos\\";
+
+        try {
+            FileOutputStream out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
+            int read = 0;
+            byte[] bytes = new byte[1024];
+            out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
+            while ((read = uploadedInputStream.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Response.status(200).entity("ok").build();
+    }
+
+    @POST
+    @Path("/uploadToProfileFolder")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+//    @Produces(MediaType.APPLICATION_JSON)
+    public Response uploadToProfileFolder(
+            @FormDataParam("fileKey") InputStream uploadedInputStream,
+            @FormDataParam("fileKey") FormDataContentDisposition fileDetail) {
+
+        String absolutePathToNRICFolder = CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().substring(1, CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().indexOf("/dist")).replace("/", "\\") + "\\tellybuddy-war\\web\\management\\customers\\profilePhotos\\";
+
+        try {
+            FileOutputStream out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
+            int read = 0;
+            byte[] bytes = new byte[1024];
+            out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
+            while ((read = uploadedInputStream.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Response.status(200).entity("ok").build();
+    }
 }
