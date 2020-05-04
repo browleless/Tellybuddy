@@ -25,7 +25,7 @@ public class Category implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
     
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 32,  unique = true)
     @NotNull
     @Size(min = 4, max = 32)
     private String name;
