@@ -38,12 +38,7 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
         } else {
             Bill billToPay = billSessionBeanLocal.retrieveBillByBillId(bill.getBillId());
 
-            Date date = new Date();
-            date.setHours(13);
-            date.setMinutes(11);
-            date.setSeconds(0);
-
-            Payment newPayment = new Payment(payment.getCreditCardNumber(), payment.getCvv(), date, payment.getAmount());
+            Payment newPayment = new Payment(payment.getCreditCardNumber(), payment.getCvv(), new Date(), payment.getAmount());
             billToPay.getCustomer().setLoyaltyPoints(billToPay.getCustomer().getLoyaltyPoints() - (billToPay.getPrice().add(billToPay.getAddOnPrice()).add(billToPay.getExceedPenaltyPrice()).multiply(BigDecimal.valueOf((double) (100 - billToPay.getFamilyDiscountRate()) / 100))).subtract(payment.getAmount()).intValue());
 
             entityManager.persist(newPayment);
