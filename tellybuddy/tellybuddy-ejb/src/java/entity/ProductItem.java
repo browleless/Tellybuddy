@@ -31,18 +31,18 @@ public class ProductItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productItemId;
-    
+
     @Column(nullable = false, length = 10)
     @NotNull
     @Size(min = 1, max = 10)
     private String serialNumber;
-    
+
     @Column(nullable = false, precision = 6, scale = 2)
     @NotNull
     @Digits(integer = 4, fraction = 2)
     @DecimalMin("0.00")
     private BigDecimal price;
-    
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private LuxuryProduct luxuryProduct;
@@ -55,7 +55,7 @@ public class ProductItem implements Serializable {
         this.serialNumber = serialNumber;
         this.price = price;
     }
-    
+
     public Long getProductItemId() {
         return productItemId;
     }
@@ -112,5 +112,5 @@ public class ProductItem implements Serializable {
     public void setLuxuryProduct(LuxuryProduct luxuryProduct) {
         this.luxuryProduct = luxuryProduct;
     }
-    
+
 }

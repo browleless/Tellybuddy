@@ -109,7 +109,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 }
 
                 PhoneNumber phoneNumber = phoneNumberSessionBeanLocal.retrievePhoneNumberByPhoneNumberId(phoneNumberId);
-                if (phoneNumber.getSubscription() != null) {
+                if (phoneNumber.getInUse()) {
                     throw new PhoneNumberInUseException("Selected Phone Number is currently in use!");
                 }
 
@@ -170,7 +170,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
         TimerService timerService = sessionContext.getTimerService();
         // currently set to add 10s for testing, to replace with dateInAMonthsTime whenever we want
         // create timer for 1 month mark, to generate bill and reset allocation etc.
-        timerService.createSingleActionTimer(new Date(new Date().getTime() + 10000), new TimerConfig(subscriptionToApprove, true));
+        timerService.createSingleActionTimer(new Date(new Date().getTime() + 60000 * 3), new TimerConfig(subscriptionToApprove, true));
 
     }
 
@@ -196,6 +196,10 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
             // latest usage detail for the month
             UsageDetail currentUsageDetail = subscriptionToUpdate.getUsageDetails().get(subscriptionToUpdate.getUsageDetails().size() - 1);
+
+            currentUsageDetail.setDataUsage(BigDecimal.valueOf(4.6));
+            currentUsageDetail.setSmsUsage(384);
+            currentUsageDetail.setTalktimeUsage(BigDecimal.valueOf(298));
 
             // store latest allowed quota as info will be lost in the next cycle
             currentUsageDetail.setAllowedDataUsage(BigDecimal.valueOf(subscriptionTotalAllowedData.doubleValue() / 1000));
@@ -269,9 +273,9 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
 
                 // for the next timer cycle (billing cycle 1 month later)
                 TimerService timerService = sessionContext.getTimerService();
-                timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
+//                timerService.createSingleActionTimer(dateInAMonthsTime, new TimerConfig(subscriptionToUpdate, true));
                 // for debugging (Express cycle)
-//                timerService.createSingleActionTimer(new Date(new Date().getTime() + 60000), new TimerConfig(subscriptionToUpdate, true));
+                timerService.createSingleActionTimer(new Date(new Date().getTime() + 60000 * 5), new TimerConfig(subscriptionToUpdate, true));
             }
 
         } catch (SubscriptionNotFoundException | InputDataValidationException | CustomerNotFoundException | UsageDetailNotFoundException | InterruptedException ex) {
@@ -289,7 +293,7 @@ public class SubscriptionSessonBean implements SubscriptionSessonBeanLocal {
                 currentUsageDetail.setDataUsage(currentUsageDetail.getDataUsage().add(BigDecimal.valueOf(0.015)));
             }
             if (s.getAllocatedSms() != 0) {
-                currentUsageDetail.setSmsUsage(currentUsageDetail.getSmsUsage() +1);
+                currentUsageDetail.setSmsUsage(currentUsageDetail.getSmsUsage() + 1);
             }
             if (s.getAllocatedTalkTime() != 0) {
                 currentUsageDetail.setTalktimeUsage(currentUsageDetail.getTalktimeUsage().add(BigDecimal.valueOf(0.010)));

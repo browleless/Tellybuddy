@@ -406,18 +406,16 @@ public class ProductManagementManagedBean implements Serializable {
             InputStream inputAngular = productImageFileAngular.getInputstream();
             String filename = FilenameUtils.getBaseName(productImageFile.getFileName());
             String extension = FilenameUtils.getExtension(productImageFile.getFileName());
-            
+
             String absolutePathToProductImages = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\dist")) + "\\tellybuddy-war\\web\\management\\products\\productImages";
             File newFile = new File(absolutePathToProductImages, filename + '.' + extension);
             Files.copy(input, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            
+
             System.out.println(absolutePathToProductImages);
-            
+
             String angularPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").substring(0, FacesContext.getCurrentInstance().getExternalContext().getRealPath("/").indexOf("\\Tellybuddy")) + "\\TellybuddyAngular\\src\\assets\\productImages";
             File newFile2 = new File(angularPath, filename + '.' + extension);
             Files.copy(inputAngular, newFile2.toPath());
-            
-
 
             return filename + '.' + extension;
 

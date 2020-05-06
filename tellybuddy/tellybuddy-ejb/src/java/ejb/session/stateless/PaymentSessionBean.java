@@ -38,8 +38,13 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
         } else {
             Bill billToPay = billSessionBeanLocal.retrieveBillByBillId(bill.getBillId());
 
-            Payment newPayment = new Payment(payment.getCreditCardNumber(), payment.getCvv(), new Date(), payment.getAmount());
-            billToPay.getCustomer().setLoyaltyPoints(billToPay.getCustomer().getLoyaltyPoints() - (billToPay.getPrice().add(billToPay.getAddOnPrice()).add(billToPay.getExceedPenaltyPrice()).multiply(BigDecimal.valueOf((double)(100 - billToPay.getFamilyDiscountRate()) / 100))).subtract(payment.getAmount()).intValue());
+            Date date = new Date();
+            date.setHours(13);
+            date.setMinutes(11);
+            date.setSeconds(0);
+
+            Payment newPayment = new Payment(payment.getCreditCardNumber(), payment.getCvv(), date, payment.getAmount());
+            billToPay.getCustomer().setLoyaltyPoints(billToPay.getCustomer().getLoyaltyPoints() - (billToPay.getPrice().add(billToPay.getAddOnPrice()).add(billToPay.getExceedPenaltyPrice()).multiply(BigDecimal.valueOf((double) (100 - billToPay.getFamilyDiscountRate()) / 100))).subtract(payment.getAmount()).intValue());
 
             entityManager.persist(newPayment);
             entityManager.flush();
@@ -59,7 +64,7 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
         entityManager.flush();
 
         return newPayment;
-     }
+    }
 
 //    @Override
 //    public Long automateBillPayment(Bill bill) throws BillAlreadyPaidException, CustomerStoredCreditCardException, BillNotFoundException {
@@ -84,7 +89,6 @@ public class PaymentSessionBean implements PaymentSessionBeanLocal {
 //            return newPayment.getPaymentId();
 //        }
 //    }
-
     @Override
     public Payment retrievePaymentByPaymentId(Long paymentId) throws PaymentNotFoundException {
 

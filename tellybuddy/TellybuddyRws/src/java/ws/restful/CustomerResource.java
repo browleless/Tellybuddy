@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.List;
 import javax.ws.rs.core.Context;
@@ -326,15 +328,18 @@ public class CustomerResource {
         String absolutePathToNRICFolder = CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().substring(1, CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().indexOf("/dist")).replace("/", "\\") + "\\tellybuddy-war\\web\\management\\customers\\nricPhotos\\";
 
         try {
-            FileOutputStream out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
-            int read = 0;
-            byte[] bytes = new byte[1024];
-            out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
-            while ((read = uploadedInputStream.read(bytes)) != -1) {
-                out.write(bytes, 0, read);
-            }
-            out.flush();
-            out.close();
+            File newFile = new File(absolutePathToNRICFolder, fileDetail.getFileName());
+            Files.copy(uploadedInputStream, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+//            FileOutputStream out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
+//            int read = 0;
+//            byte[] bytes = new byte[1024];
+//            out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
+//            while ((read = uploadedInputStream.read(bytes)) != -1) {
+//                out.write(bytes, 0, read);
+//            }
+//            out.flush();
+//            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -350,18 +355,21 @@ public class CustomerResource {
             @FormDataParam("fileKey") InputStream uploadedInputStream,
             @FormDataParam("fileKey") FormDataContentDisposition fileDetail) {
 
-        String absolutePathToNRICFolder = CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().substring(1, CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().indexOf("/dist")).replace("/", "\\") + "\\tellybuddy-war\\web\\management\\customers\\profilePhotos\\";
+        String absolutePathToProfileFolder = CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().substring(1, CustomerResource.class.getProtectionDomain().getCodeSource().getLocation().getFile().indexOf("/dist")).replace("/", "\\") + "\\tellybuddy-war\\web\\management\\customers\\profilePhotos\\";
 
         try {
-            FileOutputStream out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
-            int read = 0;
-            byte[] bytes = new byte[1024];
-            out = new FileOutputStream(new File(absolutePathToNRICFolder + fileDetail.getFileName()));
-            while ((read = uploadedInputStream.read(bytes)) != -1) {
-                out.write(bytes, 0, read);
-            }
-            out.flush();
-            out.close();
+            File newFile = new File(absolutePathToProfileFolder, fileDetail.getFileName());
+            Files.copy(uploadedInputStream, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+//            FileOutputStream out = new FileOutputStream(new File(absolutePathToProfileFolder + fileDetail.getFileName()));
+//            int read = 0;
+//            byte[] bytes = new byte[1024];
+//            out = new FileOutputStream(new File(absolutePathToProfileFolder + fileDetail.getFileName()));
+//            while ((read = uploadedInputStream.read(bytes)) != -1) {
+//                out.write(bytes, 0, read);
+//            }
+//            out.flush();
+//            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

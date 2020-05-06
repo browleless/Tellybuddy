@@ -504,7 +504,7 @@ public class ProductSessionBean implements ProductSessionBeanLocal {
             if (productToRemove instanceof LuxuryProduct) {
                 LuxuryProduct luxuryProductToRemove = (LuxuryProduct) productToRemove;
                 for (ProductItem productItem : luxuryProductToRemove.getProductItems()) {
-                    productItem.setLuxuryProduct(null);
+                    em.remove(em.find(ProductItem.class, productItem.getProductItemId()));
                 }
                 luxuryProductToRemove.getProductItems().clear();
             }
